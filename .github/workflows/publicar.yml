@@ -29,6 +29,13 @@ jobs:
         with:
           python-version: '3.x'
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Testes do progresso e da trilha
+        run: node --test tests/*.test.js
+
       - name: Regenerar a partir do ROADMAP.md
         run: python3 tools/gen_roadmap.py
 
