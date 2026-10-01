@@ -18,3 +18,4 @@ __pycache__/
 
 # Credenciais locais (nunca commitar)
 .env
+.superpowers/
