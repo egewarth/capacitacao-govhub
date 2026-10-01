@@ -15,6 +15,7 @@ os ids dos nós são tornados únicos automaticamente para que o progresso conti
 Uso:  python3 tools/gen_roadmap.py
 """
 import re, os, json, zipfile, html as htmlmod
+from urllib.parse import quote
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC          = os.path.join(REPO, "ROADMAP.md")
@@ -132,23 +133,21 @@ def node_ids(levels):
     return ids
 
 
-def viewer(doc):
-    return "doc.html?path=" + doc
+def viewer(doc, node_id=None):
+    """Link para o leitor. O id do nó situa a posição quando o documento se repete na trilha."""
+    url = "doc.html?path=" + doc
+    return url + "&item=" + quote(node_id, safe="") if node_id else url
 
 
 # ----------------------------- roadmap.html -----------------------------
 def gen_html(levels):
     esc = lambda t: htmlmod.escape(t, quote=False)
     escq = lambda t: htmlmod.escape(t, quote=True)   # para valores de atributo
-    seen = {}
-
-    def uid(doc):
-        base = data_id(doc)
-        seen[base] = seen.get(base, 0) + 1
-        return base if seen[base] == 1 else "%s--%d" % (base, seen[base])
+    ids = iter(node_ids(levels))
 
     def node(it):
-        label, cls = TYPE_INFO[it["type"]][:2]
+        node_id = next(ids)
+        label, cls, _f, _t, icone = TYPE_INFO[it["type"]]
         role = it["role"]
         classes = ["node", cls]
         if role in SUPPORT_ROLES:
@@ -159,15 +158,18 @@ def gen_html(levels):
             classes.append("advanced")
         # O título vem antes dos metadados: é o que se procura ao varrer a lista.
         # O botão carrega nome acessível próprio — "botão" sozinho não diz o que faz.
+        # O tipo é ícone + nome (ADR 0003): a distinção não depende de cor.
         return ('      <div class="%s" data-id="%s">'
                 '<button class="check" type="button" aria-pressed="false" aria-label="%s"></button>'
                 '<div class="node-body">'
                 '<a class="node-title" href="%s">%s</a>'
-                '<span class="meta"><span class="type">%s</span> · <span class="role">%s</span></span>'
+                '<span class="meta"><span class="tag-tipo"><img src="%s" alt="" width="18" height="18">%s</span>'
+                '<span class="role">%s</span></span>'
                 '</div></div>'
-                % (" ".join(classes), esc(uid(it["doc"])),
+                % (" ".join(classes), esc(node_id),
                    escq("Marcar como concluído: " + it["title"]),
-                   esc(viewer(it["doc"])), esc(it["title"]), esc(label), ROLE_DISPLAY[role]))
+                   escq(viewer(it["doc"], node_id)), esc(it["title"]), icone, esc(label),
+                   ROLE_DISPLAY[role]))
 
     def level(lv):
         nodes = "\n".join(node(it) for it in lv["items"])
