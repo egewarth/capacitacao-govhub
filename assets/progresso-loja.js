@@ -160,7 +160,19 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     }
     const minha = sessao;
     conectar(u).catch(() => {
-      if (minha === sessao) avisar('Não foi possível carregar o progresso da sua conta.');
+      if (minha !== sessao) return;
+      // A leitura falhou: a janela de "nuvem ainda não conectada" acabou. O que foi anotado vai
+      // para a conta (merge só dos ids tocados, sem apagar o resto) e as próximas ações seguem
+      // direto para a nuvem, em vez de ficarem anotadas para sempre sem destino.
+      const meus = pendentes;
+      pendentes = null;
+      if (meus && usuario && usuario.uid === u.uid && nuvem) {
+        const ids = (valor) => Object.keys(meus.feitos).filter((id) => !!meus.feitos[id] === valor);
+        if (ids(true).length) nuvem.marcar(u.uid, ids(true), true).catch(() => {});
+        if (ids(false).length) nuvem.marcar(u.uid, ids(false), false).catch(() => {});
+        if (meus.ultimaAula) nuvem.gravarUltimaAula(u.uid, meus.ultimaAula).catch(() => {});
+      }
+      avisar('Não foi possível carregar o progresso da sua conta.');
     });
   }
 
@@ -190,6 +202,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   }
 
   function alternar(ids) {
+    // Nada a alternar: sem mudar estado, salvar, emitir nem falar com a nuvem.
+    if (!ids || ids.length === 0) return false;
     const antes = feitos;
     const { feitos: depois, marcou } = alternarIds(feitos, ids);
     feitos = depois;

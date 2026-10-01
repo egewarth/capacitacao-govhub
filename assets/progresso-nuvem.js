@@ -46,6 +46,8 @@ export async function criarNuvem(config) {
       // documento apagado). Os ids (com '/' e '--') são chaves de objeto aninhado, sem parsing
       // de caminho de campo.
       marcar(uid, ids, valor) {
+        // Mapa vazio num setDoc com merge SUBSTITUI todo o `feitos` (apagaria o progresso da conta).
+        if (!ids.length) return Promise.resolve();
         const feitos = {};
         for (const id of ids) feitos[id] = valor ? true : fs.deleteField();
         return fs.setDoc(documento(uid), { feitos, atualizadoEm: fs.serverTimestamp() }, { merge: true });

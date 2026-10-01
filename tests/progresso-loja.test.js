@@ -538,3 +538,39 @@ test('sessão restaurada: zerar antes de a nuvem conectar não ressuscita as aul
   assert.deepEqual(loja.feitos(), {});
   assert.deepEqual(nuvem.docs.ana.feitos, {});
 });
+
+test('alternar com lista vazia não muda nada nem chama a nuvem', async () => {
+  const { arm, nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: { a: true }, ultimaAula: null } } });
+  const antes = structuredClone(nuvem.docs.ana);
+  const chamadas = nuvem.chamadas.length;
+  let emissoes = 0;
+  loja.aoMudar(() => { emissoes += 1; });
+  const armAntes = JSON.stringify(arm.json(CHAVE_CONTA));
+  assert.equal(loja.alternar([]), false);
+  assert.equal(loja.alternar(undefined), false);
+  await esperar();
+  assert.deepEqual(loja.feitos(), { a: true });
+  assert.deepEqual(nuvem.docs.ana, antes);
+  assert.equal(nuvem.chamadas.length, chamadas);
+  assert.equal(emissoes, 0);
+  assert.equal(JSON.stringify(arm.json(CHAVE_CONTA)), armAntes);
+});
+
+test('leitura da conta falha: o que foi feito antes vai para a nuvem e o resto segue direto', async () => {
+  const arm = armazenamentoFalso({ [CHAVE_CONTA]: { uid: 'ana', usuario: ANA, feitos: { a: true }, ultimaAula: null } });
+  const nuvem = nuvemFalsa({ ana: { feitos: { a: true }, ultimaAula: null } });
+  nuvem.ler = async () => { throw new Error('offline'); };
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: async () => nuvem });
+  const avisos = [];
+  loja.aoAviso((t) => avisos.push(t));
+  await loja.iniciar();
+  loja.alternar(['b']);   // antes de a leitura falhar: fica anotado
+  nuvem.logar(ANA);
+  await esperar();
+  assert.deepEqual(avisos, ['Não foi possível carregar o progresso da sua conta.']);
+  assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true });
+  loja.alternar(['c']);   // depois da falha: não é mais "pendente", vai direto
+  await esperar();
+  assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true, c: true });
+  assert.deepEqual(loja.feitos(), { a: true, b: true, c: true });
+});
