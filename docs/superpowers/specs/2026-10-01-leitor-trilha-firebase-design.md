@@ -45,7 +45,7 @@ de progresso de turma; login por e-mail e senha.
   |---|---|
   | Tutorial | `book-open` |
   | Guia | `wrench` |
-  | Referência | `document-list` |
+  | Referência | `document-text` |
   | Explicação | `light-bulb` |
   | Desafio | `trophy` |
   | Pesquisa | `beaker` |
@@ -83,7 +83,7 @@ de progresso de turma; login por e-mail e senha.
 - **Barra lateral:** progresso geral no topo; um bloco recolhível por nível (`<details>`/`<summary>`
   ou botão com `aria-expanded`) com título e contador `feitas/total`; cada aula mostra a caixa de
   marcar (botão `aria-pressed`, alvo de toque ≥ 24px), o título como link, o ícone do tipo e, quando o
-  papel não é Essencial, a etiqueta do papel (Apoio, Projeto final, Opcional, Avançado). O nível da
+  papel não é Essencial, a etiqueta do papel (Apoio, Capstone, Opcional, Avançado). O nível da
   aula aberta começa expandido; a aula aberta tem `aria-current="page"`.
 - **Navegação:** clicar numa aula carrega o Markdown sem recarregar a página (`history.pushState`,
   com `popstate` tratado). A URL continua `doc.html?path=<doc>`; quando o mesmo documento aparece em
