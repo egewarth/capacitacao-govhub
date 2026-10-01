@@ -24,9 +24,6 @@
   .hero h1{margin:0 0 14px;font-size:2.5rem;font-weight:800;letter-spacing:-.025em;line-height:1.06}
   .hero p.sub{font-size:1.08rem;margin:0 0 22px}
   .hero a:focus-visible{outline-color:#fff}
-  .badges{display:flex;flex-wrap:wrap;gap:8px}
-  .badges a{color:#fff;border:1px solid rgba(255,255,255,.55);padding:5px 12px;border-radius:999px;font-size:.8rem}
-  .badges a:hover{background:rgba(255,255,255,.12);text-decoration:none}
 
   .meu-progresso{background:#fff;color:var(--text-body);border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow-xl)}
   .meu-progresso a:focus-visible{outline-color:var(--purple-700)}
@@ -111,13 +108,6 @@
       bons — não apenas dashboards bonitos. Da pergunta de negócio ao painel publicado no
       <strong>GovHub</strong>, com <strong>Apache Superset</strong> e <strong>Power BI</strong>, e com
       acessibilidade tratada como requisito, não como acabamento.</p>
-      <div class="badges">
-        <a href="https://diataxis.fr/" target="_blank">Estrutura: Diátaxis</a>
-        <a href="https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/acessibilidade-digital/eMAGv31.pdf" target="_blank">Acessibilidade: eMAG</a>
-        <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" target="_blank">WCAG</a>
-        <a href="roadmap.html">Mapa da trilha</a>
-        <a href="doc.html?path=README.md">README</a>
-      </div>
     </div>
     <div class="meu-progresso" role="region" aria-labelledby="meu-rotulo">
       <p class="rotulo" id="meu-rotulo">Seu progresso</p>
@@ -261,23 +251,6 @@
   <div class="map"><h3><img src="assets/icones/beaker-sober.svg" alt="" width="28" height="28">Pesquisa — comparativos</h3><ul>
     <li><a href="doc.html?path=docs/pesquisa/mapas-superset-vs-power-bi.md">Mapas: Superset vs. Power BI</a></li>
   </ul></div>
-</div></section>
-
-<!-- ESTRUTURA -->
-<section id="estrutura"><div class="wrap">
-  <h2>Estrutura de pastas</h2>
-  <p class="lead">"gen" marca arquivos regenerados por <code>tools/gen_roadmap.py</code> — não edite à mão.</p>
-  <pre class="tree">dashboards-roadmap/
-├── <a href="doc.html?path=README.md">README.md</a>                  <span class="c">visão geral + estrutura + como editar</span>
-├── <a href="doc.html?path=ROADMAP.md">ROADMAP.md</a>                 <span class="c">fonte única da trilha</span>
-├── <a href="doc.html?path=CONTEXT.md">CONTEXT.md</a>                 <span class="c">linguagem ubíqua da autoria</span>
-├── index.html · roadmap.html · doc.html
-├── tools/gen_roadmap.py         <span class="c">ROADMAP.md -> html + xmind + trilhas</span>
-├── docs/
-│   ├── tutoriais/  guias/  referencia/  explicacao/  desafios/  pesquisa/
-│   └── trilhas/index.md         <span class="c">gen · trilha em texto</span>
-├── exemplos/                    <span class="c">material de apoio (dados, temas, wireframes)</span>
-└── templates/                   <span class="c">um template por tipo de página</span></pre>
 </div></section>
 
 <!-- TRILHA -->

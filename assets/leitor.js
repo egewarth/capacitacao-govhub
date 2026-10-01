@@ -222,7 +222,6 @@ async function abrir({ path, item }, { foco = false } = {}) {
     desenharDiagramas(conteudo);
     const h1 = conteudo.querySelector('h1');
     document.title = (h1 ? h1.textContent : path) + ' · Trilha de Dashboards · Gov Hub';
-    $('fonte').replaceChildren('Fonte: ', el('code', {}, path), ' · ', el('a', { href: path }, 'ver o Markdown'));
     if (atual.item) progresso.registrarUltimaAula(path, atual.item.id);
     const alvo = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (alvo) alvo.scrollIntoView();

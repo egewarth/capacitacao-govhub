@@ -97,9 +97,6 @@ body.sem-trilha .sumario,body.sem-trilha .topo-sumario,body.sem-trilha .topo-pro
 .rodape-link.proxima{text-align:right}
 .btn-cta.feita{background:#fff;color:var(--purple-700);border-color:var(--primary-purple)}
 .btn-cta.feita:hover{background:var(--bg-soft)}
-.fonte{margin:18px 0 0;font-size:.8rem;color:var(--text-muted)}
-.fonte code{background:var(--bg-soft);color:var(--dark-navy);padding:1px 6px;border-radius:var(--radius-sm)}
-.fonte a{color:var(--purple-700)}
 
 /* Celular: a barra lateral vira gaveta */
 @media(max-width:899px){
