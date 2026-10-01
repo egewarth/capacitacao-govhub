@@ -278,7 +278,15 @@ marcos de avaliação — bons momentos para revisar em dupla com quem já publi
 
   montarConta(document.getElementById('conta'), progresso);
   montarAviso(progresso);
-  const { niveis } = await carregarTrilha();
+
+  let niveis = [];
+  try {
+    ({ niveis } = await carregarTrilha());
+  } catch {
+    // sem trilha.json o mapa continua navegável, só sem o progresso
+    document.getElementById('ptxt').textContent = 'Não foi possível carregar o progresso';
+  }
+
   const nos = [...document.querySelectorAll('.node')];
   const docDoNo = new Map(niveis.flatMap((n) => n.itens.map((i) => [i.id, i.doc])));
 
@@ -294,18 +302,26 @@ marcos de avaliação — bons momentos para revisar em dupla com quem já publi
     document.getElementById('pfill').style.width = c.percentual + '%';
   }
 
-  // Um documento pode estar em mais de um nó: marcar um marca todos (mesma regra do leitor).
-  for (const no of nos) {
-    no.querySelector('.check').addEventListener('click', (ev) => {
-      ev.preventDefault();
-      progresso.alternar(idsDoDoc(niveis, docDoNo.get(no.dataset.id)));
+  if (niveis.length > 0) {
+    // Um documento pode estar em mais de um nó: marcar um marca todos (mesma regra do leitor).
+    for (const no of nos) {
+      no.querySelector('.check').addEventListener('click', (ev) => {
+        ev.preventDefault();
+        progresso.alternar(idsDoDoc(niveis, docDoNo.get(no.dataset.id)));
+      });
+    }
+    document.getElementById('reset').addEventListener('click', () => {
+      if (confirm('Apagar todo o progresso da trilha? Com a conta conectada, apaga também na nuvem.')) progresso.zerar();
     });
+    progresso.aoMudar(pintar);
+    pintar();
+  } else {
+    // Sem trilha.json, desabilitar botões de check e reset
+    for (const no of nos) {
+      no.querySelector('.check').disabled = true;
+    }
+    document.getElementById('reset').disabled = true;
   }
-  document.getElementById('reset').addEventListener('click', () => {
-    if (confirm('Apagar todo o progresso da trilha? Com a conta conectada, apaga também na nuvem.')) progresso.zerar();
-  });
-  progresso.aoMudar(pintar);
-  pintar();
 </script>
 </body>
 </html>
