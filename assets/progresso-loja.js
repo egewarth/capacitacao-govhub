@@ -28,6 +28,10 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   let ultimaAula = null;
   let pararDeOuvir = null;
   let sessao = 0;   // muda a cada troca de login/logout: respostas de sessões antigas são descartadas
+  // Sessão restaurada do cache, nuvem ainda não conectada: o que a pessoa fizer fica anotado aqui
+  // (por aula, a última intenção; e a última aula aberta) e vai para a conta quando ela conectar.
+  // null fora dessa janela.
+  let pendentes = null;
   const ouvintes = new Set();
   const ouvintesAviso = new Set();
 
@@ -57,6 +61,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
 
   function desconectar() {
     pararSincronizacao();
+    pendentes = null;
     armazenamento.remove(CHAVE_CONTA);
     usuario = null;
     carregarAnonimo();
@@ -92,8 +97,19 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     if (minha !== sessao) return;
     const anonimo = lerJSON(armazenamento, CHAVE_ANONIMO, {});
     const ultimaAnonima = lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null);
+    // O que foi feito sobre o cache desta mesma conta antes de a nuvem conectar vale por cima do remoto.
+    const meus = pendentes && usuario && usuario.uid === u.uid ? pendentes : null;
+    pendentes = null;
     const novosFeitos = mesclar(anonimo, remoto && remoto.feitos);
-    const novaUltima = (remoto && remoto.ultimaAula) || ultimaAnonima;
+    const marcados = [];
+    const desmarcados = [];
+    if (meus) {
+      for (const [id, valor] of Object.entries(meus.feitos)) {
+        if (valor) { novosFeitos[id] = true; marcados.push(id); }
+        else { delete novosFeitos[id]; desmarcados.push(id); }
+      }
+    }
+    const novaUltima = (meus && meus.ultimaAula) || (remoto && remoto.ultimaAula) || ultimaAnonima;
     const trazAlgo = Object.keys(anonimo).length > 0 || (!!ultimaAnonima && !(remoto && remoto.ultimaAula));
     // O anônimo foi absorvido pela conta: não volta a ser somado numa próxima entrada.
     armazenamento.remove(CHAVE_ANONIMO);
@@ -108,6 +124,12 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       nuvem.gravarTudo(u.uid, { feitos: novosFeitos, ultimaAula: novaUltima }).catch(() => {
         devolverAnonimo(anonimo, ultimaAnonima, minha);
       });
+    }
+    if (meus) {
+      const falhou = () => { if (minha === sessao) avisar('Não foi possível salvar; entre de novo.'); };
+      if (marcados.length) nuvem.marcar(u.uid, marcados, true).catch(falhou);
+      if (desmarcados.length) nuvem.marcar(u.uid, desmarcados, false).catch(falhou);
+      if (meus.ultimaAula) nuvem.gravarUltimaAula(u.uid, meus.ultimaAula).catch(falhou);
     }
     pararDeOuvir = nuvem.ouvir(u.uid, (dados) => {
       if (minha !== sessao) return;
@@ -129,7 +151,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       return;
     }
     if (usuario && usuario.uid !== u.uid) {
-      // cache de outra conta: nunca é somado a esta
+      // cache de outra conta: nunca é somado a esta, nem o que foi feito sobre ele
+      pendentes = null;
       armazenamento.remove(CHAVE_CONTA);
       usuario = null;
       carregarAnonimo();
@@ -148,6 +171,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       usuario = cache.usuario;
       feitos = cache.feitos || {};
       ultimaAula = cache.ultimaAula || null;
+      pendentes = { feitos: {}, ultimaAula: null };
     } else {
       carregarAnonimo();
     }
@@ -171,7 +195,9 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     feitos = depois;
     salvarLocal();
     emitir();
-    if (usuario && nuvem) {
+    if (pendentes) {
+      for (const id of ids) pendentes.feitos[id] = marcou;
+    } else if (usuario && nuvem) {
       const minha = sessao;
       nuvem.marcar(usuario.uid, ids, marcou).catch(() => {
         if (minha !== sessao || !usuario) return;
@@ -190,10 +216,11 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   }
 
   function zerar() {
+    if (pendentes) for (const id of Object.keys(feitos)) pendentes.feitos[id] = false;
     feitos = {};
     salvarLocal();
     emitir();
-    if (usuario && nuvem) {
+    if (!pendentes && usuario && nuvem) {
       const minha = sessao;
       nuvem.gravarTudo(usuario.uid, { feitos: {}, ultimaAula })
         .catch(() => { if (minha === sessao) avisar('Não foi possível salvar; entre de novo.'); });
@@ -203,7 +230,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   function registrarUltimaAula(path, item) {
     ultimaAula = { path, item: item || null };
     salvarLocal();
-    if (usuario && nuvem) nuvem.gravarUltimaAula(usuario.uid, ultimaAula).catch(() => {});
+    if (pendentes) pendentes.ultimaAula = ultimaAula;
+    else if (usuario && nuvem) nuvem.gravarUltimaAula(usuario.uid, ultimaAula).catch(() => {});
   }
 
   function entrar() {

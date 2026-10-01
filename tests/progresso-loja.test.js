@@ -469,3 +469,70 @@ test('trocar de conta mostra o estado anônimo na hora, antes de a leitura respo
   assert.ok(chamadas > 0);
   assert.deepEqual(loja.feitos(), {});
 });
+
+// Sessão restaurada: o cache da conta aparece na hora, mas a nuvem só conecta depois de baixar o
+// Firebase e de o login responder. O que a pessoa fizer nessa janela não pode se perder.
+const VELHA = { path: 'docs/velha.md', item: 'velha' };
+
+function lojaRestaurada(docs) {
+  const arm = armazenamentoFalso({ [CHAVE_CONTA]: { uid: 'ana', usuario: ANA, feitos: { a: true }, ultimaAula: VELHA } });
+  const nuvem = nuvemFalsa(docs);
+  let liberar;
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: () => new Promise((r) => { liberar = () => r(nuvem); }) });
+  const iniciando = loja.iniciar();
+  return { arm, nuvem, loja, conectarNuvem: async () => { liberar(); await iniciando; } };
+}
+
+test('sessão restaurada: aula marcada e última aula antes de a nuvem conectar não se perdem', async () => {
+  const { nuvem, loja, conectarNuvem } = lojaRestaurada({ ana: { feitos: { a: true }, ultimaAula: VELHA } });
+  await esperar();
+  loja.alternar(['b']);
+  loja.registrarUltimaAula('docs/nova.md', 'nova');
+  await conectarNuvem();
+  nuvem.logar(ANA);
+  await esperar();
+  assert.deepEqual(loja.feitos(), { a: true, b: true });
+  assert.deepEqual(loja.ultimaAula(), { path: 'docs/nova.md', item: 'nova' });
+  assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true });
+  assert.deepEqual(nuvem.docs.ana.ultimaAula, { path: 'docs/nova.md', item: 'nova' });
+});
+
+test('sessão restaurada: aula desmarcada antes de a nuvem conectar continua desmarcada', async () => {
+  const { nuvem, loja, conectarNuvem } = lojaRestaurada({ ana: { feitos: { a: true }, ultimaAula: VELHA } });
+  await esperar();
+  loja.alternar(['a']);
+  await conectarNuvem();
+  loja.alternar(['c']);   // nuvem baixada, login ainda sem resposta
+  nuvem.logar(ANA);
+  await esperar();
+  assert.deepEqual(loja.feitos(), { c: true });
+  assert.deepEqual(nuvem.docs.ana.feitos, { c: true });
+  assert.deepEqual(loja.ultimaAula(), VELHA);
+});
+
+test('sessão restaurada: o pendente da conta em cache é descartado se outra conta entra', async () => {
+  const { arm, nuvem, loja, conectarNuvem } = lojaRestaurada({ beto: { feitos: { x: true }, ultimaAula: null } });
+  await esperar();
+  loja.alternar(['b']);
+  loja.registrarUltimaAula('docs/nova.md', 'nova');
+  await conectarNuvem();
+  nuvem.logar(BETO);
+  await esperar();
+  assert.deepEqual(loja.feitos(), { x: true });
+  assert.equal(loja.ultimaAula(), null);
+  assert.deepEqual(nuvem.docs.beto.feitos, { x: true });
+  assert.equal(nuvem.docs.ana, undefined);
+  assert.deepEqual(nuvem.chamadas, []);
+  assert.equal(arm.json(CHAVE_CONTA).uid, 'beto');
+});
+
+test('sessão restaurada: zerar antes de a nuvem conectar não ressuscita as aulas', async () => {
+  const { nuvem, loja, conectarNuvem } = lojaRestaurada({ ana: { feitos: { a: true }, ultimaAula: VELHA } });
+  await esperar();
+  loja.zerar();
+  await conectarNuvem();
+  nuvem.logar(ANA);
+  await esperar();
+  assert.deepEqual(loja.feitos(), {});
+  assert.deepEqual(nuvem.docs.ana.feitos, {});
+});
