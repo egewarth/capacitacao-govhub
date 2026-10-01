@@ -3,261 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Documento · Dashboards GovHub</title>
+<title>Trilha de Dashboards · Gov Hub</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/govhub.css">
-<style>
-  *{box-sizing:border-box}
-  body{margin:0;font-family:'Reddit Sans',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-       color:var(--ink);background:var(--bg);line-height:1.65}
-  body > nav{position:sticky;top:0;z-index:30;background:var(--gh-purple);border-bottom:1px solid var(--gh-purple-d)}
-  body > nav .wrap{max-width:880px;margin:0 auto;display:flex;gap:18px;align-items:center;padding:11px 20px;flex-wrap:wrap}
-  body > nav a{color:var(--gh-on-dark);font-size:.86rem;text-decoration:none}
-  nav a:hover{color:#fff}
-
-  .crumb{max-width:880px;margin:0 auto;padding:10px 20px 0;font-size:.78rem;color:var(--muted)}
-  .crumb code{background:#f0eafe;padding:1px 6px;border-radius:5px}
-  .crumb a{color:var(--accent);text-decoration:none}
-
-  main{max-width:820px;margin:0 auto;padding:8px 20px 64px}
-  .doc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px 40px}
-  @media(max-width:600px){.doc{padding:22px 20px}}
-
-  .doc h1{font-size:1.9rem;margin:.2em 0 .5em;border-bottom:2px solid var(--line);padding-bottom:.3em;color:var(--accent)}
-  .doc h2{font-size:1.4rem;margin:1.4em 0 .5em;border-bottom:1px solid var(--line);padding-bottom:.2em;color:var(--gh-purple)}
-  .doc h3{font-size:1.15rem;margin:1.2em 0 .4em}
-  .doc h4{font-size:1rem;margin:1em 0 .3em}
-  .doc p,.doc li{font-size:.97rem}
-  .doc a{color:var(--gh-purple);text-decoration:none}
-  .doc a:hover{text-decoration:underline}
-  .doc code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f0eafe;padding:.12em .4em;border-radius:5px;font-size:.86em}
-  .doc pre{background:var(--gh-purple-dd);color:#e6dcfa;border-radius:10px;padding:16px 18px;overflow:auto}
-  .doc pre code{background:none;color:inherit;padding:0;font-size:.85em}
-  .doc blockquote{margin:1em 0;padding:.4em 1.1em;border-left:4px solid var(--gh-purple);background:var(--gh-tint);border-radius:0 8px 8px 0;color:var(--gh-purple-d)}
-  .doc blockquote p{margin:.4em 0}
-  .doc table{border-collapse:collapse;width:100%;margin:1em 0;font-size:.92rem;display:block;overflow-x:auto}
-  .doc th,.doc td{border:1px solid var(--line);padding:7px 11px;text-align:left}
-  .doc th{background:var(--gh-tint)}
-  .doc hr{border:0;border-top:1px solid var(--line);margin:1.6em 0}
-  .doc img{max-width:100%}
-  .doc ul,.doc ol{padding-left:1.5em}
-  .doc figure{margin:1.4em 0;text-align:center}
-  .doc figcaption{font-size:.85rem;color:var(--muted);margin-top:.5em}
-  .doc .mermaid{margin:1.6em 0;text-align:center;overflow-x:auto}
-  .doc .mermaid svg{max-width:100%;height:auto}
-  /* O Mermaid dimensiona cada caixa medindo o rótulo a 15px, mas o rótulo é HTML
-     dentro do SVG e herdaria os 16px da página — o texto estouraria a caixa. */
-  .doc .mermaid foreignObject div,.doc .mermaid foreignObject span,
-  .doc .mermaid foreignObject p{font-size:15px;line-height:1.35;margin:0}
-
-
-  /* Marcar como feito — mesmo progresso da trilha (roadmap.html) */
-  .crumb{display:flex;align-items:center;gap:10px}
-  .chip-feito{margin-left:auto;font:inherit;font-size:.76rem;font-weight:600;cursor:pointer;white-space:nowrap;
-      border-radius:999px;padding:4px 12px;border:1px solid var(--gh-purple);background:#fff;color:var(--gh-purple)}
-  .chip-feito:hover{background:var(--gh-tint)}
-  .chip-feito[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
-  .chip-feito[aria-pressed="true"]:hover{background:var(--green-d);border-color:var(--green-d)}
-  .feito{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:18px;
-      background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px}
-  .feito .ctx{color:var(--muted);font-size:.86rem;margin-right:auto}
-  .feito .ctx b{color:var(--ink);font-weight:600}
-  .btn-feito{font:inherit;font-size:.9rem;font-weight:600;cursor:pointer;border-radius:999px;
-      padding:10px 20px;border:2px solid var(--gh-purple);background:#fff;color:var(--gh-purple)}
-  .btn-feito:hover{background:var(--gh-tint)}
-  .btn-feito[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#fff}
-  .btn-feito[aria-pressed="true"]:hover{background:var(--green-d);border-color:var(--green-d)}
-  .feito .trilha-link{color:var(--accent);font-size:.86rem}
-  .msg{background:#fff;border:1px solid var(--line);border-radius:12px;padding:28px;color:var(--muted)}
-  .msg a{color:var(--accent)}
-  footer{max-width:820px;margin:0 auto;padding:0 20px 40px;color:var(--muted);font-size:.82rem}
-  footer a,footer code{color:var(--accent)}
-</style>
+<link rel="stylesheet" href="assets/leitor.css">
 </head>
 <body>
+<a class="pular" href="#conteudo">Pular para o conteúdo</a>
 
-<nav><div class="wrap">
-  <a class="brand" href="index.html"><img src="assets/logo/logomarca-horizontal-white.svg" alt="Gov Hub" width="103" height="24"><span>Trilha de Dashboards</span></a>
-  <a href="index.html">Início</a>
-  <a href="roadmap.html">Trilha</a>
-  <a href="doc.html?path=docs/index.md">Documentação</a>
-</div></nav>
+<header class="topo"><div class="topo-wrap">
+  <button class="topo-sumario" id="abrir-sumario" type="button" aria-controls="sumario" aria-expanded="false">☰ Conteúdo</button>
+  <a class="marca" href="index.html"><img src="assets/logo/logomarca-horizontal-white.svg" alt="Gov Hub" width="103" height="24"><span>Trilha de Dashboards</span></a>
+  <nav class="topo-links" aria-label="Principal">
+    <a href="index.html">Início</a>
+    <a href="roadmap.html">Mapa da trilha</a>
+    <a href="doc.html?path=docs/index.md">Documentação</a>
+  </nav>
+  <span class="topo-progresso" aria-hidden="true"><span id="topo-percentual">0%</span><span class="barra"><span id="topo-barra"></span></span></span>
+  <div class="conta" id="conta"></div>
+</div></header>
 
-<div class="crumb" id="crumb"></div>
-<main>
-  <div class="doc" id="content"><div class="msg">Carregando…</div></div>
-  <div class="feito" id="feito" hidden>
-    <span class="ctx" id="feito-ctx"></span>
-    <button class="btn-feito" id="btn-feito" type="button" aria-pressed="false">Marcar como feito</button>
-    <a class="trilha-link" href="roadmap.html">ver na trilha</a>
-  </div>
-</main>
-<footer id="foot"></footer>
+<div class="leitor-corpo">
+  <aside class="sumario" id="sumario" aria-label="Conteúdo da trilha">
+    <div class="sumario-cabeca">
+      <p class="sumario-titulo">Conteúdo da trilha</p>
+      <button class="sumario-fechar" id="fechar-sumario" type="button" aria-label="Fechar o conteúdo da trilha">✕</button>
+    </div>
+    <div class="sumario-progresso">
+      <span id="progresso-geral-texto">Carregando…</span>
+      <span class="barra" aria-hidden="true"><span id="progresso-geral-barra"></span></span>
+    </div>
+    <ol class="niveis" id="sumario-niveis"></ol>
+  </aside>
+  <div class="fundo-gaveta" id="fundo-gaveta" hidden></div>
+
+  <main class="palco">
+    <p class="aula-contexto" id="aula-contexto" hidden></p>
+    <article class="conteudo" id="conteudo" tabindex="-1"><p class="msg">Carregando…</p></article>
+    <nav class="rodape-aula" id="rodape-aula" aria-label="Sequência da trilha" hidden>
+      <a class="rodape-link anterior" id="aula-anterior" href="#"><span class="rotulo">← Anterior</span><span class="rotulo-titulo"></span></a>
+      <button class="btn btn-cta" id="aula-cta" type="button">Concluir e avançar</button>
+      <a class="rodape-link proxima" id="aula-proxima" href="#"><span class="rotulo">Próxima →</span><span class="rotulo-titulo"></span></a>
+    </nav>
+    <p class="fonte" id="fonte"></p>
+  </main>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-<script>
-  function getPath(){
-    var p = new URLSearchParams(location.search).get('path') || 'README.md';
-    return decodeURIComponent(p).replace(/^\.?\/+/, '');
-  }
-  function resolve(base, rel){
-    var dir = base.indexOf('/') >= 0 ? base.slice(0, base.lastIndexOf('/') + 1) : '';
-    var u = new URL(dir + rel, 'http://_/');
-    return decodeURIComponent(u.pathname.slice(1));
-  }
-  function slug(s){
-    return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')
-            .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
-  }
-  function addHeadingIds(root){
-    root.querySelectorAll('h1,h2,h3,h4').forEach(function(h){ if(!h.id) h.id = slug(h.textContent); });
-  }
-  function fixLinks(root, path){
-    root.querySelectorAll('a[href]').forEach(function(a){
-      var href = a.getAttribute('href');
-      if(!href || href.charAt(0) === '#' || /^[a-z]+:/i.test(href)) return;
-      var frag = '', i = href.indexOf('#'), target = href;
-      if(i >= 0){ frag = href.slice(i); target = href.slice(0, i); }
-      if(target === ''){ a.setAttribute('href', frag); return; }
-      var r = resolve(path, target);
-      if(r.slice(-1) === '/') r += 'index.md';
-      if(r.slice(-3) === '.md'){ a.setAttribute('href', 'doc.html?path=' + r + frag); }
-      else { a.setAttribute('href', r + frag); }
-    });
-    root.querySelectorAll('img[src]').forEach(function(img){
-      var s = img.getAttribute('src');
-      if(!s || /^[a-z]+:/i.test(s) || s.charAt(0) === '/') return;
-      img.setAttribute('src', resolve(path, s));
-    });
-  }
-  // Blocos ```mermaid viram diagramas. Sem a biblioteca (CDN bloqueado), o bloco
-  // continua visível como código — o conteúdo nunca desaparece.
-  function renderDiagramas(root){
-    var blocos = root.querySelectorAll('pre > code.language-mermaid');
-    if(!blocos.length || typeof mermaid === 'undefined') return;
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: 'base',
-      fontSize: 15,
-      fontFamily: "'Inter',-apple-system,BlinkMacSystemFont,sans-serif",
-      // useMaxWidth:false — com true, o Mermaid estica diagramas pequenos até a largura
-      // da página e o texto muda de escala entre um diagrama e outro.
-      flowchart: { padding: 12, nodeSpacing: 45, rankSpacing: 55, useMaxWidth: false },
-      themeVariables: {
-        primaryColor: '#F3EEFE', primaryTextColor: '#202020', primaryBorderColor: '#7A34F3',
-        secondaryColor: '#FDF0E1', secondaryTextColor: '#202020', secondaryBorderColor: '#C2410C',
-        tertiaryColor: '#ffffff', tertiaryBorderColor: '#e4e1ee',
-        lineColor: '#5B21B6', textColor: '#202020', fontSize: '15px'
-      }
-    });
-    // Sem esperar a fonte, o Mermaid mede as caixas com a métrica errada e corta os
-    // rótulos. E cada diagrama é desenhado por mermaid.render: mermaid.run() desenha
-    // todos dentro do primeiro bloco quando a página tem mais de um.
-    var fontes = (document.fonts && document.fonts.load)
-      ? document.fonts.load("15px Inter").then(function(){ return document.fonts.ready; })
-      : Promise.resolve();
-    fontes.then(function(){
-      Array.prototype.forEach.call(blocos, function(code, i){
-        var fonte = code.textContent;
-        var div = document.createElement('div');
-        div.className = 'mermaid';
-        code.parentNode.replaceWith(div);
-        mermaid.render('diagrama-' + i, fonte)
-          .then(function(r){ div.innerHTML = r.svg; })
-          .catch(function(){ div.innerHTML = '<pre><code>' + fonte.replace(/[&<>]/g, function(ch){
-            return {'&':'&amp;','<':'&lt;','>':'&gt;'}[ch]; }) + '</code></pre>'; });
-      });
-    });
-  }
-
-  // ---- Marcar como feito -------------------------------------------------
-  // O progresso é o mesmo do roadmap.html: um objeto {id do nó: true} em
-  // localStorage. docs/trilhas/trilha.json (gerado do ROADMAP.md) diz quais nós
-  // apontam para este documento — um documento pode aparecer em mais de um nó.
-  var PROGRESSO = 'govhub-dashboards-roadmap-v1';
-  var naTrilha = null;
-
-  function lerProgresso(){
-    try { return JSON.parse(localStorage.getItem(PROGRESSO) || '{}'); } catch(e){ return {}; }
-  }
-  function gravarProgresso(p){
-    try { localStorage.setItem(PROGRESSO, JSON.stringify(p)); } catch(e){}
-  }
-  function estaFeito(){
-    var p = lerProgresso();
-    return naTrilha.ids.every(function(id){ return !!p[id]; });
-  }
-  function pintarFeito(){
-    var feito = estaFeito();
-    [document.getElementById('btn-feito'), document.getElementById('chip-feito')].forEach(function(b, i){
-      if(!b) return;
-      b.setAttribute('aria-pressed', feito ? 'true' : 'false');
-      b.textContent = feito ? (i ? '✓ Feito' : '✓ Feito — desmarcar') : (i ? 'Marcar como feito' : 'Marcar como feito');
-    });
-  }
-  function alternarFeito(){
-    var p = lerProgresso(), feito = estaFeito();
-    naTrilha.ids.forEach(function(id){ if(feito) delete p[id]; else p[id] = true; });
-    gravarProgresso(p);
-    pintarFeito();
-  }
-  function montarFeito(path){
-    return fetch('docs/trilhas/trilha.json')
-      .then(function(r){ return r.ok ? r.json() : null; })
-      .then(function(trilha){
-        if(!trilha) return;
-        naTrilha = trilha.documentos.filter(function(d){ return d.doc === path; })[0];
-        if(!naTrilha) return;   // página fora da trilha: sem botão
-        document.getElementById('feito-ctx').innerHTML =
-          'Nível ' + naTrilha.nivel + ' · <b>' + naTrilha.nivel_titulo + '</b> · ' +
-          naTrilha.tipo + ' · ' + naTrilha.papel;
-        var crumb = document.getElementById('crumb');
-        var chip = document.createElement('button');
-        chip.className = 'chip-feito'; chip.id = 'chip-feito'; chip.type = 'button';
-        crumb.appendChild(chip);
-        document.getElementById('feito').hidden = false;
-        document.getElementById('btn-feito').addEventListener('click', alternarFeito);
-        chip.addEventListener('click', alternarFeito);
-        // outra aba (a trilha, por exemplo) mexeu no progresso
-        window.addEventListener('storage', function(ev){ if(ev.key === PROGRESSO) pintarFeito(); });
-        pintarFeito();
-      })
-      .catch(function(){});
-  }
-
-  function show(html){ document.getElementById('content').innerHTML = html; }
-
-  var path = getPath();
-  document.getElementById('crumb').innerHTML = '<a href="index.html">início</a> / <code>' + path + '</code>';
-
-  fetch(path).then(function(r){ if(!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-    .then(function(md){
-      if(typeof marked === 'undefined'){
-        show('<div class="msg">Não foi possível carregar o renderizador de Markdown (CDN bloqueado/offline).<br>' +
-             'Abra o arquivo diretamente: <a href="' + path + '">' + path + '</a></div>');
-        return;
-      }
-      var content = document.getElementById('content');
-      content.innerHTML = marked.parse(md);
-      addHeadingIds(content);
-      fixLinks(content, path);
-      renderDiagramas(content);
-      var h1 = content.querySelector('h1');
-      document.title = (h1 ? h1.textContent : path) + ' · Dashboards GovHub';
-      document.getElementById('foot').innerHTML =
-        'Fonte: <code>' + path + '</code> · <a href="' + path + '">ver Markdown</a> · ' +
-        '<a href="roadmap.html">voltar para a trilha</a>';
-      montarFeito(path);
-      if(location.hash){ var el = document.getElementById(location.hash.slice(1)); if(el) el.scrollIntoView(); }
-    })
-    .catch(function(e){
-      show('<div class="msg">Não foi possível abrir <code>' + path + '</code> (' + e.message + ').<br><br>' +
-           '<a href="index.html">Voltar para o início</a></div>');
-    });
-</script>
+<script type="module" src="assets/leitor.js"></script>
 </body>
 </html>
