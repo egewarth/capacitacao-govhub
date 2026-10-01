@@ -1,6 +1,6 @@
 # ADR 0002 — Identidade visual do GovHub
 
-**Status:** aceito
+**Status:** substituído pelo [ADR 0003](0003-identidade-visual-sobria.md)
 **Data:** 2026-09-21
 
 ## Contexto

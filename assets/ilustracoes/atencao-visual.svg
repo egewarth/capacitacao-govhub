@@ -3,16 +3,16 @@
   <desc id="d">Três painéis com os mesmos doze indicadores. No primeiro, todos têm o mesmo peso visual e é preciso procurar. No segundo, todos estão coloridos e a disputa por atenção continua. No terceiro, um único indicador recebe destaque e é encontrado de imediato.</desc>
   <defs>
     <style>
-      .rot{font:600 12.5px Inter,system-ui,sans-serif;fill:#202020}
-      .leg{font:11.5px Inter,system-ui,sans-serif;fill:#5f6472}
+      .rot{font:600 12.5px Reddit Sans,system-ui,sans-serif;fill:#202020}
+      .leg{font:11.5px Reddit Sans,system-ui,sans-serif;fill:#666666}
     </style>
   </defs>
   <rect width="720" height="260" fill="#ffffff"/>
 
   <!-- 1 · tudo igual -->
   <text class="rot" x="24" y="24">Tudo com o mesmo peso</text>
-  <rect x="24" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#d9d5e8"/>
-  <g fill="#cfc8e6">
+  <rect x="24" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#E9DFFF"/>
+  <g fill="#E9DFFF">
     <rect x="40" y="52" width="40" height="28" rx="4"/><rect x="88" y="52" width="40" height="28" rx="4"/>
     <rect x="136" y="52" width="40" height="28" rx="4"/><rect x="184" y="52" width="28" height="28" rx="4"/>
     <rect x="40" y="90" width="40" height="28" rx="4"/><rect x="88" y="90" width="40" height="28" rx="4"/>
@@ -25,7 +25,7 @@
 
   <!-- 2 · tudo colorido -->
   <text class="rot" x="258" y="24">Tudo colorido</text>
-  <rect x="258" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#d9d5e8"/>
+  <rect x="258" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#E9DFFF"/>
   <g>
     <rect x="274" y="52" width="40" height="28" rx="4" fill="#C7200C"/><rect x="322" y="52" width="40" height="28" rx="4" fill="#168821"/>
     <rect x="370" y="52" width="40" height="28" rx="4" fill="#F19F42"/><rect x="418" y="52" width="28" height="28" rx="4" fill="#1351B4"/>
@@ -39,8 +39,8 @@
 
   <!-- 3 · um destaque -->
   <text class="rot" x="492" y="24">Um destaque</text>
-  <rect x="492" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#d9d5e8"/>
-  <g fill="#e6e2f0">
+  <rect x="492" y="36" width="204" height="150" rx="8" fill="#fff" stroke="#E9DFFF"/>
+  <g fill="#E9DFFF">
     <rect x="508" y="52" width="40" height="28" rx="4"/><rect x="556" y="52" width="40" height="28" rx="4"/>
     <rect x="604" y="52" width="40" height="28" rx="4"/><rect x="652" y="52" width="28" height="28" rx="4"/>
     <rect x="508" y="90" width="40" height="28" rx="4"/>
@@ -48,7 +48,7 @@
     <rect x="508" y="128" width="40" height="28" rx="4"/><rect x="556" y="128" width="40" height="28" rx="4"/>
     <rect x="604" y="128" width="40" height="28" rx="4"/><rect x="652" y="128" width="28" height="28" rx="4"/>
   </g>
-  <rect x="556" y="90" width="40" height="28" rx="4" fill="#C2410C"/>
+  <rect x="556" y="90" width="40" height="28" rx="4" fill="#BE006E"/>
   <text class="leg" x="492" y="208">A exceção é encontrada</text>
   <text class="leg" x="492" y="226">antes de qualquer leitura.</text>
 </svg>

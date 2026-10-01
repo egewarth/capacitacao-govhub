@@ -197,13 +197,15 @@ nós podem apontar para o mesmo documento de propósito).
 
 ### 7.3 Mudar cores, tipografia ou logotipo
 
-Tudo o que é marca vive em `assets/govhub.css`: os tokens de cor (`--gh-purple`, `--gh-orange`…), a
-assinatura da navegação e o realce de foco. Mudou um token ali, mudou nas três páginas. O logotipo e o
-favicon são os arquivos oficiais da plataforma, em `assets/`.
+Tudo o que é marca vive em `assets/govhub.css`: os tokens do modo sóbrio do Gov Hub
+(`--primary-purple`, `--dark-navy`, `--bg-soft`, `--accent-rose`…), a barra superior, os botões, a
+caixa de "feito" e as etiquetas de tipo de página. Mudou um token ali, mudou nas três páginas. Logotipo
+e símbolo ficam em `assets/logo/` e `assets/favicon.svg`; os ícones dos tipos de página, em
+`assets/icones/`.
 
-Ao escolher uma cor nova, verifique o contraste: texto precisa de **4,5:1** e indicadores não textuais
-de **3:1** (WCAG 2.1 AA). O laranja da marca, por exemplo, só é usado como decoração — ele reprova
-como texto sobre branco. O raciocínio completo está na [ADR 0002](docs/adr/0002-identidade-visual-govhub.md).
+Os tipos de página não têm cor própria: se distinguem por ícone e nome. Ao escolher uma cor, use só a
+paleta e verifique o contraste — texto precisa de **4,5:1** e indicadores não textuais de **3:1**
+(WCAG 2.1 AA). O raciocínio completo está no [ADR 0003](docs/adr/0003-identidade-visual-sobria.md).
 
 ### 7.4 Arquivos gerados — não edite à mão
 
