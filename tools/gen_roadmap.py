@@ -26,14 +26,16 @@ OUT_TRILHA_JSON = os.path.join(REPO, "docs", "trilhas", "trilha.json")
 PROGRESS_KEY = "govhub-dashboards-roadmap-v1"   # mesma chave em roadmap.html e doc.html
 IDX_END      = "<!-- LEVELS:END -->"
 
-# tipo -> (rótulo, classe CSS, pasta padrão, template do esqueleto)
+# tipo -> (rótulo, classe CSS, pasta padrão, slug/template do esqueleto, ícone do tipo)
+# O ícone é um ícone de produto Gov Hub (variante -sober) copiado para assets/icones/:
+# os tipos se distinguem por ícone e nome, não por cor (ADR 0003).
 TYPE_INFO = {
-    "tutorial":    ("Tutorial",   "t-tut", "tutoriais",  "tutorial"),
-    "how-to":      ("Guia",       "t-gui", "guias",      "guia"),
-    "reference":   ("Referência", "t-ref", "referencia", "referencia"),
-    "explanation": ("Explicação", "t-exp", "explicacao", "explicacao"),
-    "challenge":   ("Desafio",    "t-des", "desafios",   "desafio"),
-    "research":    ("Pesquisa",   "t-res", "pesquisa",   "pesquisa"),
+    "tutorial":    ("Tutorial",   "t-tut", "tutoriais",  "tutorial",   "assets/icones/book-open-sober.svg"),
+    "how-to":      ("Guia",       "t-gui", "guias",      "guia",       "assets/icones/wrench-sober.svg"),
+    "reference":   ("Referência", "t-ref", "referencia", "referencia", "assets/icones/document-text-sober.svg"),
+    "explanation": ("Explicação", "t-exp", "explicacao", "explicacao", "assets/icones/light-bulb-sober.svg"),
+    "challenge":   ("Desafio",    "t-des", "desafios",   "desafio",    "assets/icones/trophy-sober.svg"),
+    "research":    ("Pesquisa",   "t-res", "pesquisa",   "pesquisa",   "assets/icones/beaker-sober.svg"),
 }
 ROLE_DISPLAY = {"core": "Essencial", "support": "Apoio", "capstone": "Capstone",
                 "optional": "Opcional", "advanced": "Avançado"}
@@ -94,7 +96,7 @@ def scaffold_missing(levels):
             full = os.path.join(REPO, it["doc"])
             if os.path.exists(full):
                 continue
-            label, _cls, _folder, tpl = TYPE_INFO[it["type"]]
+            label, _cls, _folder, tpl, _icone = TYPE_INFO[it["type"]]
             os.makedirs(os.path.dirname(full), exist_ok=True)
             content = ("# %s\n\n> Rascunho — a escrever. Tipo: %s · "
                        "Template: ../../templates/%s.md\n\n%s"
@@ -115,6 +117,21 @@ def data_id(doc):
     return d
 
 
+def node_ids(levels):
+    """Id de cada nó, na ordem da trilha: o caminho sem docs/ e .md, com --N nas repetições.
+
+    É a chave do progresso (localStorage e Firestore) — mudar esta regra apaga o
+    progresso de quem já marcou aulas.
+    """
+    seen, ids = {}, []
+    for lv in levels:
+        for it in lv["items"]:
+            base = data_id(it["doc"])
+            seen[base] = seen.get(base, 0) + 1
+            ids.append(base if seen[base] == 1 else "%s--%d" % (base, seen[base]))
+    return ids
+
+
 def viewer(doc):
     return "doc.html?path=" + doc
 
@@ -131,7 +148,7 @@ def gen_html(levels):
         return base if seen[base] == 1 else "%s--%d" % (base, seen[base])
 
     def node(it):
-        label, cls, _f, _t = TYPE_INFO[it["type"]]
+        label, cls = TYPE_INFO[it["type"]][:2]
         role = it["role"]
         classes = ["node", cls]
         if role in SUPPORT_ROLES:
@@ -249,31 +266,40 @@ def gen_trilhas(levels):
 
 
 def gen_trilha_json(levels):
-    """Índice da trilha por documento, consumido por doc.html.
+    """Índice da trilha consumido pelo leitor (doc.html), pelo mapa e pela página inicial.
 
-    É o que permite marcar "feito" dentro da página de conteúdo: a página descobre
-    quais nós da trilha apontam para ela e escreve no mesmo progresso do roadmap.
-    Um documento pode aparecer em mais de um nó — daí `ids` ser uma lista; os demais
-    campos descrevem a primeira aparição, que é a usada para situar quem lê.
+    `niveis` é a trilha na ordem do ROADMAP.md: monta a barra lateral do leitor e a
+    sequência anterior/próxima. `documentos` responde "quais nós apontam para este .md"
+    — um documento pode aparecer em mais de um nó, daí `ids` ser uma lista.
     """
-    docs, ordem, seen = {}, [], {}
+    ids = iter(node_ids(levels))
+    docs, ordem, niveis = {}, [], []
     for lv in levels:
+        itens = []
         for it in lv["items"]:
-            base = data_id(it["doc"])
-            seen[base] = seen.get(base, 0) + 1
-            node_id = base if seen[base] == 1 else "%s--%d" % (base, seen[base])
+            node_id = next(ids)
+            label, _cls, _folder, slug, icone = TYPE_INFO[it["type"]]
+            itens.append({
+                "id": node_id, "titulo": it["title"], "doc": it["doc"],
+                "tipo": slug, "tipo_nome": label,
+                "papel": it["role"], "papel_nome": ROLE_DISPLAY[it["role"]],
+                "icone": icone,
+            })
             if it["doc"] not in docs:
                 docs[it["doc"]] = {
                     "doc": it["doc"], "ids": [], "titulo": it["title"],
-                    "tipo": TYPE_INFO[it["type"]][0], "papel": ROLE_DISPLAY[it["role"]],
+                    "tipo": label, "papel": ROLE_DISPLAY[it["role"]],
                     "nivel": lv["num"], "nivel_titulo": lv["title"],
                 }
                 ordem.append(it["doc"])
             docs[it["doc"]]["ids"].append(node_id)
+        niveis.append({"numero": lv["num"], "titulo": lv["title"],
+                       "descricao": lv["desc"], "itens": itens})
 
     dados = {
         "_aviso": "Gerado por tools/gen_roadmap.py a partir de ROADMAP.md - nao edite a mao.",
         "chave_progresso": PROGRESS_KEY,
+        "niveis": niveis,
         "documentos": [docs[d] for d in ordem],
     }
     open(OUT_TRILHA_JSON, "w", encoding="utf-8").write(
