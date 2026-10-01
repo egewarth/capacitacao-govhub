@@ -136,15 +136,20 @@ Dois módulos ES em `assets/`:
 `{id: true}` de hoje) e escuta o evento `storage` para refletir outras abas. Última aula em
 `localStorage["govhub-dashboards-ultima-aula"]`.
 
-**Com sessão Google:**
-1. Ao entrar, lê `progresso/{uid}` no Firestore, aplica `mesclar(local, remoto)` e grava o resultado
-   nos dois lados.
-2. Passa a escutar o documento com `onSnapshot`; cada atualização remota substitui o espelho local e
-   dispara `aoMudar`. Assim outro dispositivo ou aba reflete a mudança em tempo real.
+**Com sessão Google:** o Firestore é a fonte da verdade; o navegador guarda só um cache da sessão,
+em uma chave separada (`localStorage["govhub-dashboards-progresso-conta"]`, com o `uid` dentro).
+1. Ao entrar, lê `progresso/{uid}`, aplica `mesclar(anonimo, remoto)` com o progresso anônimo
+   (`govhub-dashboards-roadmap-v1`) e grava o resultado no Firestore. Em seguida **apaga o progresso
+   anônimo**: ele foi absorvido pela conta e não volta a ser somado em entradas futuras.
+2. Passa a escutar o documento com `onSnapshot`; cada atualização remota substitui o cache da sessão
+   e dispara `aoMudar`. Assim outro dispositivo ou aba reflete a mudança em tempo real.
 3. Marcar/desmarcar grava por campo (`feitos.<id>` = `true` ou `deleteField()`) com
    `updateDoc`/`FieldPath`, para que duas mudanças simultâneas em aulas diferentes não se sobrescrevam.
-   O espelho local é atualizado na hora (resposta otimista).
-4. Ao sair, o espelho local permanece; a pessoa continua vendo o próprio progresso naquele navegador.
+   O cache é atualizado na hora (resposta otimista).
+4. Ao sair, o cache da sessão é apagado e o navegador volta ao estado anônimo, vazio. O progresso de
+   uma conta nunca fica no navegador depois do logout nem é somado à conta de outra pessoa.
+5. Ao abrir o site já com sessão ativa (Firebase Auth mantém a sessão), o cache é exibido de imediato
+   e substituído pelo primeiro `onSnapshot`. Cache com `uid` diferente do da sessão é descartado.
 
 Documento `progresso/{uid}`:
 `{ feitos: { "<id>": true, … }, ultimaAula: { path, item }, atualizadoEm: serverTimestamp() }`.
@@ -152,8 +157,11 @@ Documento `progresso/{uid}`:
 **Configuração:** `assets/firebase-config.js` exporta `firebaseConfig`, vazio no repositório. Se
 estiver vazio, se o SDK não carregar (CDN bloqueado, offline) ou se a inicialização falhar, o botão de
 login não aparece e o site funciona só com `localStorage`, sem mensagem de erro para quem lê (aviso só
-no console). Falha ao gravar no Firestore mantém o estado local e mostra um aviso discreto ("Não foi
-possível sincronizar; o progresso ficou salvo neste navegador").
+no console). Sem conexão com a sessão ativa, o SDK do Firestore
+enfileira as gravações e as envia quando a conexão volta, enquanto a página estiver aberta; nesse
+intervalo aparece um aviso discreto ("Sem conexão: suas marcações serão sincronizadas quando a conexão
+voltar"). Gravação recusada pelo servidor (regras, sessão expirada) desfaz a marcação otimista e mostra
+"Não foi possível salvar; entre de novo".
 
 **SDK:** Firebase modular por `https://www.gstatic.com/firebasejs/<versão>/…` com versão fixada (a
 mais recente estável no momento da implementação); só `firebase-app`, `firebase-auth` e
@@ -197,4 +205,4 @@ domínios autorizados; criar o banco Firestore em modo produção; publicar `fir
   três sincronizados; progresso antigo do `localStorage` preservado; sem `firebaseConfig` o botão de
   login some e nada quebra; navegação só por teclado (Tab, Enter, Esc na gaveta).
 - **Com projeto Firebase de teste (quando existir):** login, mescla na primeira entrada, sincronização
-  entre duas abas/dispositivos, logout preserva o local, regras negam acesso ao documento de outro uid.
+  entre duas abas/dispositivos, logout limpa o cache e deixa o navegador vazio, progresso anônimo absorvido só na primeira entrada, regras negam acesso ao documento de outro uid.
