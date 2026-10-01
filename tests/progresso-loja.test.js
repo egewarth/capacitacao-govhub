@@ -28,7 +28,12 @@ function nuvemFalsa(docs = {}) {
     aoMudarUsuario(cb) { aoUsuario = cb; },
     async entrar() {},
     async sair() { aoUsuario(null); },
-    async ler(uid) { return docs[uid] ? structuredClone(docs[uid]) : null; },
+    segurarLeituras: false, pendentes: [],
+    async ler(uid) {
+      const agora = () => (docs[uid] ? structuredClone(docs[uid]) : null);
+      if (!nuvem.segurarLeituras) return agora();
+      return new Promise((r) => { nuvem.pendentes.push(() => r(agora())); });
+    },
     async gravarTudo(uid, dados) { nuvem.chamadas.push('gravarTudo'); docs[uid] = structuredClone(dados); notificar(uid); },
     async marcar(uid, ids, valor) {
       nuvem.chamadas.push('marcar');
@@ -149,11 +154,12 @@ test('sessão restaurada mostra o cache antes de a nuvem responder', async () =>
   const arm = armazenamentoFalso({ [CHAVE_CONTA]: { uid: 'ana', usuario: ANA, feitos: { a: true }, ultimaAula: null } });
   let liberar;
   const loja = criarLoja({ armazenamento: arm, criarNuvem: () => new Promise((r) => { liberar = r; }) });
-  loja.iniciar();
+  const iniciando = loja.iniciar();
   await esperar();
   assert.equal(loja.usuario().uid, 'ana');
   assert.deepEqual(loja.feitos(), { a: true });
   liberar(null);
+  await iniciando;
 });
 
 test('cache de outra conta nunca é somado à conta que entrou', async () => {
@@ -196,4 +202,58 @@ test('outra aba mexeu no progresso anônimo: recarregar relê o navegador', asyn
   arm.set(CHAVE_ANONIMO, JSON.stringify({ c: true }));
   loja.recarregar(CHAVE_ANONIMO);
   assert.deepEqual(loja.feitos(), { c: true });
+});
+
+async function lojaComLeituraSegura(docs, anonimo = {}) {
+  const arm = armazenamentoFalso(anonimo);
+  const nuvem = nuvemFalsa(docs);
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: async () => nuvem });
+  await loja.iniciar();
+  nuvem.segurarLeituras = true;
+  return { arm, nuvem, loja };
+}
+
+test('sair enquanto a conta carrega: a sessão antiga não revive', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: { b: true }, ultimaAula: null } });
+  nuvem.logar(ANA);
+  await esperar();
+  await loja.sair();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  assert.equal(loja.usuario(), null);
+  assert.equal(arm.get(CHAVE_CONTA), null);
+  assert.deepEqual(arm.json(CHAVE_ANONIMO) || {}, {});
+  await nuvem.marcar('ana', ['z'], true);
+  assert.deepEqual(loja.feitos(), {});
+  assert.deepEqual(arm.json(CHAVE_ANONIMO) || {}, {});
+});
+
+test('trocar de conta enquanto a anterior carrega: vale a última', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({
+    ana: { feitos: { a: true }, ultimaAula: null },
+    beto: { feitos: { b: true }, ultimaAula: null },
+  });
+  nuvem.logar(ANA);
+  await esperar();
+  nuvem.logar(BETO);
+  await esperar();
+  nuvem.pendentes.reverse().forEach((f) => f());   // a leitura de Beto chega antes da de Ana
+  await esperar();
+  assert.equal(loja.usuario().uid, 'beto');
+  assert.deepEqual(loja.feitos(), { b: true });
+  assert.equal(arm.json(CHAVE_CONTA).uid, 'beto');
+  await nuvem.marcar('ana', ['z'], true);
+  assert.deepEqual(loja.feitos(), { b: true });
+});
+
+test('aula marcada durante o login não se perde', async () => {
+  const { nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: { b: true }, ultimaAula: null } });
+  nuvem.logar(ANA);
+  await esperar();
+  loja.alternar(['nova']);
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  assert.equal(nuvem.docs.ana.feitos.nova, true);
+  assert.equal(loja.feitos().nova, true);
+  assert.equal(loja.feitos().b, true);
 });

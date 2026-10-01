@@ -27,6 +27,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   let feitos = {};
   let ultimaAula = null;
   let pararDeOuvir = null;
+  let sessao = 0;   // muda a cada troca de login/logout: respostas de sessões antigas são descartadas
   const ouvintes = new Set();
   const ouvintesAviso = new Set();
 
@@ -63,14 +64,28 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   }
 
   async function conectar(u) {
+    const minha = sessao;
     const anonimo = lerJSON(armazenamento, CHAVE_ANONIMO, {});
     const ultimaAnonima = lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null);
     const remoto = await nuvem.ler(u.uid);
+    if (minha !== sessao) return;
     const novosFeitos = mesclar(anonimo, remoto && remoto.feitos);
     const novaUltima = (remoto && remoto.ultimaAula) || ultimaAnonima;
     const trazAlgo = Object.keys(anonimo).length > 0 || (!!ultimaAnonima && !(remoto && remoto.ultimaAula));
     if (!remoto || trazAlgo) {
       await nuvem.gravarTudo(u.uid, { feitos: novosFeitos, ultimaAula: novaUltima });
+      if (minha !== sessao) return;
+    }
+    // Aula marcada no navegador enquanto a conta carregava: entra na conta também.
+    const tardios = Object.keys(lerJSON(armazenamento, CHAVE_ANONIMO, {})).filter((id) => !novosFeitos[id]);
+    if (tardios.length) {
+      for (const id of tardios) novosFeitos[id] = true;
+      try {
+        await nuvem.marcar(u.uid, tardios, true);
+      } catch {
+        avisar('Não foi possível salvar; entre de novo.');
+      }
+      if (minha !== sessao) return;
     }
     // O anônimo foi absorvido pela conta: não volta a ser somado numa próxima entrada.
     armazenamento.remove(CHAVE_ANONIMO);
@@ -81,6 +96,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     salvarLocal();
     emitir();
     pararDeOuvir = nuvem.ouvir(u.uid, (dados) => {
+      if (minha !== sessao) return;
       feitos = dados.feitos || {};
       ultimaAula = dados.ultimaAula || null;
       salvarLocal();
@@ -89,6 +105,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   }
 
   function aoMudarUsuario(u) {
+    sessao += 1;
     pararSincronizacao();
     if (!u) {
       desconectar();
