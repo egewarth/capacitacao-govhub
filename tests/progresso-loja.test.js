@@ -35,7 +35,15 @@ function nuvemFalsa(docs = {}) {
       if (!nuvem.segurarLeituras) return agora();
       return new Promise((r) => { nuvem.pendentes.push(() => r(agora())); });
     },
-    async gravarTudo(uid, dados) { nuvem.chamadas.push('gravarTudo'); docs[uid] = structuredClone(dados); notificar(uid); },
+    segurarGravarTudo: false, pendentesGravar: [], recusarGravarTudo: false,
+    // Como o Firestore: a escrita local vale na hora; só a confirmação demora (ou falha).
+    async gravarTudo(uid, dados) {
+      nuvem.chamadas.push('gravarTudo');
+      docs[uid] = structuredClone(dados);
+      notificar(uid);
+      if (nuvem.segurarGravarTudo) await new Promise((r) => { nuvem.pendentesGravar.push(r); });
+      if (nuvem.recusarGravarTudo) throw Object.assign(new Error('recusado'), { code: 'permission-denied' });
+    },
     async marcar(uid, ids, valor) {
       nuvem.chamadas.push('marcar');
       if (nuvem.segurarMarcar) await new Promise((r) => { nuvem.pendentesMarcar.push(r); });
@@ -260,17 +268,17 @@ test('aula marcada durante o login não se perde', async () => {
   assert.equal(loja.feitos().b, true);
 });
 
-test('aula marcada enquanto a marcação tardia está pendente também chega à conta', async () => {
+test('aula marcada enquanto a gravação da entrada está pendente também chega à conta', async () => {
   const { nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } });
   nuvem.logar(ANA);
   await esperar();
   loja.alternar(['x']);
-  nuvem.segurarMarcar = true;
+  nuvem.segurarGravarTudo = true;
   nuvem.pendentes.forEach((f) => f());
   await esperar();
-  assert.equal(loja.usuario().uid, 'ana', 'conectar não espera a marcação tardia');
+  assert.equal(loja.usuario().uid, 'ana', 'conectar não espera a gravação');
   loja.alternar(['y']);
-  nuvem.pendentesMarcar.forEach((f) => f());
+  nuvem.pendentesGravar.forEach((f) => f());
   await esperar();
   assert.equal(loja.feitos().x, true);
   assert.equal(loja.feitos().y, true);
@@ -278,34 +286,72 @@ test('aula marcada enquanto a marcação tardia está pendente também chega à 
   assert.equal(nuvem.docs.ana.feitos.y, true);
 });
 
-test('conectar termina mesmo que a marcação tardia nunca responda', async () => {
-  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } });
+test('conectar termina mesmo que a gravação da entrada nunca responda', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { x: true } });
+  nuvem.segurarGravarTudo = true;
   nuvem.logar(ANA);
   await esperar();
-  loja.alternar(['x']);
-  nuvem.segurarMarcar = true;
   nuvem.pendentes.forEach((f) => f());
   await esperar();
   assert.equal(loja.usuario().uid, 'ana');
   assert.ok(nuvem.ouvintes.has('ana'), 'ouvinte da conta inscrito');
   assert.equal(arm.get(CHAVE_ANONIMO), null);
+  assert.equal(loja.feitos().x, true);
 });
 
-test('marcação tardia recusada avisa uma vez', async () => {
-  const { nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } });
+test('gravação da entrada recusada avisa uma vez', async () => {
+  const { nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { x: true } });
   const avisos = [];
   loja.aoAviso((t) => avisos.push(t));
+  nuvem.segurarGravarTudo = true;
   nuvem.logar(ANA);
   await esperar();
-  loja.alternar(['x']);
-  nuvem.segurarMarcar = true;
   nuvem.pendentes.forEach((f) => f());
   await esperar();
-  nuvem.recusar = true;
-  nuvem.pendentesMarcar.forEach((f) => f());
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
   await esperar();
   assert.equal(avisos.length, 1);
   assert.match(avisos[0], /entre de novo/);
+});
+
+test('gravação da entrada recusada depois de a sessão mudar não avisa', async () => {
+  const { nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { x: true } });
+  const avisos = [];
+  loja.aoAviso((t) => avisos.push(t));
+  nuvem.segurarGravarTudo = true;
+  nuvem.logar(ANA);
+  await esperar();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  await loja.sair();
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
+  await esperar();
+  assert.equal(avisos.length, 0);
+});
+
+test('desmarcar no anônimo durante o login não ressuscita a aula', async () => {
+  const { nuvem, loja } = await lojaComLeituraSegura({}, { [CHAVE_ANONIMO]: { a: true } });
+  nuvem.logar(ANA);
+  await esperar();
+  loja.alternar(['a']);
+  assert.deepEqual(loja.feitos(), {});
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  assert.deepEqual(loja.feitos(), {});
+  assert.deepEqual(nuvem.docs.ana.feitos, {});
+});
+
+test('zerar no anônimo durante o login não ressuscita as aulas', async () => {
+  const { nuvem, loja } = await lojaComLeituraSegura({}, { [CHAVE_ANONIMO]: { a: true, b: true } });
+  nuvem.logar(ANA);
+  await esperar();
+  loja.zerar();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  assert.deepEqual(loja.feitos(), {});
+  assert.deepEqual(nuvem.docs.ana.feitos, {});
 });
 
 test('recusa de uma sessão antiga não desfaz o estado da sessão atual', async () => {

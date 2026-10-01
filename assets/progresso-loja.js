@@ -63,50 +63,31 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     emitir();
   }
 
+  // Uma única espera (a leitura da conta). Depois dela tudo é síncrono: nada pode ser marcado,
+  // desmarcado ou zerado no anônimo entre ler a chave e apagá-la.
   async function conectar(u) {
     const minha = sessao;
-    const anonimo = lerJSON(armazenamento, CHAVE_ANONIMO, {});
-    const ultimaAnonima = lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null);
     const remoto = await nuvem.ler(u.uid);
     if (minha !== sessao) return;
+    const anonimo = lerJSON(armazenamento, CHAVE_ANONIMO, {});
+    const ultimaAnonima = lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null);
     const novosFeitos = mesclar(anonimo, remoto && remoto.feitos);
     const novaUltima = (remoto && remoto.ultimaAula) || ultimaAnonima;
     const trazAlgo = Object.keys(anonimo).length > 0 || (!!ultimaAnonima && !(remoto && remoto.ultimaAula));
-    if (!remoto || trazAlgo) {
-      await nuvem.gravarTudo(u.uid, { feitos: novosFeitos, ultimaAula: novaUltima });
-      if (minha !== sessao) return;
-    }
-    // Daqui até assinar o ouvinte, tudo é síncrono: nada pode ser marcado no anônimo entre
-    // reler a chave e apagá-la. Aula marcada no navegador enquanto a conta carregava entra na conta.
-    const anonimoAgora = lerJSON(armazenamento, CHAVE_ANONIMO, {});
-    const ultimaAgora = lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null);
-    const tardios = Object.keys(anonimoAgora).filter((id) => !novosFeitos[id]);
-    for (const id of tardios) novosFeitos[id] = true;
-    let ultimaFinal = novaUltima;
-    if (ultimaAgora && (!ultimaAnonima || ultimaAgora.path !== ultimaAnonima.path || ultimaAgora.item !== ultimaAnonima.item)) {
-      ultimaFinal = ultimaAgora;
-    }
     // O anônimo foi absorvido pela conta: não volta a ser somado numa próxima entrada.
     armazenamento.remove(CHAVE_ANONIMO);
     armazenamento.remove(CHAVE_ULTIMA_ANONIMO);
     usuario = u;
     feitos = novosFeitos;
-    ultimaAula = ultimaFinal;
+    ultimaAula = novaUltima;
     salvarLocal();
     emitir();
-    if (tardios.length) {
-      // Sem await: a escrita do Firestore só resolve com a confirmação do servidor.
-      nuvem.marcar(u.uid, tardios, true).catch(() => {
-        if (minha !== sessao) return;
-        const restaurado = { ...feitos };
-        for (const id of tardios) delete restaurado[id];
-        feitos = restaurado;
-        salvarLocal();
-        emitir();
-        avisar('Não foi possível salvar; entre de novo.');
+    if (!remoto || trazAlgo) {
+      // Sem await: o Firestore aplica a escrita local na hora e só confirma com o servidor.
+      nuvem.gravarTudo(u.uid, { feitos: novosFeitos, ultimaAula: novaUltima }).catch(() => {
+        if (minha === sessao) avisar('Não foi possível salvar; entre de novo.');
       });
     }
-    if (ultimaFinal !== novaUltima) nuvem.gravarUltimaAula(u.uid, ultimaFinal).catch(() => {});
     pararDeOuvir = nuvem.ouvir(u.uid, (dados) => {
       if (minha !== sessao) return;
       feitos = dados.feitos || {};
@@ -132,7 +113,10 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       usuario = null;
       carregarAnonimo();
     }
-    conectar(u).catch(() => avisar('Não foi possível carregar o progresso da sua conta.'));
+    const minha = sessao;
+    conectar(u).catch(() => {
+      if (minha === sessao) avisar('Não foi possível carregar o progresso da sua conta.');
+    });
   }
 
   async function iniciar() {
