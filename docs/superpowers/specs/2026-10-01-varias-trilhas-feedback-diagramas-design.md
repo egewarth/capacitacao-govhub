@@ -102,6 +102,21 @@ referenciado que não existe.
   ignorado). Links internos do Markdown preservam a `trilha` atual. O link "Mapa da trilha" da barra
   superior aponta para o mapa da trilha atual.
 
+### Conclusão da trilha
+
+- **Na última aula da trilha**, o botão da sequência é sempre **Concluir a trilha** (não há "Próxima").
+  Ele marca a aula como feita, se ainda não estiver, e abre `concluida.html?trilha=<slug>`.
+- **`concluida.html?trilha=<slug>`** — página de sucesso, na identidade da marca (fundo navy, quarto de
+  círculo e anel roxos, sem animação):
+  - **Trilha completa** (todas as aulas feitas): "Trilha concluída", título da trilha, "Você concluiu as
+    N aulas dos M níveis. Parabéns!", botão principal **Ver outras trilhas** → `index.html` e link
+    "Voltar ao mapa desta trilha".
+  - **Chegou ao fim, mas há aulas pendentes:** "Você chegou ao fim da trilha", "X de N aulas concluídas",
+    lista das primeiras pendentes (até 3, com "… e mais K") com links para o leitor, botão **Ver as aulas
+    pendentes no mapa** e link **Ver outras trilhas** → `index.html`.
+  - O estado reage a `aoMudar` (sessão restaurada, sincronização).
+  - Sem `trilha` válida: redireciona para `index.html`.
+
 ### Módulos JS
 
 - `assets/trilha.js`: `carregarCatalogo()` e `carregarTrilha(slug)` (cache por slug; promessa rejeitada
@@ -214,7 +229,7 @@ README §7.6 atualizado com as regras novas e como exportar o feedback pelo cons
   compatibilidade, avaliar/foiAvaliada com nuvem falsa), catálogo e JSON de trilha (formato, ids únicos,
   documentos existentes), validações do gerador (slug repetido, cabeçalho faltando, documento repetido).
 - CI: os gerados em `docs/trilhas/` estão em dia; testes passam.
-- Navegador headless: catálogo com um card; `mapa.html?trilha=dashboards` com o diagrama no topo;
+- Navegador headless: catálogo com um card; `concluida.html` nos dois estados (completa e com pendentes); `mapa.html?trilha=dashboards` com o diagrama no topo;
   `roadmap.html` redireciona; leitor com `trilha` e sem `trilha`; bloco de feedback nos três estados
   (sem login dá para verificar; com login, manual); aulas com os PNGs novos e sem Mermaid.
 - Manual com Firebase real (depois de publicar as regras): enviar feedback, ver o documento em
