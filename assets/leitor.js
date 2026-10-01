@@ -227,10 +227,11 @@ async function abrir({ path, item }, { foco = false } = {}) {
       h1.focus({ preventScroll: true });
     }
   } catch (e) {
+    if (path !== atual.path) return;
     mostrarMensagem('Não foi possível abrir ', el('code', {}, path), ` (${e.message}). `,
       el('a', { href: 'index.html' }, 'Voltar para o início'));
   } finally {
-    conteudo.removeAttribute('aria-busy');
+    if (path === atual.path) conteudo.removeAttribute('aria-busy');
   }
 }
 
@@ -248,6 +249,7 @@ function interceptarLinks(ev) {
   if (url.origin !== location.origin || !url.pathname.endsWith('/doc.html') || !url.searchParams.get('path')) return;
   if (url.search === location.search && url.hash) return;   // âncora na mesma aula: o navegador rola
   ev.preventDefault();
+  if (url.search === location.search) { fecharGaveta(); return; }   // aula já aberta: sem entrada duplicada no histórico
   navegar(url.href);
 }
 
