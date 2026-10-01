@@ -86,8 +86,15 @@ Dashboards-Roadmap/
 ├── roadmap.html                 gen · trilha visual com progresso
 ├── doc.html                     visualizador de Markdown
 ├── roadmap-dashboards.xmind     gen · mapa mental
-├── assets/                      identidade visual: tokens, logotipo, favicon
-│   └── ilustracoes/             SVGs didáticos usados nas páginas
+├── assets/
+│   ├── govhub.css               identidade visual (tokens do modo sóbrio) e componentes comuns
+│   ├── leitor.css · leitor.js   leitor da trilha (doc.html)
+│   ├── progresso-*.js           progresso: núcleo, loja e Firebase (ADR 0004)
+│   ├── firebase-config.js       configuração do Firebase (vazia = só navegador)
+│   ├── logo/ · icones/ · ilustracoes/   logotipo, ícones dos tipos de página e SVGs didáticos
+├── tests/                       node --test tests/*.test.js
+├── firestore.rules              regras de segurança do progresso
+├── firebase.json                configuração do Firebase CLI (regras)
 ├── tools/gen_roadmap.py         ROADMAP.md -> html + xmind + trilhas
 ├── docs/
 │   ├── tutoriais/  guias/  referencia/  explicacao/  desafios/  pesquisa/
@@ -165,6 +172,12 @@ plataforma.
 ```bash
 python3 -m http.server 8000        # na raiz do repositório
 # abrir http://localhost:8000/  (Início)  e  /roadmap.html
+```
+
+Testes do progresso e do índice da trilha (Node 20+):
+
+```bash
+node --test tests/*.test.js
 ```
 
 ---

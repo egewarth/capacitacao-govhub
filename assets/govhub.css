@@ -40,23 +40,6 @@
   --topo-altura:56px;
 }
 
-/* --- TRANSIÇÃO ---------------------------------------------------------------
-   Nomes da identidade anterior (ADR 0002) apontando para a paleta sóbria, para
-   as páginas continuarem de pé enquanto são migradas. Removido na última etapa. */
-:root{
-  --gh-purple:var(--primary-purple); --gh-purple-l:var(--primary-purple); --gh-purple-d:var(--purple-700);
-  --gh-purple-dd:var(--dark-navy); --gh-orange:var(--accent-rose); --gh-orange-l:#fff; --gh-orange-d:var(--accent-rose);
-  --gh-tint:var(--bg-soft); --gh-tint-line:var(--border-soft); --gh-on-dark:#fff;
-  --ink:var(--text-strong); --muted:var(--text-muted); --line:var(--border-soft); --panel:#fff; --bg:var(--bg-soft);
-  --accent:var(--dark-navy); --focus:var(--purple-700);
-  --tut:var(--dark-navy); --gui:var(--dark-navy); --ref:var(--dark-navy); --exp:var(--dark-navy); --des:var(--accent-rose); --res:var(--dark-navy);
-  --tut-bg:var(--bg-soft); --gui-bg:var(--bg-soft); --ref-bg:var(--bg-soft); --exp-bg:var(--bg-soft); --des-bg:var(--bg-soft); --res-bg:var(--bg-soft);
-  --green:var(--primary-purple); --green-d:var(--purple-700); --red-d:var(--accent-rose);
-}
-.brand{display:flex;align-items:center;gap:10px;margin-right:auto;text-decoration:none}
-.brand img{height:22px;width:auto;display:block}
-.brand span{color:#fff;font-size:.93rem;font-weight:700;border-left:1px solid rgba(255,255,255,.5);padding-left:10px}
-/* --- fim da transição ------------------------------------------------------ */
 
 body{font-family:var(--font-family-base);color:var(--text-body);background:var(--bg-soft)}
 
@@ -146,6 +129,6 @@ body{font-family:var(--font-family-base);color:var(--text-body);background:var(-
 
 /* Foco visível (eMAG 2.1 / WCAG 2.4.7) — roxo escuro no claro, branco no roxo */
 a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--purple-700);outline-offset:2px;border-radius:3px}
-.topo a:focus-visible,.topo button:focus-visible,.topo summary:focus-visible,body > nav a:focus-visible,.brand:focus-visible{outline-color:#fff}
+.topo a:focus-visible,.topo button:focus-visible,.topo summary:focus-visible{outline-color:#fff}
 
 @media (prefers-reduced-motion: reduce){*{transition:none !important;scroll-behavior:auto !important}}
