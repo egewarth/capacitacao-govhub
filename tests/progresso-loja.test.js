@@ -35,22 +35,43 @@ function nuvemFalsa(docs = {}) {
       if (!nuvem.segurarLeituras) return agora();
       return new Promise((r) => { nuvem.pendentes.push(() => r(agora())); });
     },
-    segurarGravarTudo: false, pendentesGravar: [], recusarGravarTudo: false,
-    // Como o Firestore: a escrita local vale na hora; só a confirmação demora (ou falha).
+    segurarGravarTudo: false, pendentesGravar: [], recusarGravarTudo: false, reversoes: [],
+    // Como o Firestore: a escrita local vale na hora (e os ouvintes a veem); a confirmação demora
+    // ou falha, e na falha a visão otimista é revertida e os ouvintes são avisados de novo.
     async gravarTudo(uid, dados) {
       nuvem.chamadas.push('gravarTudo');
+      const antes = docs[uid] ? structuredClone(docs[uid]) : null;
       docs[uid] = structuredClone(dados);
       notificar(uid);
       if (nuvem.segurarGravarTudo) await new Promise((r) => { nuvem.pendentesGravar.push(r); });
-      if (nuvem.recusarGravarTudo) throw Object.assign(new Error('recusado'), { code: 'permission-denied' });
+      await Promise.resolve();
+      if (nuvem.recusarGravarTudo) {
+        if (antes) docs[uid] = antes; else delete docs[uid];
+        notificar(uid);
+        throw Object.assign(new Error('recusado'), { code: 'permission-denied' });
+      }
+    },
+    // Outro dispositivo mexeu: também vale como base para reverter escritas pendentes.
+    externo(uid, id) {
+      (docs[uid] || (docs[uid] = { feitos: {}, ultimaAula: null })).feitos[id] = true;
+      nuvem.reversoes.forEach((rv) => { if (rv.uid === uid) rv.anteriores[id] = true; });
+      notificar(uid);
     },
     async marcar(uid, ids, valor) {
       nuvem.chamadas.push('marcar');
-      if (nuvem.segurarMarcar) await new Promise((r) => { nuvem.pendentesMarcar.push(r); });
-      if (nuvem.recusar) throw Object.assign(new Error('recusado'), { code: 'permission-denied' });
       const d = docs[uid] || (docs[uid] = { feitos: {}, ultimaAula: null });
+      const rv = { uid, anteriores: {} };
+      for (const id of ids) rv.anteriores[id] = !!d.feitos[id];
+      nuvem.reversoes.push(rv);
       for (const id of ids) { if (valor) d.feitos[id] = true; else delete d.feitos[id]; }
       notificar(uid);
+      if (nuvem.segurarMarcar) await new Promise((r) => { nuvem.pendentesMarcar.push(r); });
+      await Promise.resolve();   // a recusa chega do servidor, nunca no mesmo instante
+      if (nuvem.recusar) {
+        for (const id of ids) { if (rv.anteriores[id]) d.feitos[id] = true; else delete d.feitos[id]; }
+        notificar(uid);
+        throw Object.assign(new Error('recusado'), { code: 'permission-denied' });
+      }
     },
     async gravarUltimaAula(uid, ultima) {
       nuvem.chamadas.push('gravarUltimaAula');
@@ -361,7 +382,7 @@ test('recusa de uma sessão antiga não desfaz o estado da sessão atual', async
   nuvem.segurarMarcar = true;
   loja.alternar(['a']);                       // sessão 1: marcar pendente
   await loja.sair();
-  nuvem.docs.ana.feitos.a = true;             // outro dispositivo marcou a mesma aula
+  nuvem.externo('ana', 'a');                  // outro dispositivo marcou a mesma aula
   nuvem.logar(ANA);
   await esperar();
   assert.deepEqual(loja.feitos(), { a: true });
@@ -370,4 +391,81 @@ test('recusa de uma sessão antiga não desfaz o estado da sessão atual', async
   await esperar();
   assert.deepEqual(loja.feitos(), { a: true });
   assert.equal(avisos.length, 0);
+});
+
+const AULA = { path: 'docs/a.md', item: 'a' };
+
+test('gravação da entrada recusada devolve o progresso anônimo ao navegador', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { a: true, b: true } });
+  nuvem.segurarGravarTudo = true;
+  nuvem.logar(ANA);
+  await esperar();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
+  await esperar();
+  assert.equal(loja.usuario().uid, 'ana');
+  assert.equal(loja.feitos().a, true);
+  assert.equal(loja.feitos().b, true);
+  await loja.sair();
+  assert.deepEqual(arm.json(CHAVE_ANONIMO), { a: true, b: true });
+  assert.deepEqual(loja.feitos(), { a: true, b: true });
+});
+
+test('gravação da entrada recusada devolve a última aula anônima', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ULTIMA_ANONIMO]: AULA });
+  nuvem.segurarGravarTudo = true;
+  nuvem.logar(ANA);
+  await esperar();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
+  await esperar();
+  await loja.sair();
+  assert.deepEqual(arm.json(CHAVE_ULTIMA_ANONIMO), AULA);
+});
+
+test('recusa depois do logout: sem aviso, mas o progresso anônimo volta ao navegador', async () => {
+  const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { a: true }, [CHAVE_ULTIMA_ANONIMO]: AULA });
+  const avisos = [];
+  loja.aoAviso((t) => avisos.push(t));
+  nuvem.segurarGravarTudo = true;
+  nuvem.logar(ANA);
+  await esperar();
+  nuvem.pendentes.forEach((f) => f());
+  await esperar();
+  await loja.sair();
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
+  await esperar();
+  assert.equal(avisos.length, 0);
+  assert.deepEqual(arm.json(CHAVE_ANONIMO), { a: true });
+  assert.deepEqual(arm.json(CHAVE_ULTIMA_ANONIMO), AULA);
+  assert.deepEqual(loja.feitos(), { a: true });
+});
+
+test('zerar recusado depois do logout não avisa', async () => {
+  const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: { a: true }, ultimaAula: null } } });
+  const avisos = [];
+  loja.aoAviso((t) => avisos.push(t));
+  nuvem.segurarGravarTudo = true;
+  loja.zerar();
+  await loja.sair();
+  nuvem.recusarGravarTudo = true;
+  nuvem.pendentesGravar.forEach((f) => f());
+  await esperar();
+  assert.equal(avisos.length, 0);
+});
+
+test('trocar de conta mostra o estado anônimo na hora, antes de a leitura responder', async () => {
+  const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: { a: true }, ultimaAula: null } } });
+  assert.deepEqual(loja.feitos(), { a: true });
+  let chamadas = 0;
+  loja.aoMudar(() => { chamadas += 1; });
+  nuvem.segurarLeituras = true;
+  nuvem.logar(BETO);
+  assert.ok(chamadas > 0);
+  assert.deepEqual(loja.feitos(), {});
 });

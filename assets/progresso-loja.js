@@ -63,6 +63,27 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     emitir();
   }
 
+  // A nuvem recusou a gravação que levava o progresso anônimo: ele pertence a este navegador e
+  // volta para a chave anônima (união com o que houver ali), mesmo que a sessão já tenha acabado.
+  function devolverAnonimo(anonimo, ultimaAnonima, minha) {
+    if (Object.keys(anonimo).length > 0) {
+      armazenamento.set(CHAVE_ANONIMO, JSON.stringify(mesclar(lerJSON(armazenamento, CHAVE_ANONIMO, {}), anonimo)));
+    }
+    if (ultimaAnonima && !lerJSON(armazenamento, CHAVE_ULTIMA_ANONIMO, null)) {
+      armazenamento.set(CHAVE_ULTIMA_ANONIMO, JSON.stringify(ultimaAnonima));
+    }
+    if (minha === sessao) {
+      // Ainda logado: mantém as aulas visíveis; a próxima entrada absorve de novo (união é idempotente).
+      feitos = mesclar(feitos, anonimo);
+      salvarLocal();
+      emitir();
+      avisar('Não foi possível salvar; entre de novo.');
+    } else if (!usuario) {
+      carregarAnonimo();
+      emitir();
+    }
+  }
+
   // Uma única espera (a leitura da conta). Depois dela tudo é síncrono: nada pode ser marcado,
   // desmarcado ou zerado no anônimo entre ler a chave e apagá-la.
   async function conectar(u) {
@@ -85,7 +106,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     if (!remoto || trazAlgo) {
       // Sem await: o Firestore aplica a escrita local na hora e só confirma com o servidor.
       nuvem.gravarTudo(u.uid, { feitos: novosFeitos, ultimaAula: novaUltima }).catch(() => {
-        if (minha === sessao) avisar('Não foi possível salvar; entre de novo.');
+        devolverAnonimo(anonimo, ultimaAnonima, minha);
       });
     }
     pararDeOuvir = nuvem.ouvir(u.uid, (dados) => {
@@ -112,6 +133,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       armazenamento.remove(CHAVE_CONTA);
       usuario = null;
       carregarAnonimo();
+      emitir();
     }
     const minha = sessao;
     conectar(u).catch(() => {
@@ -172,8 +194,9 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     salvarLocal();
     emitir();
     if (usuario && nuvem) {
+      const minha = sessao;
       nuvem.gravarTudo(usuario.uid, { feitos: {}, ultimaAula })
-        .catch(() => avisar('Não foi possível salvar; entre de novo.'));
+        .catch(() => { if (minha === sessao) avisar('Não foi possível salvar; entre de novo.'); });
     }
   }
 
