@@ -20,10 +20,12 @@ máquina com login próprio, que querem retomar de onde pararam em outro lugar. 
 - **Com sessão,** o Firestore é a fonte da verdade. O navegador guarda só um cache da conta, apagado ao
   sair. O progresso de uma conta nunca fica no navegador depois do logout nem é somado a outra conta.
 - **Escrita por campo** (`feitos.<id>`), para que marcações simultâneas em dispositivos diferentes não
-  se sobrescrevam. A sincronização é em tempo real (`onSnapshot`).
+  se sobrescrevam. As escritas são `setDoc` com `merge`, e não `updateDoc`: funcionam mesmo antes de o
+  documento existir. A sincronização é em tempo real (`onSnapshot`).
 - **SDK por CDN** (`gstatic.com`, versão fixada em `assets/progresso-nuvem.js`), carregado só quando
   `assets/firebase-config.js` está preenchido.
-- **Regras em `firestore.rules`:** cada `uid` só lê e grava o próprio documento, com campos validados.
+- **Regras em `firestore.rules`:** cada `uid` só lê e grava o próprio documento, e o documento só pode
+  ter as chaves `feitos`, `ultimaAula` e `atualizadoEm`. O conteúdo dessas chaves não é validado.
 
 ## Consequências
 

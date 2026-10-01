@@ -41,14 +41,17 @@ export async function criarNuvem(config) {
         feitos, ultimaAula: ultimaAula || null, atualizadoEm: fs.serverTimestamp(),
       }),
       // Um campo por aula (feitos.<id>), numa única escrita: duas aulas marcadas ao mesmo
-      // tempo em dispositivos diferentes não se sobrescrevem.
+      // tempo em dispositivos diferentes não se sobrescrevem. setDoc com merge (e não updateDoc)
+      // funciona também quando o documento ainda não existe (sessão restaurada, entrada recusada,
+      // documento apagado). Os ids (com '/' e '--') são chaves de objeto aninhado, sem parsing
+      // de caminho de campo.
       marcar(uid, ids, valor) {
-        const campos = [];
-        for (const id of ids) campos.push(new fs.FieldPath('feitos', id), valor ? true : fs.deleteField());
-        return fs.updateDoc(documento(uid), ...campos, 'atualizadoEm', fs.serverTimestamp());
+        const feitos = {};
+        for (const id of ids) feitos[id] = valor ? true : fs.deleteField();
+        return fs.setDoc(documento(uid), { feitos, atualizadoEm: fs.serverTimestamp() }, { merge: true });
       },
-      gravarUltimaAula: (uid, ultimaAula) => fs.updateDoc(documento(uid),
-        'ultimaAula', ultimaAula, 'atualizadoEm', fs.serverTimestamp()),
+      gravarUltimaAula: (uid, ultimaAula) => fs.setDoc(documento(uid),
+        { ultimaAula, atualizadoEm: fs.serverTimestamp() }, { merge: true }),
       ouvir: (uid, cb, erro) => fs.onSnapshot(documento(uid),
         (snap) => cb(normalizar(snap.exists() ? snap.data() : null)), erro),
     };

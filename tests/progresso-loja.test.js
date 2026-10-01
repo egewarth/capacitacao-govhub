@@ -59,6 +59,7 @@ function nuvemFalsa(docs = {}) {
     },
     async marcar(uid, ids, valor) {
       nuvem.chamadas.push('marcar');
+      // Como setDoc com merge: cria o documento se ele não existir.
       const d = docs[uid] || (docs[uid] = { feitos: {}, ultimaAula: null });
       const rv = { uid, anteriores: {} };
       for (const id of ids) rv.anteriores[id] = !!d.feitos[id];
@@ -75,6 +76,7 @@ function nuvemFalsa(docs = {}) {
     },
     async gravarUltimaAula(uid, ultima) {
       nuvem.chamadas.push('gravarUltimaAula');
+      // Como setDoc com merge: cria o documento se ele não existir.
       (docs[uid] || (docs[uid] = { feitos: {}, ultimaAula: null })).ultimaAula = ultima;
     },
     ouvir(uid, cb) { ouvintes.set(uid, cb); cb(copia(uid)); return () => ouvintes.delete(uid); },
