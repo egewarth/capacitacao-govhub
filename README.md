@@ -89,6 +89,7 @@ Dashboards-Roadmap/
 ├── assets/
 │   ├── govhub.css               identidade visual (tokens do modo sóbrio) e componentes comuns
 │   ├── leitor.css · leitor.js   leitor da trilha (doc.html)
+│   ├── caminho.js               quais ?path= o leitor aceita (só .md do próprio site)
 │   ├── progresso-*.js           progresso: núcleo, loja e Firebase (ADR 0004)
 │   ├── firebase-config.js       configuração do Firebase (vazia = só navegador)
 │   ├── logo/ · icones/ · ilustracoes/   logotipo, ícones dos tipos de página e SVGs didáticos

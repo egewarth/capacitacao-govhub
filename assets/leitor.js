@@ -4,6 +4,7 @@ import { progresso } from './progresso.js';
 import { carregarTrilha } from './trilha.js';
 import { montarConta, montarAviso } from './conta.js';
 import { el } from './dom.js';
+import { caminhoSeguro } from './caminho.js';
 import { contar, hrefDoItem, idsDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
@@ -14,7 +15,9 @@ let diagramas = 0;
 // ---- URL e Markdown -----------------------------------------------------------
 function lerUrl() {
   const p = new URLSearchParams(location.search);
-  return { path: (p.get('path') || 'README.md').replace(/^\.?\/+/, ''), item: p.get('item') };
+  const bruto = p.get('path') || 'README.md';
+  // Só normaliza o que é seguro; o resto chega intacto a abrir(), que o recusa sem buscar.
+  return { path: caminhoSeguro(bruto) ? bruto.replace(/^\.?\/+/, '') : bruto, item: p.get('item') };
 }
 function resolver(base, rel) {
   const dir = base.includes('/') ? base.slice(0, base.lastIndexOf('/') + 1) : '';
@@ -202,6 +205,8 @@ async function abrir({ path, item }, { foco = false } = {}) {
   const conteudo = $('conteudo');
   conteudo.setAttribute('aria-busy', 'true');
   try {
+    // Ponto único por onde passa todo ?path= (URL inicial, links interceptados, voltar/avançar).
+    if (!caminhoSeguro(path)) throw new Error('caminho não permitido');
     const r = await fetch(path);
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const md = await r.text();
