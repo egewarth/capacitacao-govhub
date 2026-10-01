@@ -229,6 +229,30 @@ se algum arquivo gerado estiver desatualizado** — ou seja, se alguém editou o
 regenerar, ou esqueceu de commitar o esqueleto de uma página nova. Não há build: o site vai ao ar como
 está no repositório, porque `doc.html` lê os `.md` em tempo de execução.
 
+### 7.6 Salvar o progresso no Firebase
+
+Sem configuração, o site funciona e o progresso fica só no navegador. Para que quem entra com a conta
+Google leve o progresso para qualquer computador:
+
+1. Em <https://console.firebase.google.com>, crie um projeto (o Google Analytics não é necessário).
+2. **Configurações do projeto → Seus apps → Web (`</>`)**: registre um app e copie o objeto
+   `firebaseConfig` para `assets/firebase-config.js` (pelo menos `apiKey`, `authDomain`, `projectId`
+   e `appId`). Esse arquivo já está preenchido para o projeto `capacitacao-gov-hub`; estes passos
+   servem para recriar o projeto ou trocá-lo por outro.
+3. **Authentication → Método de login**: ative **Google**.
+4. **Authentication → Configurações → Domínios autorizados**: adicione o domínio do GitHub Pages
+   (ex.: `<usuario>.github.io`). `localhost` já vem autorizado.
+5. **Firestore Database**: crie o banco em **modo de produção**.
+6. Publique as regras de [`firestore.rules`](firestore.rules): cole o conteúdo em
+   **Firestore → Regras → Publicar**, ou rode `firebase deploy --only firestore:rules` (Firebase CLI).
+   As regras de `firestore.rules` são as que estão publicadas no console; mantenha os dois sempre
+   iguais.
+7. Commite `assets/firebase-config.js`. Ao abrir o site, o botão **Entrar com Google** aparece na barra
+   superior.
+
+Os valores de `firebaseConfig` são públicos por natureza; o que protege os dados são as regras do
+passo 6. A decisão está no [ADR 0004](docs/adr/0004-progresso-no-firebase.md).
+
 ---
 
 ## 8. Origem do conteúdo
