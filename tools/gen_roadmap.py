@@ -2,15 +2,15 @@
 """
 Gera os artefatos de todas as trilhas a partir de trilhas/*.md.
 
-Entrada: cada trilhas/<slug>.md começa com um cabeçalho `---` (slug, titulo, descricao
-e, opcionalmente, diagrama + diagrama_alt) seguido do corpo em Markdown com níveis
+Entrada: cada trilhas/<slug>.md começa com um cabeçalho `---` (slug, titulo, descricao,
+categoria e, opcionalmente, diagrama + diagrama_alt) seguido do corpo em Markdown com níveis
 (`## Nível N · Título`) e itens (`- [tipo] **Título** — papel — `docs/....md``).
 
 Saídas, em docs/trilhas/:
   <slug>.json   a trilha para o mapa, o leitor e o catálogo
   <slug>.md     a versão em texto
   <slug>.xmind  o mapa mental (determinístico: data fixa no zip)
-  index.json    o catálogo das trilhas (ordem de slug)
+  index.json    o catálogo das trilhas (negociais antes das técnicas; dentro delas, ordem de slug)
   index.md      o catálogo em texto
 Saídas de trilhas que não existem mais em trilhas/ são apagadas. O arquivo da trilha
 precisa se chamar <slug>.md, e cada doc precisa ser docs/<...>.md (sem .. nem \\).
@@ -28,7 +28,9 @@ TRILHAS_DIR = os.path.join(REPO, "trilhas")
 OUT_DIR = os.path.join(REPO, "docs", "trilhas")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 AVISO = "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao."
-CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao")
+CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao", "categoria")
+# categoria -> posição no catálogo. Negocial: para quem usa os dados; técnica: para quem opera a plataforma.
+CATEGORIAS = {"negocial": 0, "tecnica": 1}
 XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa e sem compressão (ZIP_STORED): o .xmind só muda com o conteúdo e é idêntico em qualquer
                                       # versão do zlib (a saída do deflate varia entre builds)
 
@@ -125,7 +127,7 @@ def ler_cabecalho(texto, origem):
     """Lê o bloco `---` do topo (linhas `chave: valor`). Devolve (meta, linhas do corpo)."""
     linhas = texto.split("\n")
     if not linhas or linhas[0].strip() != "---":
-        raise SystemExit("%s: falta o cabeçalho (--- slug, titulo, descricao ---) no topo" % origem)
+        raise SystemExit("%s: falta o cabeçalho (--- slug, titulo, descricao, categoria ---) no topo" % origem)
     meta, fim = {}, None
     for i in range(1, len(linhas)):
         l = linhas[i].strip()
@@ -145,6 +147,8 @@ def ler_cabecalho(texto, origem):
             raise SystemExit("%s: cabeçalho sem %r" % (origem, campo))
     if not SLUG_RE.match(meta["slug"]):
         raise SystemExit("%s: slug inválido %r (use letras minúsculas, números e hífen)" % (origem, meta["slug"]))
+    if meta["categoria"] not in CATEGORIAS:
+        raise SystemExit("%s: categoria inválida %r (use %s)" % (origem, meta["categoria"], " ou ".join(CATEGORIAS)))
     if bool(meta.get("diagrama")) != bool(meta.get("diagrama_alt")):
         raise SystemExit("%s: diagrama e diagrama_alt andam juntos" % origem)
     return meta, linhas[fim + 1:]
@@ -185,7 +189,8 @@ def json_da_trilha(meta, levels):
                 "icone": icone,
             })
         niveis.append({"numero": lv["num"], "titulo": lv["title"], "descricao": lv["desc"], "itens": itens})
-    dados = {"_aviso": AVISO, "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"]}
+    dados = {"_aviso": AVISO, "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"],
+             "categoria": meta["categoria"]}
     if meta.get("diagrama"):
         dados["diagrama"] = meta["diagrama"]
         dados["diagrama_alt"] = meta["diagrama_alt"]
@@ -275,7 +280,7 @@ def warnings(levels):
 
 
 def carregar(trilhas_dir):
-    """Lê e valida todas as trilhas. Devolve [(meta, levels, dropped, origem)] ordenado por slug."""
+    """Lê e valida todas as trilhas. Devolve [(meta, levels, dropped, origem)] na ordem do catálogo."""
     trilhas = []
     for nome in sorted(os.listdir(trilhas_dir)):
         if not nome.endswith(".md"):
@@ -297,12 +302,12 @@ def carregar(trilhas_dir):
         raise SystemExit("slug repetido entre trilhas: %s" % ", ".join(repetidos))
     if not trilhas:
         raise SystemExit("nenhuma trilha em %s" % trilhas_dir)
-    trilhas.sort(key=lambda t: t[0]["slug"])
+    trilhas.sort(key=lambda t: (CATEGORIAS[t[0]["categoria"]], t[0]["slug"]))
     return trilhas
 
 
 def gerar(trilhas_dir, out_dir):
-    """Gera tudo de todas as trilhas. Devolve as metas na ordem do catálogo (slug)."""
+    """Gera tudo de todas as trilhas. Devolve as metas na ordem do catálogo."""
     trilhas = carregar(trilhas_dir)
     os.makedirs(out_dir, exist_ok=True)
     catalogo = []
@@ -312,7 +317,7 @@ def gerar(trilhas_dir, out_dir):
         gen_texto(meta, levels, os.path.join(out_dir, meta["slug"] + ".md"))
         gen_xmind(meta, levels, os.path.join(out_dir, meta["slug"] + ".xmind"))
         catalogo.append({
-            "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"],
+            "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"], "categoria": meta["categoria"],
             "niveis": len(levels), "aulas": [i["id"] for n in dados["niveis"] for i in n["itens"]],
         })
     escrever_json(os.path.join(out_dir, "index.json"), {"_aviso": AVISO, "trilhas": catalogo})

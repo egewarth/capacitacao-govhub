@@ -4,6 +4,7 @@ titulo: Dashboards no Gov Hub
 diagrama: assets/diagramas/logica-da-trilha.png
 diagrama_alt: A lógica da trilha em cinco etapas, da esquerda para a direita: por quê (fundamentos), o quê (princípios transversais), como (execução na ferramenta), governança (padrões Gov Hub) e prática (estudo de caso). Acessibilidade e arquitetura da informação aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.
 descricao: Do "por que um dashboard" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.
+categoria: negocial
 ---
 # Trilha de aprendizagem — Dashboards no GovHub
 

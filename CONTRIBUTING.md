@@ -68,7 +68,8 @@ trilha — é dele que sai o botão *Marcar como feito* no fim de cada página. 
 
 ### Criar uma trilha nova
 
-1. Copie `trilhas/dashboards.md` para `trilhas/<slug>.md` e troque o cabeçalho (título e descrição).
+1. Copie `trilhas/dashboards.md` para `trilhas/<slug>.md` e troque o cabeçalho (título, descrição e
+   `categoria`: `negocial` ou `tecnica`, que vira a etiqueta do card e define a ordem no catálogo).
 2. Liste os níveis e os itens. Aulas já existentes podem ser reaproveitadas: o progresso é da aula e
    vale em todas as trilhas que a usam.
 3. Rode `python3 tools/gen_roadmap.py` e commite o resultado.

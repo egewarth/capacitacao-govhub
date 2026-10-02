@@ -5,6 +5,7 @@ import { carregarCatalogo } from './trilha.js';
 import { el } from './dom.js';
 
 const $ = (id) => document.getElementById(id);
+const CATEGORIAS = { negocial: 'Negocial', tecnica: 'Técnica' };
 montarConta($('conta'), progresso);
 montarAviso(progresso);
 
@@ -19,6 +20,7 @@ function card(t) {
   const mapa = 'mapa.html?trilha=' + encodeURIComponent(t.slug);
   const tituloId = 'trilha-' + t.slug;
   return el('article', { class: 'trilha-card', 'aria-labelledby': tituloId },
+    CATEGORIAS[t.categoria] ? el('p', { class: 'categoria ' + t.categoria }, CATEGORIAS[t.categoria]) : null,
     el('h3', { id: tituloId }, t.titulo),
     el('p', {}, t.descricao),
     el('p', { class: 'numeros' }, `${t.aulas.length} aulas · ${t.niveis} níveis`),

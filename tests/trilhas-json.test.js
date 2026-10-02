@@ -7,10 +7,14 @@ const catalogo = JSON.parse(ler('docs/trilhas/index.json'));
 const TIPOS = ['tutorial', 'guia', 'referencia', 'explicacao', 'desafio', 'pesquisa'];
 const PAPEIS = ['core', 'support', 'capstone', 'optional', 'advanced'];
 
-test('o catálogo lista as trilhas em ordem de slug', () => {
+const CATEGORIAS = ['negocial', 'tecnica'];
+
+test('o catálogo lista as negociais antes das técnicas e, dentro delas, em ordem de slug', () => {
+  const chave = (t) => CATEGORIAS.indexOf(t.categoria) + ':' + t.slug;
   const slugs = catalogo.trilhas.map((t) => t.slug);
   assert.ok(slugs.length > 0);
-  assert.deepEqual(slugs, [...slugs].sort());
+  assert.ok(catalogo.trilhas.every((t) => CATEGORIAS.includes(t.categoria)));
+  assert.deepEqual(catalogo.trilhas.map(chave), catalogo.trilhas.map(chave).sort());
   assert.ok(slugs.includes('dashboards'));
 });
 
@@ -19,6 +23,7 @@ for (const resumo of catalogo.trilhas) {
 
   test(`${resumo.slug}: cabeçalho e níveis completos`, () => {
     assert.equal(trilha.slug, resumo.slug);
+    assert.equal(trilha.categoria, resumo.categoria);
     assert.ok(trilha.titulo && trilha.descricao);
     assert.equal(!!trilha.diagrama, !!trilha.diagrama_alt);
     if (trilha.diagrama) assert.ok(existsSync(new URL('../' + trilha.diagrama, import.meta.url)), trilha.diagrama);

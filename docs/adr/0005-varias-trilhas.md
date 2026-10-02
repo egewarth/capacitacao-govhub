@@ -11,7 +11,8 @@ duplicar texto e sem que a pessoa tenha de marcar a mesma aula duas vezes.
 
 ## Decisão
 
-- **Uma trilha por arquivo** `trilhas/<slug>.md`, com cabeçalho (título, descrição) e os níveis e itens
+- **Uma trilha por arquivo** `trilhas/<slug>.md`, com cabeçalho (título, descrição, categoria `negocial` ou
+  `tecnica`) e os níveis e itens
   abaixo dele. É a única fonte editada à mão.
 - **JSON por trilha e um catálogo** (`docs/trilhas/<slug>.json`, `docs/trilhas/index.json`), gerados por
   `tools/gen_roadmap.py`, junto com `<slug>.md` e `<slug>.xmind`.

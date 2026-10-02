@@ -5,7 +5,7 @@ spec = importlib.util.spec_from_file_location("gen", os.path.join(REPO, "tools",
 gen = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(gen)
 
-CABECALHO = "---\nslug: teste\ntitulo: Trilha teste\ndescricao: Uma trilha.\n---\n"
+CABECALHO = "---\nslug: teste\ntitulo: Trilha teste\ndescricao: Uma trilha.\ncategoria: negocial\n---\n"
 CORPO = ("# Trilha\n\n## Nível 0 · Base\nAbertura do nível.\n\n"
          "- [explanation] **Por que** — core — `docs/explicacao/por-que-fazer-um-dashboard.md`\n"
          "- [reference] **Glossário** — support — `docs/referencia/glossario.md`\n")
@@ -31,9 +31,15 @@ class Cabecalho(unittest.TestCase):
             gen.ler_cabecalho(CABECALHO.replace("teste", "Teste Ruim"), "t.md")
 
     def test_diagrama_exige_alt(self):
-        cab = "---\nslug: teste\ntitulo: T\ndescricao: D\ndiagrama: assets/x.png\n---\n"
+        cab = "---\nslug: teste\ntitulo: T\ndescricao: D\ncategoria: negocial\ndiagrama: assets/x.png\n---\n"
         with self.assertRaises(SystemExit):
             gen.ler_cabecalho(cab + CORPO, "t.md")
+
+    def test_exige_categoria_conhecida(self):
+        with self.assertRaises(SystemExit):
+            gen.ler_cabecalho(CABECALHO.replace("categoria: negocial\n", ""), "t.md")
+        with self.assertRaises(SystemExit):
+            gen.ler_cabecalho(CABECALHO.replace("negocial", "outra"), "t.md")
 
 
 class Validacoes(unittest.TestCase):
@@ -58,11 +64,20 @@ class Geracao(unittest.TestCase):
         itens = trilha["niveis"][0]["itens"]
         self.assertEqual([i["id"] for i in itens], ["explicacao/por-que-fazer-um-dashboard", "referencia/glossario"])
         self.assertEqual(itens[1]["papel"], "support")
+        self.assertEqual(trilha["categoria"], "negocial")
         catalogo = json.load(open(os.path.join(saida, "index.json"), encoding="utf-8"))
+        self.assertEqual(catalogo["trilhas"][0]["categoria"], "negocial")
         self.assertEqual(catalogo["trilhas"][0]["aulas"], [i["id"] for i in itens])
         self.assertEqual(catalogo["trilhas"][0]["niveis"], 1)
         for nome in ("teste.md", "teste.xmind", "index.md"):
             self.assertTrue(os.path.exists(os.path.join(saida, nome)), nome)
+
+    def test_catalogo_poe_negociais_antes_das_tecnicas(self):
+        tecnica = CABECALHO.replace("teste", "aaa").replace("negocial", "tecnica")
+        metas, saida = self.gerar({"teste.md": CABECALHO + CORPO, "aaa.md": tecnica + CORPO})
+        self.assertEqual([m["slug"] for m in metas], ["teste", "aaa"])
+        catalogo = json.load(open(os.path.join(saida, "index.json"), encoding="utf-8"))
+        self.assertEqual([t["slug"] for t in catalogo["trilhas"]], ["teste", "aaa"])
 
     def test_nome_do_arquivo_igual_ao_slug(self):
         # os links gerados apontam para trilhas/<slug>.md
@@ -80,7 +95,7 @@ class Geracao(unittest.TestCase):
                 self.gerar({"teste.md": CABECALHO + corpo})
             msg = str(cm.exception.code)
             self.assertIn("trilhas/teste.md", msg)
-            self.assertIn("linha 13", msg)   # 5 linhas de cabeçalho + 8 do corpo
+            self.assertIn("linha 14", msg)   # 6 linhas de cabeçalho + 8 do corpo
 
     def test_apaga_saidas_de_trilha_removida(self):
         trilhas = tempfile.mkdtemp()

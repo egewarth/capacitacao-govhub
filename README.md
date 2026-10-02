@@ -212,7 +212,8 @@ documento pode estar em várias trilhas, mas não se repete dentro da mesma.
 
 **Criar uma trilha nova:** copie `trilhas/dashboards.md` para `trilhas/<slug>.md`, troque o cabeçalho,
 liste os itens (aulas já existentes podem ser reaproveitadas; o progresso é da aula) e rode o gerador.
-A trilha aparece no catálogo da home. Veja o [ADR 0005](docs/adr/0005-varias-trilhas.md).
+O campo `categoria` do cabeçalho é `negocial` (para quem usa os dados) ou `tecnica` (para quem opera
+a plataforma): o catálogo da home mostra essa etiqueta no card e lista as negociais primeiro. Veja o [ADR 0005](docs/adr/0005-varias-trilhas.md).
 
 ### 7.3 Mudar cores, tipografia ou logotipo
 
