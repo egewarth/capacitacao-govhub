@@ -79,6 +79,12 @@ body.sem-trilha .sumario,body.sem-trilha .topo-sumario,body.sem-trilha .topo-pro
 .conteudo figure{margin:1.4em 0;text-align:center}
 .conteudo figcaption{font-size:.85rem;color:var(--text-muted);margin-top:.5em}
 .conteudo p > img:only-child{display:block;width:100%;height:auto;margin:1.2em auto}
+.conteudo .mermaid{margin:1.6em 0;text-align:center;overflow-x:auto}
+.conteudo .mermaid svg{max-width:100%;height:auto}
+/* O Mermaid dimensiona cada caixa medindo o rótulo a 15px, mas o rótulo é HTML dentro do
+   SVG e herdaria o tamanho da página — o texto estouraria a caixa. */
+.conteudo .mermaid foreignObject div,.conteudo .mermaid foreignObject span,
+.conteudo .mermaid foreignObject p{font-size:15px;line-height:1.35;margin:0}
 .msg{color:var(--text-muted)}
 
 /* Sequência da trilha */

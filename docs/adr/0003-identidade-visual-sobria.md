@@ -52,4 +52,4 @@ o nome escrito e um ícone de produto Gov Hub (variante `-sober`, em `assets/ico
   Logos e ícones são cópias; se o MIV mudar, os arquivos em `assets/logo/` e `assets/icones/` precisam
   ser trocados à mão (os ícones vêm de `GovHub-br/skills-assets`).
 
-Atualização (2026-10): o leitor não usa mais Mermaid; os diagramas são PNGs da skill `govhub-diagramas` (ADR 0003 continua valendo para o resto).
+Atualização (2026-10): os diagramas são PNGs da skill `govhub-diagramas` (ADR 0003 continua valendo para o resto). Exceção temporária: as aulas da trilha de adoção (`docs/plataforma/`) mantêm os blocos Mermaid da documentação de origem até serem convertidas; o leitor os desenha com as cores da paleta e só carrega a biblioteca quando a aula tem diagrama.

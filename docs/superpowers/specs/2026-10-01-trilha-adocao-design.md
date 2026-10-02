@@ -27,16 +27,13 @@ não orienta nenhuma decisão aqui; o padrão é o deste site.
   `index.md` → `docs/plataforma/index.md`).
 - `docs/plataforma/LEIA-ME.md`: origem, commit, licença MIT com o aviso de copyright, e as regras de
   adaptação desta spec. Não entra na trilha.
-- Diagramas em `assets/diagramas/<nome>.html|.png`, como os da trilha de dashboards, referenciados
-  da aula por caminho relativo (`../../../assets/diagramas/<nome>.png` a partir de
-  `docs/plataforma/<seção>/`).
 - Fonte da trilha em `trilhas/adocao.md`; o gerador produz `docs/trilhas/adocao.json|.md|.xmind` e
-  atualiza o catálogo. Nenhuma mudança de código é esperada.
+  atualiza o catálogo. A única mudança de código é o leitor voltar a desenhar Mermaid.
 
 ## A trilha
 
 Cabeçalho: `slug: adocao`, `titulo: Adotar o Gov Hub no seu órgão`, `descricao` de uma frase,
-`diagrama: assets/diagramas/logica-da-trilha-adocao.png` com `diagrama_alt`.
+sem `diagrama` por enquanto.
 
 | Nível | Aula (fonte em `docs/documentacao/`) | Tipo | Papel |
 |---|---|---|---|
@@ -74,11 +71,10 @@ Cabeçalho: `slug: adocao`, `titulo: Adotar o Gov Hub no seu órgão`, `descrica
 
 O texto original fica como está; muda só o que o site não mostra ou que a identidade pede.
 
-1. **Mermaid → PNG.** Cada bloco ` ```mermaid ` (21 nas aulas acima) vira um diagrama feito com a skill
-   `govhub-diagramas`, com a mesma informação, as correções de cor já usadas (claro `#F2F1F6` no
-   lugar do pêssego, decisões com contorno `#613EFF`) e texto alternativo que descreve o conteúdo,
-   como nos diagramas da trilha de dashboards. Nome do arquivo: `<seção>-<aula>[-n]`
-   (ex.: `adocao-deploy-inicial.png`). Cores fixas do original (`style … fill:`) são descartadas.
+1. **Mermaid fica, por enquanto.** Os blocos ` ```mermaid ` (21 nas aulas acima) seguem como estão; só
+   saem as linhas `style … fill:` com cores fora da paleta. A troca por PNG da skill `govhub-diagramas`
+   fica para uma etapa posterior. Para isso o leitor volta a desenhar Mermaid (código removido em
+   `3cc4d6c`), com o tema da paleta Gov Hub e carregando a biblioteca só quando a aula tem diagrama.
 2. **Caixas `!!! tipo "Título"` → citação** com o título em negrito na primeira linha
    (`> **Comece pequeno.** …`).
 3. **Sem travessão no texto corrido** (regra da identidade); troca por dois-pontos, vírgula ou ponto.
@@ -90,17 +86,15 @@ O texto original fica como está; muda só o que o site não mostra ou que a ide
 
 ## Diagrama de abertura
 
-`assets/diagramas/logica-da-trilha-adocao.html|.png`, feito com a skill: os sete níveis como etapas
-(entender → planejar → infraestrutura → deploy → primeira fonte → governança → fork), no mesmo estilo
-de "A lógica da trilha" de dashboards, com `diagrama_alt` no cabeçalho da trilha.
+Fica para a etapa dos diagramas; até lá o cabeçalho da trilha não tem `diagrama` (o campo é opcional).
 
 ## Verificação
 
 - `python3 tools/gen_roadmap.py` sem erro; o gerador já valida caminhos e repetição.
 - `node --test tests/*.test.js` e `python3 -m unittest discover -s tests -p 'test_*.py'` passando; o
   CI confere que `docs/` gerado está em dia.
-- Nenhum ` ```mermaid ` nem `!!!` restante em `docs/plataforma/`; todo `![…](…)` aponta para PNG que
-  existe.
+- Nenhum `!!!` nem `style … fill:` restante em `docs/plataforma/`.
 - No navegador (Chrome headless): catálogo com dois cards, mapa da trilha `adocao`, uma aula com
   diagrama e uma com caixa convertida, e a página de conclusão.
-- Cada PNG conferido contra o Mermaid original (mesmos nós e ligações).
+- Os diagramas Mermaid aparecem desenhados, com a paleta, e as aulas sem diagrama não baixam a
+  biblioteca.

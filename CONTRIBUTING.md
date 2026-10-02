@@ -133,7 +133,8 @@ descreve um **arranjo visual** — posição na tela, destaque, leitura — pede
 
 ### Diagramas: PNG no padrão Gov Hub, em `assets/diagramas/`
 
-As aulas **não usam Mermaid**. Cada diagrama tem dois arquivos em `assets/diagramas/`:
+Aula nova **não usa Mermaid** (a exceção temporária são as aulas de `docs/plataforma/`, copiadas da
+documentação técnica, que ainda serão convertidas). Cada diagrama tem dois arquivos em `assets/diagramas/`:
 `<nome>.html` é a fonte versionada (revisável em diff) e `<nome>.png` é a imagem que a aula mostra.
 Para criar ou regenerar, use a skill `govhub-diagramas` do plugin govhub-core; os comandos estão no
 [README, seção 7.3.1](README.md#731-diagramas). Commite sempre o `.html` e o `.png` juntos.
