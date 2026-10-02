@@ -1,12 +1,12 @@
 // Leitor da trilha (doc.html): barra lateral com os níveis, aula em Markdown e a sequência
 // anterior/próxima, sem recarregar a página. Links antigos doc.html?path=... continuam valendo.
 import { progresso } from './progresso.js';
-import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
+import { carregarCatalogo, carregarTrilha, escolherTrilha, trilhaParaDoc } from './trilha.js';
 import { montarConta, montarAviso } from './conta.js';
 import { el } from './dom.js';
 import { montarFeedback } from './feedback.js';
 import { caminhoSeguro } from './caminho.js';
-import { contar, hrefDoItem, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
+import { contar, hrefDoItem, idDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
 const feedback = montarFeedback($('feedback'), progresso);
@@ -259,7 +259,14 @@ montarConta($('conta'), progresso);
 montarAviso(progresso);
 let catalogo = null;
 try { catalogo = await carregarCatalogo(); } catch { catalogo = null; }
-slug = escolherTrilha(catalogo, lerUrl().trilha) || 'dashboards';
+{
+  // Sem ?trilha= válido (menu "Documentação", links antigos, links dentro das aulas): a trilha da
+  // última aula, se tiver este doc; senão dashboards; senão a primeira que tiver o doc.
+  const pedido = lerUrl();
+  const valida = escolherTrilha(catalogo, pedido.trilha) === pedido.trilha ? pedido.trilha : null;
+  const ultima = progresso.ultimaAula();
+  slug = valida || trilhaParaDoc(catalogo, idDoDoc(pedido.path), ultima && ultima.trilha) || 'dashboards';
+}
 try { trilha = await carregarTrilha(slug); niveis = trilha.niveis || []; } catch { trilha = null; niveis = []; }   // sem a trilha o leitor ainda abre o Markdown, só sem a barra lateral
 if (lerUrl().trilha !== slug) {
   const u = new URL(location.href);

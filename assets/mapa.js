@@ -64,7 +64,10 @@ montarAviso(progresso);
 const pedido = new URLSearchParams(location.search).get('trilha');
 let catalogo = null;
 try { catalogo = await carregarCatalogo(); } catch { catalogo = null; }
-const slug = escolherTrilha(catalogo, pedido);
+// mapa.html sem ?trilha= (ou com uma que não existe): a trilha da última aula, senão dashboards, senão a primeira.
+const ultima = progresso.ultimaAula();
+const slug = [pedido, ultima && ultima.trilha, 'dashboards']
+  .find((s) => s && escolherTrilha(catalogo, s) === s) || escolherTrilha(catalogo, null);
 let trilha = null;
 if (slug) { try { trilha = await carregarTrilha(slug); } catch { trilha = null; } }
 
@@ -77,6 +80,7 @@ if (!trilha) {
 } else {
   if (pedido !== slug) history.replaceState(null, '', 'mapa.html?trilha=' + encodeURIComponent(slug) + location.hash);
   document.title = trilha.titulo + ' · Mapa da trilha · Gov Hub';
+  $('link-mapa').href = 'mapa.html?trilha=' + encodeURIComponent(slug);
   $('trilha-titulo').textContent = trilha.titulo;
   $('trilha-descricao').textContent = trilha.descricao;
   if (trilha.diagrama) {
