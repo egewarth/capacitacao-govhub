@@ -4,7 +4,7 @@ O GovHub BR adota a **Arquitetura Medallion** (Raw → Bronze → Silver → Gol
 
 ## Diagrama de Arquitetura
 
-![Arquitetura completa da solução GovHub BR](../../assets/images/arquitetura_gov_hub_3.png)
+![Arquitetura completa da solução GovHub BR](../imagens/arquitetura_gov_hub_3.png)
 
 *Figura 1: fluxo conceitual desde os sistemas estruturantes até as camadas de dados e os serviços de consumo.*
 

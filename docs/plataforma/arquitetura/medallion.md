@@ -4,7 +4,7 @@ O GovHub BR usa a arquitetura Medallion como modelo de organização progressiva
 
 ## Camadas
 
-![Fluxo da arquitetura Medallion no GovHub BR](../../assets/images/fluxo_dados.jpg)
+![Fluxo da arquitetura Medallion no GovHub BR](../imagens/fluxo_dados.jpg)
 
 *Figura 1: evolução da qualidade entre as camadas e serviços transversais do pipeline.*
 

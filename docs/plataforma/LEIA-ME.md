@@ -18,6 +18,8 @@ O texto original foi mantido. Mudou só:
    ou o inverso no dicionário de dados), sem mudar nós nem ligações.
 3. Travessões no texto corrido viraram dois-pontos, vírgula ou ponto (regra da identidade visual).
 4. Cada aula termina com o crédito para a página oficial.
+5. As imagens que as aulas usam foram copiadas para `docs/plataforma/imagens/` (na origem ficam em
+   `docs/assets/images/`), e o caminho na aula foi ajustado.
 
 Os links não foram reescritos: os que apontam para páginas que não estão nesta pasta podem não abrir
 no site.
