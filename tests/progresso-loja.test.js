@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { criarLoja, CHAVE_ANONIMO, CHAVE_ULTIMA_ANONIMO, CHAVE_CONTA } from '../assets/progresso-loja.js';
+import { criarLoja, normalizarUltima, CHAVE_ANONIMO, CHAVE_ULTIMA_ANONIMO, CHAVE_CONTA } from '../assets/progresso-loja.js';
 
 const esperar = () => new Promise((r) => setTimeout(r, 0));
 const ANA = { uid: 'ana', nome: 'Ana Souza', email: 'ana@exemplo.gov.br', foto: null };
@@ -122,7 +122,7 @@ test('ao entrar, o progresso anônimo é somado à conta e sai do navegador', as
   });
   assert.deepEqual(loja.feitos(), { a: true, b: true });
   assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true });
-  assert.deepEqual(loja.ultimaAula(), { path: 'docs/a.md', item: 'a' });
+  assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/a.md' });
   assert.equal(arm.get(CHAVE_ANONIMO), null);
   assert.equal(arm.get(CHAVE_ULTIMA_ANONIMO), null);
   assert.equal(arm.json(CHAVE_CONTA).uid, 'ana');
@@ -133,7 +133,7 @@ test('entrar sem progresso anônimo não regrava a conta', async () => {
   const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: { b: true }, ultimaAula: { path: 'docs/b.md', item: 'b' } } } });
   assert.deepEqual(nuvem.chamadas, []);
   assert.deepEqual(loja.feitos(), { b: true });
-  assert.deepEqual(loja.ultimaAula(), { path: 'docs/b.md', item: 'b' });
+  assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/b.md' });
 });
 
 test('a primeira entrada de uma conta nova cria o documento', async () => {
@@ -211,13 +211,13 @@ test('última aula: anônima fica no navegador; com sessão vai para a nuvem', a
   const arm = armazenamentoFalso();
   const anon = criarLoja({ armazenamento: arm });
   await anon.iniciar();
-  anon.registrarUltimaAula('docs/a.md', 'a');
-  assert.deepEqual(arm.json(CHAVE_ULTIMA_ANONIMO), { path: 'docs/a.md', item: 'a' });
+  anon.registrarUltimaAula('dashboards', 'docs/a.md');
+  assert.deepEqual(arm.json(CHAVE_ULTIMA_ANONIMO), { trilha: 'dashboards', path: 'docs/a.md' });
 
   const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: {}, ultimaAula: null } } });
-  loja.registrarUltimaAula('docs/b.md', null);
+  loja.registrarUltimaAula('dashboards', 'docs/b.md');
   await esperar();
-  assert.deepEqual(nuvem.docs.ana.ultimaAula, { path: 'docs/b.md', item: null });
+  assert.deepEqual(nuvem.docs.ana.ultimaAula, { trilha: 'dashboards', path: 'docs/b.md' });
 });
 
 test('zerar com sessão apaga também na nuvem', async () => {
@@ -395,7 +395,7 @@ test('recusa de uma sessão antiga não desfaz o estado da sessão atual', async
   assert.equal(avisos.length, 0);
 });
 
-const AULA = { path: 'docs/a.md', item: 'a' };
+const AULA = { trilha: 'dashboards', path: 'docs/a.md' };
 
 test('gravação da entrada recusada devolve o progresso anônimo ao navegador', async () => {
   const { arm, nuvem, loja } = await lojaComLeituraSegura({ ana: { feitos: {}, ultimaAula: null } }, { [CHAVE_ANONIMO]: { a: true, b: true } });
@@ -474,7 +474,7 @@ test('trocar de conta mostra o estado anônimo na hora, antes de a leitura respo
 
 // Sessão restaurada: o cache da conta aparece na hora, mas a nuvem só conecta depois de baixar o
 // Firebase e de o login responder. O que a pessoa fizer nessa janela não pode se perder.
-const VELHA = { path: 'docs/velha.md', item: 'velha' };
+const VELHA = { trilha: 'dashboards', path: 'docs/velha.md' };
 
 function lojaRestaurada(docs) {
   const arm = armazenamentoFalso({ [CHAVE_CONTA]: { uid: 'ana', usuario: ANA, feitos: { a: true }, ultimaAula: VELHA } });
@@ -489,14 +489,14 @@ test('sessão restaurada: aula marcada e última aula antes de a nuvem conectar 
   const { nuvem, loja, conectarNuvem } = lojaRestaurada({ ana: { feitos: { a: true }, ultimaAula: VELHA } });
   await esperar();
   loja.alternar(['b']);
-  loja.registrarUltimaAula('docs/nova.md', 'nova');
+  loja.registrarUltimaAula('dashboards', 'docs/nova.md');
   await conectarNuvem();
   nuvem.logar(ANA);
   await esperar();
   assert.deepEqual(loja.feitos(), { a: true, b: true });
-  assert.deepEqual(loja.ultimaAula(), { path: 'docs/nova.md', item: 'nova' });
+  assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/nova.md' });
   assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true });
-  assert.deepEqual(nuvem.docs.ana.ultimaAula, { path: 'docs/nova.md', item: 'nova' });
+  assert.deepEqual(nuvem.docs.ana.ultimaAula, { trilha: 'dashboards', path: 'docs/nova.md' });
 });
 
 test('sessão restaurada: aula desmarcada antes de a nuvem conectar continua desmarcada', async () => {
@@ -516,7 +516,7 @@ test('sessão restaurada: o pendente da conta em cache é descartado se outra co
   const { arm, nuvem, loja, conectarNuvem } = lojaRestaurada({ beto: { feitos: { x: true }, ultimaAula: null } });
   await esperar();
   loja.alternar(['b']);
-  loja.registrarUltimaAula('docs/nova.md', 'nova');
+  loja.registrarUltimaAula('dashboards', 'docs/nova.md');
   await conectarNuvem();
   nuvem.logar(BETO);
   await esperar();
@@ -573,4 +573,27 @@ test('leitura da conta falha: o que foi feito antes vai para a nuvem e o resto s
   await esperar();
   assert.deepEqual(nuvem.docs.ana.feitos, { a: true, b: true, c: true });
   assert.deepEqual(loja.feitos(), { a: true, b: true, c: true });
+});
+
+test('normalizarUltima lê o formato antigo como trilha dashboards', () => {
+  assert.deepEqual(normalizarUltima({ path: 'docs/a.md', item: 'a' }), { trilha: 'dashboards', path: 'docs/a.md' });
+  assert.deepEqual(normalizarUltima({ trilha: 'outra', path: 'docs/b.md' }), { trilha: 'outra', path: 'docs/b.md' });
+  assert.equal(normalizarUltima(null), null);
+  assert.equal(normalizarUltima({}), null);
+});
+
+test('registrarUltimaAula guarda a trilha', async () => {
+  const arm = armazenamentoFalso();
+  const loja = criarLoja({ armazenamento: arm });
+  await loja.iniciar();
+  loja.registrarUltimaAula('dashboards', 'docs/a.md');
+  assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/a.md' });
+  assert.deepEqual(arm.json(CHAVE_ULTIMA_ANONIMO), { trilha: 'dashboards', path: 'docs/a.md' });
+});
+
+test('ultimaAula antiga salva no navegador é lida com a trilha dashboards', async () => {
+  const arm = armazenamentoFalso({ [CHAVE_ULTIMA_ANONIMO]: { path: 'docs/a.md', item: 'a' } });
+  const loja = criarLoja({ armazenamento: arm });
+  await loja.iniciar();
+  assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/a.md' });
 });

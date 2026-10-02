@@ -21,6 +21,12 @@ function lerJSON(armazenamento, chave, padrao) {
   }
 }
 
+// Antes de haver várias trilhas, a última aula era { path, item } e só existia a de Dashboards.
+export function normalizarUltima(valor) {
+  if (!valor || !valor.path) return null;
+  return { trilha: valor.trilha || 'dashboards', path: valor.path };
+}
+
 export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
   let nuvem = null;
   let usuario = null;
@@ -241,8 +247,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     }
   }
 
-  function registrarUltimaAula(path, item) {
-    ultimaAula = { path, item: item || null };
+  function registrarUltimaAula(trilha, path) {
+    ultimaAula = { trilha, path };
     salvarLocal();
     if (pendentes) pendentes.ultimaAula = ultimaAula;
     else if (usuario && nuvem) nuvem.gravarUltimaAula(usuario.uid, ultimaAula).catch(() => {});
@@ -271,7 +277,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     iniciar, alternar, zerar, registrarUltimaAula, entrar, sair, recarregar,
     feitos: () => feitos,
     usuario: () => usuario,
-    ultimaAula: () => ultimaAula,
+    ultimaAula: () => normalizarUltima(ultimaAula),
     nuvemDisponivel: () => !!nuvem,
     aoMudar(cb) { ouvintes.add(cb); return () => ouvintes.delete(cb); },
     aoAviso(cb) { ouvintesAviso.add(cb); return () => ouvintesAviso.delete(cb); },
