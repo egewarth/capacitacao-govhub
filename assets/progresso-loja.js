@@ -169,6 +169,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
       pendentes = null;
       armazenamento.remove(CHAVE_CONTA);
       usuario = null;
+      avaliadas = {};
       carregarAnonimo();
       emitir();
     }

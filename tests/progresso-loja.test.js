@@ -649,3 +649,37 @@ test('avaliadas vêm da conta e somem no logout', async () => {
   await loja.sair();
   assert.equal(loja.foiAvaliada('x'), false);
 });
+
+test('trocar de conta com a leitura nova pendente: avaliações da anterior não aparecem', async () => {
+  const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: {}, ultimaAula: null, avaliadas: { x: true } }, beto: { feitos: {}, ultimaAula: null } } });
+  assert.equal(loja.foiAvaliada('x'), true);
+  nuvem.segurarLeituras = true;
+  nuvem.logar(BETO);
+  await esperar();
+  assert.equal(loja.foiAvaliada('x'), false);
+});
+
+test('trocar de conta com a leitura nova recusada: avaliações da anterior não aparecem', async () => {
+  const { nuvem, loja } = await lojaLogada({ docs: { ana: { feitos: {}, ultimaAula: null, avaliadas: { x: true } } } });
+  nuvem.ler = async () => { throw new Error('offline'); };
+  nuvem.logar(BETO);
+  await esperar();
+  assert.equal(loja.foiAvaliada('x'), false);
+});
+
+test('avaliadas ficam no cache da conta e voltam numa sessão restaurada', async () => {
+  const { arm } = await lojaLogada({ docs: { ana: { feitos: {}, ultimaAula: null, avaliadas: { x: true } } } });
+  assert.deepEqual(arm.json(CHAVE_CONTA).avaliadas, { x: true });
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null, avaliadas: { x: true } } });
+  nuvem.segurarLeituras = true;
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: async () => nuvem });
+  await loja.iniciar();
+  assert.equal(loja.foiAvaliada('x'), true);
+});
+
+test('avaliar com uso inválido é recusado', async () => {
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  await assert.rejects(loja.avaliar('a', 'dashboards', { clareza: 'claro', uso: 'talvezsim' }), /resposta-invalida/);
+});
