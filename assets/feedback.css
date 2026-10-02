@@ -1,0 +1,23 @@
+/* Bloco de avaliação da aula (doc.html). Só tokens de assets/govhub.css. */
+.feedback{margin-top:20px;background:#fff;border:1px solid var(--border-soft);border-radius:var(--radius-lg);padding:22px 24px}
+.feedback[hidden]{display:none}
+.fb-titulo{margin:0 0 12px;font-size:1.15rem;font-weight:800;color:var(--dark-navy)}
+.fb-titulo:focus{outline:none}
+.fb-form{display:grid;gap:10px}
+.fb-grupo{border:0;margin:0;padding:0}
+.fb-grupo legend{font-weight:700;color:var(--dark-navy);margin-bottom:6px;padding:0}
+.fb-opcoes{display:flex;flex-wrap:wrap;gap:8px}
+.fb-opcao{position:relative}
+.fb-opcao input{position:absolute;opacity:0;width:1px;height:1px}
+.fb-opcao span{display:inline-block;border:2px solid var(--border-soft);border-radius:999px;padding:6px 14px;font-weight:600;cursor:pointer;color:var(--dark-navy)}
+.fb-opcao input:checked + span{background:var(--primary-purple);border-color:var(--primary-purple);color:#fff}
+.fb-opcao input:focus-visible + span{outline:3px solid var(--purple-700);outline-offset:2px}
+.fb-rotulo{font-weight:700;color:var(--dark-navy)}
+.fb-form textarea{font:inherit;border:1px solid var(--border-soft);border-radius:var(--radius-md);padding:10px;resize:vertical;color:var(--text-body)}
+.fb-form textarea:focus-visible{outline:3px solid var(--purple-700);outline-offset:1px}
+.fb-contador{justify-self:end;font-size:.78rem;color:var(--text-muted)}
+.fb-nota{margin:0;font-size:.82rem;color:var(--text-muted)}
+.fb-erro{margin:0;color:var(--accent-rose);font-weight:700}
+.fb-erro[hidden]{display:none}
+.fb-form .btn{justify-self:start}
+.fb-form .btn:disabled{opacity:.55;cursor:not-allowed}

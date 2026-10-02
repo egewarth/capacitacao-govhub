@@ -261,12 +261,17 @@ Google leve o progresso para qualquer computador:
 6. Publique as regras de [`firestore.rules`](firestore.rules): cole o conteúdo em
    **Firestore → Regras → Publicar**, ou rode `firebase deploy --only firestore:rules` (Firebase CLI).
    As regras de `firestore.rules` são as que estão publicadas no console; mantenha os dois sempre
-   iguais.
+   iguais. Elas incluem as da coleção `feedback` (só criar, campos validados) e precisam estar
+   publicadas **antes** do deploy do bloco de avaliação; sem elas o envio falha.
 7. Commite `assets/firebase-config.js`. Ao abrir o site, o botão **Entrar com Google** aparece na barra
    superior.
 
 Os valores de `firebaseConfig` são públicos por natureza; o que protege os dados são as regras do
 passo 6. A decisão está no [ADR 0004](docs/adr/0004-progresso-no-firebase.md).
+A avaliação anônima das aulas está no [ADR 0006](docs/adr/0006-feedback-anonimo.md).
+
+**Ler o feedback.** Console do Firebase → Firestore → coleção `feedback` (filtros por `trilha` e
+`aula`). Se precisar de planilha, exporte com `gcloud firestore export`.
 
 ---
 

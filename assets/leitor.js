@@ -4,10 +4,12 @@ import { progresso } from './progresso.js';
 import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
 import { montarConta, montarAviso } from './conta.js';
 import { el } from './dom.js';
+import { montarFeedback } from './feedback.js';
 import { caminhoSeguro } from './caminho.js';
 import { contar, hrefDoItem, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
+const feedback = montarFeedback($('feedback'), progresso);
 let niveis = [];
 let trilha = null;   // objeto da trilha aberta
 let slug = null;     // slug da trilha aberta
@@ -204,6 +206,7 @@ async function abrir({ path }, { foco = false } = {}) {
   pintarContexto();
   marcarAtiva();
   pintarRodape();
+  feedback.mostrar(null, slug);   // some enquanto a aula carrega
   const conteudo = $('conteudo');
   conteudo.setAttribute('aria-busy', 'true');
   try {
@@ -225,6 +228,7 @@ async function abrir({ path }, { foco = false } = {}) {
     const h1 = conteudo.querySelector('h1');
     document.title = (h1 ? h1.textContent : path) + ' · ' + (trilha ? trilha.titulo : 'Trilhas') + ' · Gov Hub';
     if (atual.item) progresso.registrarUltimaAula(slug, path);
+    feedback.mostrar(atual.item ? atual.item.id : null, slug);
     const alvo = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (alvo) alvo.scrollIntoView();
     else window.scrollTo(0, 0);
