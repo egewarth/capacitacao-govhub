@@ -35,13 +35,7 @@ juntos, ela pede divisão.
 
 Os dois critérios, em sequência:
 
-```mermaid
-flowchart LR
-    Q{"Como é o<br>conteúdo?"} -->|"assunto simples, indicadores<br>relacionados, visão rápida"| U["Uma única página"]
-    Q -->|"temas diferentes, públicos<br>distintos, volume elevado"| M["Múltiplas páginas"]
-    U -.->|"rolagem longa, assuntos<br>nunca lidos juntos"| M
-    M -.->|"uma pergunta única exige<br>abrir mais de uma aba"| U
-```
+![Decisão a partir de "Como é o conteúdo?": assunto simples, indicadores relacionados e visão rápida levam a uma única página; temas diferentes, públicos distintos e volume elevado levam a múltiplas páginas. De uma única página, rolagem longa e assuntos nunca lidos juntos levam a múltiplas páginas; de múltiplas páginas, uma pergunta única que exige abrir mais de uma aba leva de volta a uma única página.](../../assets/diagramas/organizacao-de-paginas-e-abas.png)
 
 ## Trade-offs e alternativas
 
