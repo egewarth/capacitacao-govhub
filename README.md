@@ -225,6 +225,21 @@ Os tipos de página não têm cor própria: se distinguem por ícone e nome. Ao 
 paleta e verifique o contraste — texto precisa de **4,5:1** e indicadores não textuais de **3:1**
 (WCAG 2.1 AA). O raciocínio completo está no [ADR 0003](docs/adr/0003-identidade-visual-sobria.md).
 
+### 7.3.1 Diagramas
+
+Os diagramas das aulas ficam em `assets/diagramas/`: `<nome>.html` é a fonte versionada e
+`<nome>.png` (3000 px de largura) é o que as aulas mostram. As aulas **não usam Mermaid**.
+
+Para regenerar, use a skill `govhub-diagramas` (`SKILL=/home/joaoegewarth/.claude/plugins/cache/govhub/govhub-core/d56397136fcf/govhub-diagramas`):
+
+```bash
+node $SKILL/scripts/inline_assets.mjs $SKILL/templates/<familia>.html assets/diagramas/<nome>.html
+node $SKILL/scripts/render.mjs assets/diagramas/<nome>.html     # gera assets/diagramas/<nome>.png
+```
+
+Regra de cor: paleta sóbria. O pêssego `#FFE7E1` do template da skill deve ser trocado por
+`#F2F1F6` em cada diagrama.
+
 ### 7.4 Arquivos gerados — não edite à mão
 
 - `docs/trilhas/*.json`, `docs/trilhas/*.md` e `docs/trilhas/*.xmind`.

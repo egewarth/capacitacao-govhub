@@ -46,9 +46,10 @@ o nome escrito e um ícone de produto Gov Hub (variante `-sober`, em `assets/ico
   informação. Quem lia o tipo pela cor da borda no mapa passa a ler a etiqueta.
 - **Contrastes:** branco sobre roxo (5,0:1), navy e `#BE006E`; navy sobre branco e `#F2F1F6`; roxo em
   texto pequeno usa `#3F28A6`. Nunca roxo sobre navy nem `#BE006E` sobre roxo.
-- **Exceções de cor literal, documentadas:** o tema do Mermaid em `assets/leitor.js` (o Mermaid não lê
-  variáveis CSS) e o painel "Tudo colorido" de `assets/ilustracoes/atencao-visual.svg`, cujas cores são
+- **Exceções de cor literal, documentadas:** o painel "Tudo colorido" de `assets/ilustracoes/atencao-visual.svg`, cujas cores são
   o conteúdo do exemplo — um painel com cores demais —, não a identidade do site.
 - **Dependências externas:** Reddit Sans vem do Google Fonts (sem internet, cai na pilha do sistema).
   Logos e ícones são cópias; se o MIV mudar, os arquivos em `assets/logo/` e `assets/icones/` precisam
   ser trocados à mão (os ícones vêm de `GovHub-br/skills-assets`).
+
+Atualização (2026-10): o leitor não usa mais Mermaid; os diagramas são PNGs da skill `govhub-diagramas` (ADR 0003 continua valendo para o resto).

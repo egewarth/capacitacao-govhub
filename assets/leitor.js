@@ -14,7 +14,6 @@ let niveis = [];
 let trilha = null;   // objeto da trilha aberta
 let slug = null;     // slug da trilha aberta
 let atual = { path: null, item: null };   // item: nó da trilha, ou null para página fora dela
-let diagramas = 0;
 
 // ---- URL e Markdown -----------------------------------------------------------
 function lerUrl() {
@@ -53,46 +52,6 @@ function corrigirLinks(raiz, path) {
     const s = img.getAttribute('src');
     if (!s || /^[a-z]+:/i.test(s) || s.startsWith('/')) return;
     img.setAttribute('src', resolver(path, s));
-  });
-}
-
-// Blocos ```mermaid viram diagramas. Sem a biblioteca (CDN bloqueado), o bloco continua
-// visível como código — o conteúdo nunca desaparece.
-function desenharDiagramas(raiz) {
-  const blocos = raiz.querySelectorAll('pre > code.language-mermaid');
-  if (!blocos.length || typeof mermaid === 'undefined') return;
-  // Cores literais da paleta de assets/govhub.css: o Mermaid não lê variáveis CSS.
-  mermaid.initialize({
-    startOnLoad: false,
-    theme: 'base',
-    fontSize: 15,
-    fontFamily: "'Reddit Sans',-apple-system,BlinkMacSystemFont,sans-serif",
-    // useMaxWidth:false — com true, o Mermaid estica diagramas pequenos até a largura
-    // da página e o texto muda de escala entre um diagrama e outro.
-    flowchart: { padding: 12, nodeSpacing: 45, rankSpacing: 55, useMaxWidth: false },
-    themeVariables: {
-      primaryColor: '#F2F1F6', primaryTextColor: '#0A005A', primaryBorderColor: '#613EFF',
-      secondaryColor: '#FFFFFF', secondaryTextColor: '#0A005A', secondaryBorderColor: '#BE006E',
-      tertiaryColor: '#FFFFFF', tertiaryBorderColor: '#E9DFFF',
-      lineColor: '#0A005A', textColor: '#2D3748', fontSize: '15px',
-    },
-  });
-  // Sem esperar a fonte, o Mermaid mede as caixas com a métrica errada e corta os rótulos.
-  // E cada diagrama é desenhado por mermaid.render: mermaid.run() desenha todos dentro do
-  // primeiro bloco quando a página tem mais de um.
-  const fontes = document.fonts && document.fonts.load
-    ? document.fonts.load("15px 'Reddit Sans'").then(() => document.fonts.ready)
-    : Promise.resolve();
-  fontes.then(() => {
-    blocos.forEach((code) => {
-      const fonte = code.textContent;
-      const div = el('div', { class: 'mermaid' });
-      code.parentNode.replaceWith(div);
-      diagramas += 1;
-      mermaid.render('diagrama-' + diagramas, fonte)
-        .then((r) => { div.innerHTML = r.svg; })
-        .catch(() => { div.replaceChildren(el('pre', {}, el('code', {}, fonte))); });
-    });
   });
 }
 
@@ -224,7 +183,6 @@ async function abrir({ path }, { foco = false } = {}) {
     conteudo.innerHTML = marked.parse(md);
     idsNosTitulos(conteudo);
     corrigirLinks(conteudo, path);
-    desenharDiagramas(conteudo);
     const h1 = conteudo.querySelector('h1');
     document.title = (h1 ? h1.textContent : path) + ' · ' + (trilha ? trilha.titulo : 'Trilhas') + ' · Gov Hub';
     if (atual.item) progresso.registrarUltimaAula(slug, path);
