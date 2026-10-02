@@ -1,14 +1,16 @@
 // Leitor da trilha (doc.html): barra lateral com os níveis, aula em Markdown e a sequência
 // anterior/próxima, sem recarregar a página. Links antigos doc.html?path=... continuam valendo.
 import { progresso } from './progresso.js';
-import { carregarTrilha } from './trilha.js';
+import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
 import { montarConta, montarAviso } from './conta.js';
 import { el } from './dom.js';
 import { caminhoSeguro } from './caminho.js';
-import { contar, hrefDoItem, idsDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
+import { contar, hrefDoItem, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
 let niveis = [];
+let trilha = null;   // objeto da trilha aberta
+let slug = null;     // slug da trilha aberta
 let atual = { path: null, item: null };   // item: nó da trilha, ou null para página fora dela
 let diagramas = 0;
 
@@ -17,21 +19,21 @@ function lerUrl() {
   const p = new URLSearchParams(location.search);
   const bruto = p.get('path') || 'README.md';
   // Só normaliza o que é seguro; o resto chega intacto a abrir(), que o recusa sem buscar.
-  return { path: caminhoSeguro(bruto) ? bruto.replace(/^\.?\/+/, '') : bruto, item: p.get('item') };
+  return { trilha: p.get('trilha'), path: caminhoSeguro(bruto) ? bruto.replace(/^\.?\/+/, '') : bruto };
 }
 function resolver(base, rel) {
   const dir = base.includes('/') ? base.slice(0, base.lastIndexOf('/') + 1) : '';
   const u = new URL(dir + rel, 'http://_/');
   return decodeURIComponent(u.pathname.slice(1));
 }
-function slug(s) {
+function slugDe(s) {
   return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 function idsNosTitulos(raiz) {
-  raiz.querySelectorAll('h1,h2,h3,h4').forEach((h) => { if (!h.id) h.id = slug(h.textContent); });
+  raiz.querySelectorAll('h1,h2,h3,h4').forEach((h) => { if (!h.id) h.id = slugDe(h.textContent); });
 }
-// Links relativos do .md apontam para outros .md: viram doc.html?path=... (e o leitor
+// Links relativos do .md apontam para outros .md: viram doc.html?trilha=...&path=... (e o leitor
 // intercepta o clique). Imagens relativas são resolvidas a partir da pasta do documento.
 function corrigirLinks(raiz, path) {
   raiz.querySelectorAll('a[href]').forEach((a) => {
@@ -43,7 +45,7 @@ function corrigirLinks(raiz, path) {
     if (alvo === '') { a.setAttribute('href', frag); return; }
     let r = resolver(path, alvo);
     if (r.endsWith('/')) r += 'index.md';
-    a.setAttribute('href', r.endsWith('.md') ? 'doc.html?path=' + r + frag : r + frag);
+    a.setAttribute('href', r.endsWith('.md') ? 'doc.html?trilha=' + encodeURIComponent(slug) + '&path=' + r + frag : r + frag);
   });
   raiz.querySelectorAll('img[src]').forEach((img) => {
     const s = img.getAttribute('src');
@@ -104,9 +106,9 @@ function montarSumario() {
         el('button', {
           class: 'check', type: 'button', 'aria-pressed': 'false',
           'aria-label': 'Marcar como concluída: ' + item.titulo,
-          onclick: () => progresso.alternar(idsDoDoc(niveis, item.doc)),
+          onclick: () => progresso.alternar([item.id]),
         }),
-        el('a', { class: 'aula-link', href: hrefDoItem(item) },
+        el('a', { class: 'aula-link', href: hrefDoItem(slug, item) },
           el('span', { class: 'aula-titulo' }, item.titulo),
           el('span', { class: 'aula-meta' },
             el('img', { src: item.icone, alt: '', width: 16, height: 16 }),
@@ -164,7 +166,7 @@ function pintarContexto() {
 function apontar(link, item) {
   link.hidden = !item;
   if (!item) return;
-  link.href = hrefDoItem(item);
+  link.href = hrefDoItem(slug, item);
   link.querySelector('.rotulo-titulo').textContent = item.titulo;
 }
 
@@ -175,21 +177,21 @@ function pintarRodape() {
   const { anterior, proxima } = vizinhos(niveis, atual.item.id);
   apontar($('aula-anterior'), anterior);
   apontar($('aula-proxima'), proxima);
-  const feita = todosFeitos(progresso.feitos(), idsDoDoc(niveis, atual.item.doc));
+  const feita = todosFeitos(progresso.feitos(), [atual.item.id]);
   const cta = $('aula-cta');
   cta.classList.toggle('feita', feita);
-  if (!feita) cta.textContent = proxima ? 'Concluir e avançar' : 'Concluir a trilha';
-  else cta.textContent = proxima ? 'Próxima aula →' : 'Ver o mapa da trilha';
+  if (!proxima) cta.textContent = 'Concluir a trilha';
+  else cta.textContent = feita ? 'Próxima aula →' : 'Concluir e avançar';
 }
 
 function aoClicarCta() {
   if (!atual.item) return;
-  const ids = idsDoDoc(niveis, atual.item.doc);
+  const ids = [atual.item.id];
   const feita = todosFeitos(progresso.feitos(), ids);
   const { proxima } = vizinhos(niveis, atual.item.id);
   if (!feita) progresso.alternar(ids);
-  if (proxima) navegar(hrefDoItem(proxima));
-  else if (feita) location.href = 'roadmap.html';
+  if (proxima) navegar(hrefDoItem(slug, proxima));
+  else location.href = 'concluida.html?trilha=' + encodeURIComponent(slug);
 }
 
 // ---- Abrir aula ---------------------------------------------------------------------
@@ -197,8 +199,8 @@ function mostrarMensagem(...partes) {
   $('conteudo').replaceChildren(el('p', { class: 'msg' }, ...partes));
 }
 
-async function abrir({ path, item }, { foco = false } = {}) {
-  atual = { path, item: localizar(niveis, path, item) };
+async function abrir({ path }, { foco = false } = {}) {
+  atual = { path, item: localizar(niveis, path) };
   pintarContexto();
   marcarAtiva();
   pintarRodape();
@@ -221,8 +223,8 @@ async function abrir({ path, item }, { foco = false } = {}) {
     corrigirLinks(conteudo, path);
     desenharDiagramas(conteudo);
     const h1 = conteudo.querySelector('h1');
-    document.title = (h1 ? h1.textContent : path) + ' · Trilha de Dashboards · Gov Hub';
-    if (atual.item) progresso.registrarUltimaAula(path, atual.item.id);
+    document.title = (h1 ? h1.textContent : path) + ' · ' + (trilha ? trilha.titulo : 'Trilhas') + ' · Gov Hub';
+    if (atual.item) progresso.registrarUltimaAula(slug, path);
     const alvo = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (alvo) alvo.scrollIntoView();
     else window.scrollTo(0, 0);
@@ -251,6 +253,8 @@ function interceptarLinks(ev) {
   if (!a || ev.defaultPrevented || ev.button !== 0 || ev.metaKey || ev.ctrlKey || ev.shiftKey || ev.altKey || a.target) return;
   const url = new URL(a.href, location.href);
   if (url.origin !== location.origin || !url.pathname.endsWith('/doc.html') || !url.searchParams.get('path')) return;
+  const outra = url.searchParams.get('trilha');
+  if (outra && outra !== slug) return;   // outra trilha: o navegador carrega a página inteira
   if (url.search === location.search && url.hash) return;   // âncora na mesma aula: o navegador rola
   ev.preventDefault();
   if (url.search === location.search) { fecharGaveta(); return; }   // aula já aberta: sem entrada duplicada no histórico
@@ -259,9 +263,7 @@ function interceptarLinks(ev) {
 
 function aoVoltar() {
   const destino = lerUrl();
-  const item = localizar(niveis, destino.path, destino.item);
-  const mesmaAula = destino.path === atual.path && (item && item.id) === (atual.item && atual.item.id);
-  if (!mesmaAula) abrir(destino);   // se só o #fragmento mudou, o navegador já rolou
+  if (destino.path !== atual.path) abrir(destino);   // se só o #fragmento mudou, o navegador já rolou
 }
 
 // ---- Gaveta (celular) -----------------------------------------------------------------
@@ -292,11 +294,17 @@ function iniciarGaveta() {
 // ---- Início ----------------------------------------------------------------------------
 montarConta($('conta'), progresso);
 montarAviso(progresso);
-try {
-  niveis = (await carregarTrilha()).niveis || [];
-} catch {
-  niveis = [];   // sem trilha.json o leitor ainda abre o Markdown, só sem a barra lateral
+let catalogo = null;
+try { catalogo = await carregarCatalogo(); } catch { catalogo = null; }
+slug = escolherTrilha(catalogo, lerUrl().trilha) || 'dashboards';
+try { trilha = await carregarTrilha(slug); niveis = trilha.niveis || []; } catch { trilha = null; niveis = []; }   // sem a trilha o leitor ainda abre o Markdown, só sem a barra lateral
+if (lerUrl().trilha !== slug) {
+  const u = new URL(location.href);
+  u.searchParams.set('trilha', slug);
+  history.replaceState(null, '', u);
 }
+$('link-mapa').href = 'mapa.html?trilha=' + encodeURIComponent(slug);
+document.querySelector('.sumario-titulo').textContent = trilha ? trilha.titulo : 'Conteúdo da trilha';
 if (!niveis.length) document.body.classList.add('sem-trilha');
 montarSumario();
 iniciarGaveta();

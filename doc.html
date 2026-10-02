@@ -19,7 +19,7 @@
   <a class="marca" href="index.html"><img src="assets/logo/logomarca-horizontal-white.svg" alt="Gov Hub" width="103" height="24"><span>Trilha de Dashboards</span></a>
   <nav class="topo-links" aria-label="Principal">
     <a href="index.html">Início</a>
-    <a href="roadmap.html">Mapa da trilha</a>
+    <a href="mapa.html?trilha=dashboards" id="link-mapa">Mapa da trilha</a>
     <a href="doc.html?path=docs/index.md">Documentação</a>
   </nav>
   <span class="topo-progresso" aria-hidden="true"><span id="topo-percentual">0%</span><span class="barra"><span id="topo-barra"></span></span></span>
@@ -43,6 +43,7 @@
   <main class="palco">
     <p class="aula-contexto" id="aula-contexto" hidden></p>
     <article class="conteudo" id="conteudo" tabindex="-1"><p class="msg">Carregando…</p></article>
+    <section class="feedback" id="feedback" aria-labelledby="feedback-titulo" hidden></section>
     <nav class="rodape-aula" id="rodape-aula" aria-label="Sequência da trilha" hidden>
       <a class="rodape-link anterior" id="aula-anterior" href="#"><span class="rotulo">← Anterior</span><span class="rotulo-titulo"></span></a>
       <button class="btn btn-cta" id="aula-cta" type="button">Concluir e avançar</button>
