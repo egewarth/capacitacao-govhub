@@ -8,13 +8,7 @@ Uma das abordagens mais usadas em dashboards modernos segue a lógica **overview
 filter → details on demand**. Ela resolve a tensão entre dois desejos legítimos e opostos: ver tudo e
 ver pouco.
 
-```mermaid
-flowchart LR
-    A(["Abre o painel"]) --> B["1. Overview<br>indicadores principais<br>tendências e consolidado"]
-    B --> C["2. Zoom e filtro<br>região, período,<br>unidade, equipe"]
-    C --> D["3. Detalhe sob demanda<br>drill-down, tabela,<br>exportação"]
-    B -.->|"telão de monitoramento:<br>ninguém clica"| E(["O painel vive<br>só neste nível"])
-```
+![Fluxo da navegação de um painel: quem abre o painel começa no 1. Overview (indicadores principais, tendências e consolidado), segue para o 2. Zoom e filtro (região, período, unidade, equipe) e depois para o 3. Detalhe sob demanda (drill-down, tabela, exportação). Uma seta tracejada sai do Overview para o caso do telão de monitoramento, onde ninguém clica e o painel vive só neste nível.](../../assets/diagramas/estrutura-de-navegacao.png)
 
 ## 1. Overview first
 
