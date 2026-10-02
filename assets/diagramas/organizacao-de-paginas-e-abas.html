@@ -172,12 +172,18 @@ svg.arrows text { font-family: var(--font); font-size: 11.5px; font-weight: 600;
   .legend .sample { width: 56px; flex: none; }
   .legend .item { white-space: nowrap; gap: 8px; }
   svg.arrows text { font-size: 21px; }
+  /* sem pêssego: claro da marca #F2F1F6 + borda roxa no losango */
+  :root { --bg-peach: #F2F1F6; }
+  .decision { position: relative; background: #613EFF; }
+  .decision::before { content: ""; position: absolute; inset: 0; background: #F2F1F6; clip-path: polygon(50% 3.5%, 96.5% 50%, 50% 96.5%, 3.5% 50%); z-index: -1; }
+  .decision { isolation: isolate; }
+  .legend .swatch--peach { background: #F2F1F6; border-color: #613EFF; }
 </style>
 </head>
 <body>
 <div class="diagram">
   <h1 class="title">Uma página ou várias?</h1>
-  <p class="subtitle">Dois critérios, em sequência, e o caminho de volta</p>
+  <p class="subtitle">Um critério de decisão e os sinais para trocar de formato</p>
 
   <div class="canvas">
     <div class="pagina">

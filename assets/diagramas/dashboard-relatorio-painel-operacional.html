@@ -161,7 +161,7 @@ svg.arrows text { font-family: var(--font); font-size: 11.5px; font-weight: 600;
   .title { font-size: 42px; }
   .subtitle { font-size: 24px; margin-top: 10px; }
   .arvore { display: grid; grid-template-columns: 330px 1fr 720px; align-items: center; }
-  .arvore .decision { width: 330px; height: 230px; font-size: 25px; grid-column: 1; grid-row: 1; }
+  .arvore .decision { width: 360px; height: 240px; font-size: 24px; padding: 0 70px; grid-column: 1; grid-row: 1; }
   .saidas { grid-column: 3; grid-row: 1; display: flex; flex-direction: column; gap: 36px; }
   .node { padding: 18px 22px; }
   .node h3 { font-size: 30px; }
@@ -172,6 +172,12 @@ svg.arrows text { font-family: var(--font); font-size: 11.5px; font-weight: 600;
   .legend .sample { width: 70px; }
   svg.arrows text { font-size: 21px; }
   .canvas { margin-top: 44px; }
+  /* sem pêssego: claro da marca #F2F1F6 + borda roxa no losango */
+  :root { --bg-peach: #F2F1F6; }
+  .decision { position: relative; background: #613EFF; }
+  .decision::before { content: ""; position: absolute; inset: 0; background: #F2F1F6; clip-path: polygon(50% 3.5%, 96.5% 50%, 50% 96.5%, 3.5% 50%); z-index: -1; }
+  .decision { isolation: isolate; }
+  .legend .swatch--peach { background: #F2F1F6; border-color: #613EFF; }
 </style>
 </head>
 <body>
