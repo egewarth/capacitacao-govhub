@@ -5,7 +5,7 @@ Estratégia de validação e monitoramento da qualidade dos dados no GovHub BR.
 ## Abordagem Multi-Camada
 
 ```mermaid
-graph LR
+graph TD
     A[Ingestão] -->|Retries, logs| B[Bronze]
     B -->|dbt tests| C[Silver]
     C -->|dbt tests + business rules| D[Gold]

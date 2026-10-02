@@ -14,7 +14,7 @@ O dicionário conceitual explica **o que os dados significam** no contexto gover
 ## Organização por Camada
 
 ```mermaid
-graph TB
+graph LR
     subgraph "Bronze (MinIO)"
         B1[raw files - JSON/CSV]
     end

@@ -32,7 +32,7 @@ OpenMetadata fornece catálogo de dados, linhagem e ownership para garantir que 
 ## Linhagem
 
 ```mermaid
-graph LR
+graph TD
     A[API TransfereGov] --> B[MinIO: bronze-transferegov]
     B --> C[silver.transferencias]
     C --> D[gold.fato_transferencias]

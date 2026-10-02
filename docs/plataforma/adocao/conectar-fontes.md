@@ -12,7 +12,7 @@ Como adicionar fontes de dados do seu órgão ao GovHub.
 ## Fluxo para Nova Fonte
 
 ```mermaid
-graph LR
+graph TD
     A[1. Identificar API/fonte] --> B[2. Criar DAG]
     B --> C[3. Criar models dbt]
     C --> D[4. Testar pipeline]

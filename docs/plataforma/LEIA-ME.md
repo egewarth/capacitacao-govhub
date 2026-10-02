@@ -14,6 +14,8 @@ O texto original foi mantido. Mudou só:
 1. As caixas `!!! tipo "Título"` do MkDocs viraram citação, com o título em negrito.
 2. As linhas `style … fill:` dos diagramas Mermaid foram removidas (cores fora da paleta). Os
    diagramas continuam em Mermaid por enquanto; serão trocados por PNG da skill `govhub-diagramas`.
+   Os diagramas largos demais para a coluna da aula mudaram de direção (horizontal para vertical,
+   ou o inverso no dicionário de dados), sem mudar nós nem ligações.
 3. Travessões no texto corrido viraram dois-pontos, vírgula ou ponto (regra da identidade visual).
 4. Cada aula termina com o crédito para a página oficial.
 

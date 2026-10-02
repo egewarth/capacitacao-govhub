@@ -14,7 +14,7 @@ Passo a passo para o primeiro deploy do GovHub BR no seu cluster.
 ## Visão Geral do Deploy
 
 ```mermaid
-graph LR
+graph TD
     A[1. Instalar Argo CD] --> B[2. Aplicar App-of-Apps]
     B --> C[3. Sync Waves deployam tudo]
     C --> D[4. Verificar serviços]
