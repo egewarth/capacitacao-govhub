@@ -27,7 +27,8 @@ OUT_DIR = os.path.join(REPO, "docs", "trilhas")
 SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 AVISO = "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao."
 CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao")
-XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa: o .xmind só muda quando o conteúdo muda
+XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa e sem compressão (ZIP_STORED): o .xmind só muda com o conteúdo e é idêntico em qualquer
+                                      # versão do zlib (a saída do deflate varia entre builds)
 
 # tipo -> (rótulo, classe CSS, pasta padrão, slug/template do esqueleto, ícone do tipo)
 # O ícone é um ícone de produto Gov Hub (variante -sober) copiado para assets/icones/:
@@ -218,7 +219,7 @@ def gen_xmind(meta, levels, caminho):
         os.remove(caminho)
     with zipfile.ZipFile(caminho, "w") as z:
         for nome, obj in (("content.json", content), ("metadata.json", metadata), ("manifest.json", manifest)):
-            z.writestr(zipfile.ZipInfo(nome, date_time=XMIND_DATA), dump(obj), compress_type=zipfile.ZIP_DEFLATED)
+            z.writestr(zipfile.ZipInfo(nome, date_time=XMIND_DATA), dump(obj), compress_type=zipfile.ZIP_STORED)
 
 
 def gen_texto(meta, levels, caminho):

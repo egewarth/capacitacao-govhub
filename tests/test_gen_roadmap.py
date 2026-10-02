@@ -1,4 +1,4 @@
-import importlib.util, json, os, tempfile, unittest
+import importlib.util, json, os, tempfile, unittest, zipfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 spec = importlib.util.spec_from_file_location("gen", os.path.join(REPO, "tools", "gen_roadmap.py"))
@@ -73,6 +73,10 @@ class Geracao(unittest.TestCase):
         _, s2 = self.gerar({"teste.md": CABECALHO + CORPO})
         self.assertEqual(open(os.path.join(s1, "teste.xmind"), "rb").read(),
                          open(os.path.join(s2, "teste.xmind"), "rb").read())
+        with zipfile.ZipFile(os.path.join(s1, "teste.xmind")) as z:
+            for info in z.infolist():
+                self.assertEqual(info.date_time, (1980, 1, 1, 0, 0, 0))
+                self.assertEqual(info.compress_type, zipfile.ZIP_STORED)
 
 
 if __name__ == "__main__":
