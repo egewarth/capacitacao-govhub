@@ -60,7 +60,8 @@ export function montarFeedback(secao, progresso) {
     if (enviada || progresso.foiAvaliada(aula)) {
       const t = titulo('Obrigado pela avaliação.');
       t.setAttribute('tabindex', '-1');
-      secao.replaceChildren(t);
+      secao.replaceChildren(el('div', { class: 'fb-obrigado' },
+        el('img', { src: 'assets/icones/heart-sober.svg', alt: '', width: '48', height: '48' }), t));
       return;
     }
     if (!progresso.usuario()) {
