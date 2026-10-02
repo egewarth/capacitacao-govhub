@@ -1,4 +1,4 @@
-# ADR 0006 — Avaliação anônima de cada aula
+# ADR 0006 — Avaliação de cada aula sem dados de identificação
 
 **Status:** aceito
 **Data:** 2026-10-01
@@ -6,7 +6,11 @@
 ## Contexto
 
 A equipe quer saber o que melhorar em cada aula. Para que a crítica seja franca, a pessoa precisa se
-sentir livre para dizer que algo ficou confuso, sem que a resposta seja ligada ao seu nome.
+sentir livre para dizer que algo ficou confuso, sem que a resposta carregue o seu nome.
+
+**O que este desenho garante:** o documento de feedback não leva nenhum dado que identifique a pessoa
+e o site nunca lê o feedback. **O que ele não garante:** anonimato diante de quem administra o
+projeto Firebase (ver Consequências).
 
 ## Decisão
 
@@ -24,11 +28,14 @@ sentir livre para dizer que algo ficou confuso, sem que a resposta seja ligada a
 
 ## Consequências
 
-- O Firestore guarda, em todo documento, metadados de criação e atualização com data e hora exatas,
-  legíveis por quem administra o projeto pela API. Como a pessoa normalmente marca a aula como feita
-  logo depois de avaliar, um administrador determinado poderia aproximar horários. O desenho reduz, mas
-  não elimina, essa possibilidade; eliminá-la exigiria um servidor que recebesse e regravasse as
-  respostas em lote.
+- **Não é anonimato diante de quem administra o projeto.** Logo depois de criar o feedback, o próprio
+  site grava `progresso/{uid}` (`avaliadas.<aula>` e `atualizadoEm`). O Firestore guarda o horário
+  exato de criação do documento de feedback (`createTime`) e o de atualização do progresso, ambos
+  legíveis por quem tem acesso administrativo ou à API do projeto. Comparando os dois, essa pessoa
+  consegue dizer quem avaliou, com alta confiança. Se os registros de auditoria de acesso a dados
+  (Data Access audit logs) do Google Cloud estiverem ativados, eles também registram o autor de cada
+  gravação. Eliminar essa ligação exigiria um servidor que recebesse as respostas e as regravasse em
+  lote, sem o vínculo com quem enviou.
 - O login obrigatório reduz spam.
 - Não é possível corrigir uma avaliação enviada.
 - A mesma pessoa pode avaliar de novo em outro dispositivo se a gravação de `avaliadas` falhar.

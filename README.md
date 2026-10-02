@@ -284,7 +284,8 @@ Google leve o progresso para qualquer computador:
 
 Os valores de `firebaseConfig` são públicos por natureza; o que protege os dados são as regras do
 passo 6. A decisão está no [ADR 0004](docs/adr/0004-progresso-no-firebase.md).
-A avaliação anônima das aulas está no [ADR 0006](docs/adr/0006-feedback-anonimo.md).
+A avaliação das aulas está no [ADR 0006](docs/adr/0006-feedback-anonimo.md): a resposta não leva
+uid, nome, e-mail nem horário, mas não é anônima diante de quem administra o projeto Firebase.
 
 **Ler o feedback.** Console do Firebase → Firestore → coleção `feedback` (filtros por `trilha` e
 `aula`). Se precisar de planilha, exporte com `gcloud firestore export`.

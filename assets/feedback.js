@@ -1,5 +1,5 @@
-// Bloco "Conte como foi esta aula" no fim de cada aula (doc.html). Exige login; a resposta é anônima
-// (ver ADR 0006). Estados: convite para entrar, formulário, enviando, obrigado, erro.
+// Bloco "Conte como foi esta aula" no fim de cada aula (doc.html). Exige login; a resposta não leva
+// uid, nome, e-mail nem horário (ver ADR 0006, que explica o limite dessa garantia). Estados: convite para entrar, formulário, enviando, obrigado, erro.
 import { el } from './dom.js';
 import { CLAREZA, USO, LIMITE_COMENTARIO } from './progresso-loja.js';
 
@@ -33,7 +33,7 @@ export function montarFeedback(secao, progresso) {
       grupo('fb-uso', 'Vai usar isso no seu trabalho?', USO, ROTULOS_USO, () => atualizar()),
       el('label', { class: 'fb-rotulo', for: 'fb-comentario' }, 'Comentário (opcional)'),
       comentario, contador,
-      el('p', { class: 'fb-nota' }, 'Sua resposta é anônima: não guardamos quem respondeu.'),
+      el('p', { class: 'fb-nota' }, 'Sua resposta não leva seu nome nem seu e-mail.'),
       erro, enviar);
     const valor = (nome) => { const m = form.querySelector(`input[name="${nome}"]:checked`); return m ? m.value : null; };
     function atualizar() { enviar.disabled = enviando || !valor('fb-clareza') || !valor('fb-uso'); }
