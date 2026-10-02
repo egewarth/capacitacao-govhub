@@ -35,14 +35,7 @@ rapidamente.
 
 O caminho completo da decisão, da pergunta até o desempate:
 
-```mermaid
-flowchart LR
-    P{"O que entender<br>em 5 segundos?"} --> F["Família do visual<br>tempo · comparação · participação · distribuição<br>relação · localização · detalhamento"]
-    F --> K["Qual KPI esse gráfico sustenta?<br>o indicador dá a leitura imediata;<br>o gráfico explica o número"]
-    K --> E{"Dois visuais<br>empatam?"}
-    E -->|não| U(["Use o que responde"])
-    E -->|sim| M(["Prefira o que exige<br>menos explicação"])
-```
+![Árvore de decisão da escolha do gráfico: a pergunta "O que entender em 5 segundos?" leva à família do visual (tempo, comparação, participação, distribuição, relação, localização ou detalhamento), depois à pergunta "Qual KPI esse gráfico sustenta?" (o indicador dá a leitura imediata; o gráfico explica o número) e ao desempate "Dois visuais empatam?". Se não, use o que responde; se sim, prefira o que exige menos explicação.](../../assets/diagramas/qual-e-o-grafico-certo.png)
 
 ### Exemplo: evolução ao longo do tempo
 
