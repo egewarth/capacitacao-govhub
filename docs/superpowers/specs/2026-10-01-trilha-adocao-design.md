@@ -65,7 +65,7 @@ sem `diagrama` por enquanto.
 | | Fork MinC (`forks/minc.md`) | reference | support |
 
 26 aulas, 13 core. Cada nível ganha uma frase de abertura escrita para este público, no estilo de
-`trilhas/dashboards.md`. A última aula core (guia de criação de fork) leva ao "Concluir a trilha".
+`trilhas/dashboards.md`. A última aula da trilha (Fork MinC) leva ao "Concluir a trilha".
 
 ## Regras de adaptação
 
