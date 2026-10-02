@@ -134,9 +134,10 @@ necessários.
 - Mapa com progresso: [mapa.html?trilha=dashboards](mapa.html?trilha=dashboards)
 - O progresso também pode ser marcado **de dentro de cada página**: quem está lendo clica em
   *Marcar como feito* e a trilha registra. É o mesmo progresso, nos dois lugares.
-- O progresso vive no navegador de quem estuda: **não sincroniza entre navegadores nem entre
-  dispositivos**, e some se os dados do site forem limpos. Persistir por pessoa exigiria login,
-  que o material não tem.
+- Sem login, o progresso vive no navegador de quem estuda: não sincroniza entre navegadores nem
+  entre dispositivos, e some se os dados do site forem limpos. O login com Google é **opcional**:
+  quem entra leva o progresso (de todas as trilhas) para qualquer computador, salvo no Firebase
+  (seção 7.6).
 - Versão em texto: [docs/trilhas/dashboards.md](docs/trilhas/dashboards.md)
 - Fonte: [trilhas/dashboards.md](trilhas/dashboards.md)
 
@@ -288,7 +289,8 @@ A avaliação das aulas está no [ADR 0006](docs/adr/0006-feedback-anonimo.md): 
 uid, nome, e-mail nem horário, mas não é anônima diante de quem administra o projeto Firebase.
 
 **Ler o feedback.** Console do Firebase → Firestore → coleção `feedback` (filtros por `trilha` e
-`aula`). Se precisar de planilha, exporte com `gcloud firestore export`.
+`aula`). Para ter uma tabela, exporte a coleção para o BigQuery (ou leia com um script pequeno usando
+o Admin SDK). `gcloud firestore export` gera um export do Firestore no Cloud Storage, não uma planilha.
 
 ---
 
