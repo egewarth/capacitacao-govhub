@@ -26,12 +26,15 @@ export function escolherTrilha(catalogo, slug) {
 
 // Trilha para abrir um doc quando o link não diz qual (doc.html?path=..., links antigos e links
 // dentro das aulas): a preferida (ex.: a da última aula), se tiver a aula; senão 'dashboards', se
-// tiver; senão a primeira do catálogo que tiver; senão o mesmo que escolherTrilha.
+// tiver; senão a primeira do catálogo que tiver. Doc fora de todas as trilhas (ex.: docs/index.md,
+// do menu "Documentação"): a preferida, se existir; senão 'dashboards'; senão a primeira.
 export function trilhaParaDoc(catalogo, id, preferida) {
   const trilhas = (catalogo && catalogo.trilhas) || [];
   const tem = (slug) => trilhas.some((t) => t.slug === slug && (t.aulas || []).includes(id));
   if (preferida && tem(preferida)) return preferida;
   if (tem('dashboards')) return 'dashboards';
   const primeira = trilhas.find((t) => (t.aulas || []).includes(id));
-  return primeira ? primeira.slug : escolherTrilha(catalogo, preferida);
+  if (primeira) return primeira.slug;
+  if (escolherTrilha(catalogo, preferida) === preferida) return preferida;
+  return escolherTrilha(catalogo, 'dashboards');
 }

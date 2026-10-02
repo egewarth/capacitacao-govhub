@@ -45,10 +45,12 @@ test('trilhaParaDoc: fora de dashboards, a primeira trilha (ordem do catálogo) 
   assert.equal(trilhaParaDoc(catalogo, 'explicacao/so-em-duas', 'omega'), 'omega');
 });
 
-test('trilhaParaDoc: aula em nenhuma trilha cai em escolherTrilha', () => {
-  assert.equal(trilhaParaDoc(catalogo, 'explicacao/solta'), 'analise');
-  assert.equal(trilhaParaDoc(catalogo, 'explicacao/solta', 'zeta'), 'zeta');
-  assert.equal(trilhaParaDoc(catalogo, 'explicacao/solta', 'nao-existe'), 'analise');
+test('trilhaParaDoc: doc em nenhuma trilha (ex.: docs/index.md) vai para a preferida, senão dashboards, senão a primeira', () => {
+  assert.equal(trilhaParaDoc(catalogo, 'index'), 'dashboards');
+  assert.equal(trilhaParaDoc(catalogo, 'index', 'zeta'), 'zeta');
+  assert.equal(trilhaParaDoc(catalogo, 'index', 'nao-existe'), 'dashboards');
+  const semDashboards = { trilhas: catalogo.trilhas.filter((t) => t.slug !== 'dashboards') };
+  assert.equal(trilhaParaDoc(semDashboards, 'index'), 'analise');
 });
 
 test('trilhaParaDoc: catálogo nulo dá null; trilha sem lista de aulas não quebra', () => {
