@@ -255,9 +255,10 @@ function interceptarLinks(ev) {
   if (url.origin !== location.origin || !url.pathname.endsWith('/doc.html') || !url.searchParams.get('path')) return;
   const outra = url.searchParams.get('trilha');
   if (outra && outra !== slug) return;   // outra trilha: o navegador carrega a página inteira
-  if (url.search === location.search && url.hash) return;   // âncora na mesma aula: o navegador rola
+  const mesmaAula = url.searchParams.get('path') === new URLSearchParams(location.search).get('path');   // a ordem dos parâmetros não importa
+  if (mesmaAula && url.hash) return;   // âncora na mesma aula: o navegador rola
   ev.preventDefault();
-  if (url.search === location.search) { fecharGaveta(); return; }   // aula já aberta: sem entrada duplicada no histórico
+  if (mesmaAula) { fecharGaveta(); return; }   // aula já aberta: sem entrada duplicada no histórico
   navegar(url.href);
 }
 
@@ -300,7 +301,9 @@ slug = escolherTrilha(catalogo, lerUrl().trilha) || 'dashboards';
 try { trilha = await carregarTrilha(slug); niveis = trilha.niveis || []; } catch { trilha = null; niveis = []; }   // sem a trilha o leitor ainda abre o Markdown, só sem a barra lateral
 if (lerUrl().trilha !== slug) {
   const u = new URL(location.href);
-  u.searchParams.set('trilha', slug);
+  const resto = new URLSearchParams(u.search);
+  resto.delete('trilha');
+  u.search = new URLSearchParams({ trilha: slug, ...Object.fromEntries(resto) }).toString();   // trilha antes de path, como nos links gerados
   history.replaceState(null, '', u);
 }
 $('link-mapa').href = 'mapa.html?trilha=' + encodeURIComponent(slug);
