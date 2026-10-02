@@ -1,4 +1,4 @@
-// Monta elementos sem innerHTML: títulos e nomes vêm de dados (ROADMAP.md, conta Google) e são
+// Monta elementos sem innerHTML: títulos e nomes vêm de dados (trilhas/*.md, conta Google) e são
 // texto, não HTML.
 export function el(tag, attrs = {}, ...filhos) {
   const no = document.createElement(tag);

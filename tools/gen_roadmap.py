@@ -19,7 +19,7 @@ Todo .md referenciado que ainda não existe ganha um esqueleto (nunca se sobresc
 
 Uso:  python3 tools/gen_roadmap.py
 """
-import re, os, json, zipfile, shutil
+import re, os, json, zipfile
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TRILHAS_DIR = os.path.join(REPO, "trilhas")
@@ -158,7 +158,7 @@ def validar_repetidos(levels, origem):
             vistos[it["doc"]] = lv["num"]
 
 
-def trilha_json(meta, levels):
+def json_da_trilha(meta, levels):
     niveis = []
     for lv in levels:
         itens = []
@@ -288,7 +288,7 @@ def gerar(trilhas_dir, out_dir):
     os.makedirs(out_dir, exist_ok=True)
     catalogo = []
     for meta, levels, _dropped, _origem in trilhas:
-        dados = trilha_json(meta, levels)
+        dados = json_da_trilha(meta, levels)
         escrever_json(os.path.join(out_dir, meta["slug"] + ".json"), dados)
         gen_texto(meta, levels, os.path.join(out_dir, meta["slug"] + ".md"))
         gen_xmind(meta, levels, os.path.join(out_dir, meta["slug"] + ".xmind"))
@@ -307,8 +307,6 @@ def main():
     for meta, levels, _d, _o in trilhas:          # esqueletos antes dos JSONs, como sempre
         criados[meta["slug"]] = scaffold_missing(levels)
     gerar(TRILHAS_DIR, OUT_DIR)
-    # TEMPORÁRIO até a Task 5: as páginas atuais ainda leem docs/trilhas/trilha.json
-    shutil.copyfile(os.path.join(OUT_DIR, "dashboards.json"), os.path.join(OUT_DIR, "trilha.json"))
 
     for meta, levels, dropped, origem in trilhas:
         aulas = sum(len(lv["items"]) for lv in levels)
