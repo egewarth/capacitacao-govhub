@@ -13,7 +13,7 @@ propósito.
 | [Pesquisa](pesquisa/index.md) | comparar | você precisa decidir entre alternativas |
 
 A ordem recomendada de leitura está na [trilha](trilhas/index.md) — ou na
-[versão visual](../roadmap.html).
+[versão visual](../mapa.html?trilha=dashboards).
 
 ## Decisões registradas
 
