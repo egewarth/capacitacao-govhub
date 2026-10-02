@@ -1,9 +1,11 @@
+---
+slug: dashboards
+titulo: Dashboards no Gov Hub
+descricao: Do "por que um dashboard" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.
+---
 # Trilha de aprendizagem — Dashboards no GovHub
 
-> **Fonte única da trilha.** Edite **apenas este arquivo** para evoluir o conteúdo e depois rode
-> `python3 tools/gen_roadmap.py`. Ele regenera: `roadmap.html` (visual),
-> `roadmap-dashboards.xmind` (mapa mental) e `docs/trilhas/index.md` (versão em texto).
-> **Não edite esses três à mão** — suas alterações serão sobrescritas.
+> **Fonte única da trilha.** Edite **apenas este arquivo** e rode `python3 tools/gen_roadmap.py`. Ele regenera `docs/trilhas/dashboards.json` (lido pelo mapa, pelo leitor e pelo catálogo), `docs/trilhas/dashboards.md` (versão em texto) e `docs/trilhas/dashboards.xmind` (mapa mental). Um mesmo documento não pode aparecer duas vezes nesta trilha.
 >
 > **Formato do item:** `` - [tipo] **Título** — papel — `caminho/para/doc.md` ``
 > &nbsp;&nbsp;• **tipo**: `tutorial` · `how-to` · `reference` · `explanation` · `challenge` · `research`
@@ -11,7 +13,6 @@
 >
 > **Cadência:** faça os itens **core** de cada nível, de cima para baixo; **support/optional/advanced**
 > ficam para quando forem necessários. Para reordenar, mova linhas; para incluir, copie uma linha.
-> Vários itens podem apontar para o mesmo documento de propósito.
 >
 > A trilha segue a progressão **"por quê" → "o quê" → "como"**: fundamentos conceituais, princípios
 > transversais (design, acessibilidade, arquitetura da informação), execução técnica na ferramenta,

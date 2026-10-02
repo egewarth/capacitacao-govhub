@@ -1,7 +1,7 @@
 name: Publicar no GitHub Pages
 
 # O site é estático: não há build. O pipeline existe para garantir que o que vai
-# ao ar corresponde ao ROADMAP.md — a fonte única da trilha.
+# ao ar corresponde a trilhas/ — a fonte das trilhas.
 
 on:
   push:
@@ -36,18 +36,20 @@ jobs:
       - name: Testes do progresso e da trilha
         run: node --test tests/*.test.js
 
-      - name: Regenerar a partir do ROADMAP.md
+      - name: Testes do gerador
+        run: python3 -m unittest discover -s tests -p 'test_*.py'
+
+      - name: Regenerar as trilhas
         run: python3 tools/gen_roadmap.py
 
       - name: Conferir se os arquivos gerados estão em dia
         run: |
-          # O .xmind fica de fora: o zip carrega carimbo de tempo e muda a cada
-          # execução, mesmo sem mudança de conteúdo.
-          pendente=$(git status --porcelain --untracked-files=all -- roadmap.html index.html docs/)
+          # O .xmind é determinístico (data fixa no zip) e fica em docs/trilhas/.
+          pendente=$(git status --porcelain --untracked-files=all -- docs/)
           if [ -n "$pendente" ]; then
-            echo "::error::Rodar 'python3 tools/gen_roadmap.py' mudou arquivos versionados — o ROADMAP.md foi editado sem regenerar, ou falta commitar o esqueleto de uma página nova."
+            echo "::error::Rodar 'python3 tools/gen_roadmap.py' mudou arquivos versionados — uma trilha foi editada sem regenerar, ou falta commitar o esqueleto de uma página nova."
             echo "$pendente"
-            git --no-pager diff -- roadmap.html index.html docs/
+            git --no-pager diff -- docs/
             exit 1
           fi
           echo "Arquivos gerados em dia."

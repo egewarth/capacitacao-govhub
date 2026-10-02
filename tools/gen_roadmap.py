@@ -1,31 +1,33 @@
 #!/usr/bin/env python3
 """
-Gera os artefatos da trilha a partir da fonte única ROADMAP.md.
+Gera os artefatos de todas as trilhas a partir de trilhas/*.md.
 
-Etapas:
-  1. Lê e valida ROADMAP.md (tipos/papéis).
-  2. Cria um esqueleto para todo .md referenciado que ainda não existe (nunca sobrescreve).
-  3. Regenera: roadmap.html, roadmap-dashboards.xmind, docs/trilhas/index.md e
-     docs/trilhas/trilha.json (índice que a página de conteúdo usa para marcar 'feito').
-     Cada conceito abre pelo visualizador doc.html (Markdown -> HTML).
+Entrada: cada trilhas/<slug>.md começa com um cabeçalho `---` (slug, titulo, descricao
+e, opcionalmente, diagrama + diagrama_alt) seguido do corpo em Markdown com níveis
+(`## Nível N · Título`) e itens (`- [tipo] **Título** — papel — `docs/....md``).
 
-Caminhos repetidos são permitidos (vários nós da trilha podem apontar para o mesmo documento);
-os ids dos nós são tornados únicos automaticamente para que o progresso continue por nó.
+Saídas, em docs/trilhas/:
+  <slug>.json   a trilha para o mapa, o leitor e o catálogo
+  <slug>.md     a versão em texto
+  <slug>.xmind  o mapa mental (determinístico: data fixa no zip)
+  index.json    o catálogo das trilhas (ordem de slug)
+  index.md      o catálogo em texto
+
+Regra de ids: id da aula = caminho do doc sem `docs/` e sem `.md`. Vale em todas as
+trilhas e é a chave do progresso; por isso um doc não pode se repetir na mesma trilha.
+Todo .md referenciado que ainda não existe ganha um esqueleto (nunca se sobrescreve).
 
 Uso:  python3 tools/gen_roadmap.py
 """
-import re, os, json, zipfile, html as htmlmod
-from urllib.parse import quote
+import re, os, json, zipfile, shutil
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SRC          = os.path.join(REPO, "ROADMAP.md")
-OUT_HTML     = os.path.join(REPO, "roadmap.html")
-OUT_XMIND    = os.path.join(REPO, "roadmap-dashboards.xmind")
-OUT_TRILHAS  = os.path.join(REPO, "docs", "trilhas", "index.md")
-OUT_INDEX    = os.path.join(REPO, "index.html")
-OUT_TRILHA_JSON = os.path.join(REPO, "docs", "trilhas", "trilha.json")
-PROGRESS_KEY = "govhub-dashboards-roadmap-v1"   # mesma chave em roadmap.html e doc.html
-IDX_END      = "<!-- LEVELS:END -->"
+TRILHAS_DIR = os.path.join(REPO, "trilhas")
+OUT_DIR = os.path.join(REPO, "docs", "trilhas")
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+AVISO = "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao."
+CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao")
+XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa: o .xmind só muda quando o conteúdo muda
 
 # tipo -> (rótulo, classe CSS, pasta padrão, slug/template do esqueleto, ícone do tipo)
 # O ícone é um ícone de produto Gov Hub (variante -sober) copiado para assets/icones/:
@@ -44,10 +46,6 @@ SUPPORT_ROLES = ("support", "optional")
 
 ITEM_RE  = re.compile(r'^- \[([^\]]+)\]\s+\*\*(.+?)\*\*\s+—\s+(.+?)\s+—\s+`([^`]+)`\s*$')
 LEVEL_RE = re.compile(r'^##\s+Nível\s+(\d+)\s+·\s+(.+)$')
-
-START_LINE = "<!-- ROADMAP:START · gerado por tools/gen_roadmap.py a partir de ROADMAP.md · NÃO EDITE À MÃO -->"
-END_LINE   = "<!-- ROADMAP:END -->"
-
 
 def parse(lines):
     levels, cur, dropped = [], None, []
@@ -76,7 +74,7 @@ def parse(lines):
             # acumula o parágrafo de abertura do nível até o primeiro item
             cur["desc"] = (cur["desc"] + " " + s).strip()
     if not levels:
-        raise SystemExit("Nenhum nível encontrado em ROADMAP.md")
+        raise SystemExit("Nenhum nível encontrado")
     return levels, dropped
 
 
@@ -118,93 +116,74 @@ def data_id(doc):
     return d
 
 
-def node_ids(levels):
-    """Id de cada nó, na ordem da trilha: o caminho sem docs/ e .md, com --N nas repetições.
 
-    É a chave do progresso (localStorage e Firestore) — mudar esta regra apaga o
-    progresso de quem já marcou aulas.
-    """
-    seen, ids = {}, []
+def ler_cabecalho(texto, origem):
+    """Lê o bloco `---` do topo (linhas `chave: valor`). Devolve (meta, linhas do corpo)."""
+    linhas = texto.split("\n")
+    if not linhas or linhas[0].strip() != "---":
+        raise SystemExit("%s: falta o cabeçalho (--- slug, titulo, descricao ---) no topo" % origem)
+    meta, fim = {}, None
+    for i in range(1, len(linhas)):
+        l = linhas[i].strip()
+        if l == "---":
+            fim = i
+            break
+        if not l:
+            continue
+        if ":" not in l:
+            raise SystemExit("%s: linha de cabeçalho inválida: %r" % (origem, linhas[i]))
+        chave, valor = l.split(":", 1)
+        meta[chave.strip()] = valor.strip()
+    if fim is None:
+        raise SystemExit("%s: cabeçalho sem o --- de fechamento" % origem)
+    for campo in CAMPOS_OBRIGATORIOS:
+        if not meta.get(campo):
+            raise SystemExit("%s: cabeçalho sem %r" % (origem, campo))
+    if not SLUG_RE.match(meta["slug"]):
+        raise SystemExit("%s: slug inválido %r (use letras minúsculas, números e hífen)" % (origem, meta["slug"]))
+    if bool(meta.get("diagrama")) != bool(meta.get("diagrama_alt")):
+        raise SystemExit("%s: diagrama e diagrama_alt andam juntos" % origem)
+    return meta, linhas[fim + 1:]
+
+
+def validar_repetidos(levels, origem):
+    """O id da aula é o caminho do doc: o mesmo doc duas vezes na trilha teria um só progresso."""
+    vistos = {}
     for lv in levels:
         for it in lv["items"]:
-            base = data_id(it["doc"])
-            seen[base] = seen.get(base, 0) + 1
-            ids.append(base if seen[base] == 1 else "%s--%d" % (base, seen[base]))
-    return ids
+            if it["doc"] in vistos:
+                raise SystemExit("%s: %s aparece duas vezes na trilha (níveis %d e %d)"
+                                 % (origem, it["doc"], vistos[it["doc"]], lv["num"]))
+            vistos[it["doc"]] = lv["num"]
 
 
-def viewer(doc, node_id=None):
-    """Link para o leitor. O id do nó situa a posição quando o documento se repete na trilha."""
-    url = "doc.html?path=" + doc
-    return url + "&item=" + quote(node_id, safe="") if node_id else url
+def trilha_json(meta, levels):
+    niveis = []
+    for lv in levels:
+        itens = []
+        for it in lv["items"]:
+            label, _cls, _pasta, slug_tipo, icone = TYPE_INFO[it["type"]]
+            itens.append({
+                "id": data_id(it["doc"]), "titulo": it["title"], "doc": it["doc"],
+                "tipo": slug_tipo, "tipo_nome": label,
+                "papel": it["role"], "papel_nome": ROLE_DISPLAY[it["role"]],
+                "icone": icone,
+            })
+        niveis.append({"numero": lv["num"], "titulo": lv["title"], "descricao": lv["desc"], "itens": itens})
+    dados = {"_aviso": AVISO, "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"]}
+    if meta.get("diagrama"):
+        dados["diagrama"] = meta["diagrama"]
+        dados["diagrama_alt"] = meta["diagrama_alt"]
+    dados["niveis"] = niveis
+    return dados
 
 
-# ----------------------------- roadmap.html -----------------------------
-def gen_html(levels):
-    esc = lambda t: htmlmod.escape(t, quote=False)
-    escq = lambda t: htmlmod.escape(t, quote=True)   # para valores de atributo
-    ids = iter(node_ids(levels))
-
-    def node(it):
-        node_id = next(ids)
-        label, cls, _f, _t, icone = TYPE_INFO[it["type"]]
-        role = it["role"]
-        classes = ["node", cls]
-        if role in SUPPORT_ROLES:
-            classes.append("support")
-        if role == "capstone":
-            classes.append("capstone")
-        if role == "advanced":
-            classes.append("advanced")
-        # O título vem antes dos metadados: é o que se procura ao varrer a lista.
-        # O botão carrega nome acessível próprio — "botão" sozinho não diz o que faz.
-        # O tipo é ícone + nome (ADR 0003): a distinção não depende de cor.
-        return ('      <div class="%s" data-id="%s">'
-                '<button class="check" type="button" aria-pressed="false" aria-label="%s"></button>'
-                '<div class="node-body">'
-                '<a class="node-title" href="%s">%s</a>'
-                '<span class="meta"><span class="tag-tipo"><img src="%s" alt="" width="18" height="18">%s</span>'
-                '<span class="role">%s</span></span>'
-                '</div></div>'
-                % (" ".join(classes), esc(node_id),
-                   escq("Marcar como concluído: " + it["title"]),
-                   escq(viewer(it["doc"], node_id)), esc(it["title"]), icone, esc(label),
-                   ROLE_DISPLAY[role]))
-
-    def level(lv):
-        nodes = "\n".join(node(it) for it in lv["items"])
-        # h2 de verdade: numa página de 44 itens, pular de nível em nível é o recurso
-        # mais usado por quem navega com leitor de tela. O número fica no círculo
-        # (decorativo) e entra no texto do heading de forma invisível.
-        return ('  <div class="level">\n'
-                '    <div class="milestone" id="nivel-%d"><span class="num" aria-hidden="true">%d</span>\n'
-                '      <div><h2><span class="sr-only">Nível %d · </span>%s</h2>\n'
-                '      <p>%s</p></div></div>\n'
-                '    <div class="nodes">\n%s\n    </div>\n'
-                '  </div>' % (lv["num"], lv["num"], lv["num"], esc(lv["title"]),
-                              esc(lv["desc"]), nodes))
-
-    def atalhos(levels):
-        """Índice dos níveis — a trilha é uma rolagem longa e tende a crescer."""
-        links = "\n".join(
-            '      <a href="#nivel-%d"><b>%d</b> %s</a>' % (lv["num"], lv["num"], esc(lv["title"]))
-            for lv in levels)
-        return ('  <nav class="atalhos" aria-label="Níveis da trilha">\n'
-                '    <span class="atalhos-rot">Ir para:</span>\n'
-                '    <div class="atalhos-lista">\n%s\n    </div>\n  </nav>' % links)
-
-    body = atalhos(levels) + "\n\n" + "\n\n".join(level(lv) for lv in levels)
-    html = open(OUT_HTML, encoding="utf-8").read()
-    if "<!-- ROADMAP:START" not in html or END_LINE not in html:
-        raise SystemExit("Marcadores ROADMAP:START/END não encontrados em roadmap.html")
-    pre = html.split("<!-- ROADMAP:START", 1)[0]
-    post = html.split(END_LINE, 1)[1]
-    open(OUT_HTML, "w", encoding="utf-8").write(pre + START_LINE + "\n\n" + body + "\n\n  " + END_LINE + post)
-    return sum(len(lv["items"]) for lv in levels)
+def escrever_json(caminho, dados):
+    with open(caminho, "w", encoding="utf-8") as f:
+        f.write(json.dumps(dados, ensure_ascii=False, indent=2) + "\n")
 
 
-# ----------------------------- roadmap-dashboards.xmind -----------------------------
-def gen_xmind(levels):
+def gen_xmind(meta, levels, caminho):
     _c = [0]
     def nid():
         _c[0] += 1
@@ -225,7 +204,7 @@ def gen_xmind(levels):
         kids = [topic(it["title"], role=ROLE_DISPLAY[it["role"]], note=it["doc"]) for it in lv["items"]]
         level_topics.append(topic("Nível %d · %s" % (lv["num"], lv["title"]), note=lv["desc"], children=kids))
 
-    root = topic("GovHub\nTrilha de capacitação em Dashboards",
+    root = topic(meta["titulo"],
                  note="Faça os itens essenciais de cada nível primeiro, de cima para baixo; "
                       "os itens de apoio e opcionais vêm depois.",
                  children=level_topics)
@@ -235,135 +214,114 @@ def gen_xmind(levels):
     manifest = {"file-entries": {"content.json": {}, "metadata.json": {}}}
 
     dump = lambda o: json.dumps(o, ensure_ascii=False).encode("utf-8")
-    if os.path.exists(OUT_XMIND):
-        os.remove(OUT_XMIND)
-    with zipfile.ZipFile(OUT_XMIND, "w", zipfile.ZIP_DEFLATED) as z:
-        z.writestr("content.json", dump(content))
-        z.writestr("metadata.json", dump(metadata))
-        z.writestr("manifest.json", dump(manifest))
+    if os.path.exists(caminho):
+        os.remove(caminho)
+    with zipfile.ZipFile(caminho, "w") as z:
+        for nome, obj in (("content.json", content), ("metadata.json", metadata), ("manifest.json", manifest)):
+            z.writestr(zipfile.ZipInfo(nome, date_time=XMIND_DATA), dump(obj), compress_type=zipfile.ZIP_DEFLATED)
 
 
-# ----------------------------- docs/trilhas/index.md -----------------------------
-def gen_trilhas(levels):
+def gen_texto(meta, levels, caminho):
     def line(it):
         label = TYPE_INFO[it["type"]][0]
         rel   = "../" + (it["doc"][len("docs/"):] if it["doc"].startswith("docs/") else it["doc"])
         role  = ("**%s**" % ROLE_DISPLAY[it["role"]]) if it["role"] in ("core", "capstone") else ROLE_DISPLAY[it["role"]]
         return "- [%s](%s) — *%s* · %s" % (it["title"], rel, label, role)
 
-    out = ["# Trilha de aprendizagem\n",
-           "A cadência recomendada: por onde começar e para onde ir. Faça os itens **essenciais** de",
-           "cada nível primeiro, de cima para baixo; os de **apoio/opcionais** ficam para depois.\n",
-           "> Versão visual (estilo roadmap.sh, com progresso): **[roadmap.html](../../roadmap.html)**",
-           "> Gerado a partir de **[ROADMAP.md](../../ROADMAP.md)** por `tools/gen_roadmap.py` — não edite à mão.\n",
-           "---\n", "## Comece por aqui\n"]
+    out = ["# %s\n" % meta["titulo"], meta["descricao"] + "\n",
+           "> Versão visual, com progresso: **[mapa da trilha](../../mapa.html?trilha=%s)**" % meta["slug"],
+           "> Gerado a partir de **[trilhas/%s.md](../../trilhas/%s.md)** por `tools/gen_roadmap.py` — não edite à mão.\n"
+           % (meta["slug"], meta["slug"]),
+           "---\n"]
     for lv in levels:
         out.append("### Nível %d · %s" % (lv["num"], lv["title"]))
         out.append("*%s*" % lv["desc"])
         for it in lv["items"]:
             out.append(line(it))
         out.append("")
-    out.append("## Pronto para publicar dashboards no GovHub")
-    open(OUT_TRILHAS, "w", encoding="utf-8").write("\n".join(out) + "\n")
+    with open(caminho, "w", encoding="utf-8") as f:
+        f.write("\n".join(out) + "\n")
 
 
-def gen_trilha_json(levels):
-    """Índice da trilha consumido pelo leitor (doc.html), pelo mapa e pela página inicial.
-
-    `niveis` é a trilha na ordem do ROADMAP.md: monta a barra lateral do leitor e a
-    sequência anterior/próxima. `documentos` responde "quais nós apontam para este .md"
-    — um documento pode aparecer em mais de um nó, daí `ids` ser uma lista.
-    """
-    ids = iter(node_ids(levels))
-    docs, ordem, niveis = {}, [], []
-    for lv in levels:
-        itens = []
-        for it in lv["items"]:
-            node_id = next(ids)
-            label, _cls, _folder, slug, icone = TYPE_INFO[it["type"]]
-            itens.append({
-                "id": node_id, "titulo": it["title"], "doc": it["doc"],
-                "tipo": slug, "tipo_nome": label,
-                "papel": it["role"], "papel_nome": ROLE_DISPLAY[it["role"]],
-                "icone": icone,
-            })
-            if it["doc"] not in docs:
-                docs[it["doc"]] = {
-                    "doc": it["doc"], "ids": [], "titulo": it["title"],
-                    "tipo": label, "papel": ROLE_DISPLAY[it["role"]],
-                    "nivel": lv["num"], "nivel_titulo": lv["title"],
-                }
-                ordem.append(it["doc"])
-            docs[it["doc"]]["ids"].append(node_id)
-        niveis.append({"numero": lv["num"], "titulo": lv["title"],
-                       "descricao": lv["desc"], "itens": itens})
-
-    dados = {
-        "_aviso": "Gerado por tools/gen_roadmap.py a partir de ROADMAP.md - nao edite a mao.",
-        "chave_progresso": PROGRESS_KEY,
-        "niveis": niveis,
-        "documentos": [docs[d] for d in ordem],
-    }
-    open(OUT_TRILHA_JSON, "w", encoding="utf-8").write(
-        json.dumps(dados, ensure_ascii=False, indent=2) + "\n")
-    return len(ordem)
-
-
-def gen_index(levels):
-    """Preenche a região LEVELS do index.html com um card por nível (se houver marcadores)."""
-    esc = lambda t: htmlmod.escape(t, quote=False)
-    cards = "\n".join(
-        '    <div class="card"><h4>Nível %d · %s</h4><p>%s</p></div>'
-        % (lv["num"], esc(lv["title"]), esc(lv["desc"])) for lv in levels)
-    html = open(OUT_INDEX, encoding="utf-8").read()
-    if "<!-- LEVELS:START" not in html or IDX_END not in html:
-        return False
-    pre = html.split("<!-- LEVELS:START", 1)[0]
-    post = html.split(IDX_END, 1)[1]
-    start = "<!-- LEVELS:START · gerado a partir de ROADMAP.md por tools/gen_roadmap.py · não edite à mão -->"
-    open(OUT_INDEX, "w", encoding="utf-8").write(pre + start + "\n" + cards + "\n  " + IDX_END + post)
-    return True
+def gen_catalogo_texto(metas_e_levels, caminho):
+    out = ["# Trilhas\n"]
+    for meta, _levels in metas_e_levels:
+        out.append("- [%s](%s.md) — %s" % (meta["titulo"], meta["slug"], meta["descricao"]))
+    with open(caminho, "w", encoding="utf-8") as f:
+        f.write("\n".join(out) + "\n")
 
 
 def warnings(levels):
     msgs = []
-    paths = [it["doc"] for lv in levels for it in lv["items"]]
-    for p in sorted(set(x for x in paths if paths.count(x) > 1)):
-        msgs.append("caminho referenciado %dx (permitido): %s" % (paths.count(p), p))
     nums = [lv["num"] for lv in levels]
     for n in sorted(set(x for x in nums if nums.count(x) > 1)):
         msgs.append("número de nível duplicado: %d" % n)
     return msgs
 
 
-def main():
-    lines = open(SRC, encoding="utf-8").read().split("\n")
-    levels, dropped = parse(lines)
-    created = scaffold_missing(levels)
-    total = gen_html(levels)
-    gen_xmind(levels)
-    gen_trilhas(levels)
-    docs_json = gen_trilha_json(levels)
-    idx = gen_index(levels)
+def carregar(trilhas_dir):
+    """Lê e valida todas as trilhas. Devolve [(meta, levels, dropped, origem)] ordenado por slug."""
+    trilhas = []
+    for nome in sorted(os.listdir(trilhas_dir)):
+        if not nome.endswith(".md"):
+            continue
+        origem = os.path.join("trilhas", nome)
+        with open(os.path.join(trilhas_dir, nome), encoding="utf-8") as f:
+            meta, corpo = ler_cabecalho(f.read(), origem)
+        levels, dropped = parse(corpo)
+        validar_repetidos(levels, origem)
+        trilhas.append((meta, levels, dropped, origem))
+    slugs = [m["slug"] for m, _l, _d, _o in trilhas]
+    repetidos = sorted(set(s for s in slugs if slugs.count(s) > 1))
+    if repetidos:
+        raise SystemExit("slug repetido entre trilhas: %s" % ", ".join(repetidos))
+    if not trilhas:
+        raise SystemExit("nenhuma trilha em %s" % trilhas_dir)
+    trilhas.sort(key=lambda t: t[0]["slug"])
+    return trilhas
 
-    print("Gerado a partir de ROADMAP.md  (níveis: %d | itens: %d)" % (len(levels), total))
-    print("região de níveis do index.html: %s" % ("atualizada" if idx else "sem marcadores, ignorada"))
-    print("índice da trilha (botão Feito): %d documento(s)" % docs_json)
-    if dropped:
-        print("\nAVISO: %d linha(s) de bullet IGNORADA(S) — não são itens válidos" % len(dropped))
-        print("  formato esperado:  - [tipo] **Título** — papel — `caminho`")
-        for n, raw in dropped:
-            print("   L%-3d %r" % (n, raw))
-    if created:
-        print("\nEsqueletos criados (%d):" % len(created))
-        for c in created:
-            print("   + %s" % c)
-    warns = warnings(levels)
-    if warns:
-        print("\nObservações:")
-        for w in warns:
-            print("   - %s" % w)
-    print("\n-> roadmap.html · roadmap-dashboards.xmind · docs/trilhas/index.md · docs/trilhas/trilha.json")
+
+def gerar(trilhas_dir, out_dir):
+    """Gera tudo de todas as trilhas. Devolve as metas na ordem do catálogo (slug)."""
+    trilhas = carregar(trilhas_dir)
+    os.makedirs(out_dir, exist_ok=True)
+    catalogo = []
+    for meta, levels, _dropped, _origem in trilhas:
+        dados = trilha_json(meta, levels)
+        escrever_json(os.path.join(out_dir, meta["slug"] + ".json"), dados)
+        gen_texto(meta, levels, os.path.join(out_dir, meta["slug"] + ".md"))
+        gen_xmind(meta, levels, os.path.join(out_dir, meta["slug"] + ".xmind"))
+        catalogo.append({
+            "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"],
+            "niveis": len(levels), "aulas": [i["id"] for n in dados["niveis"] for i in n["itens"]],
+        })
+    escrever_json(os.path.join(out_dir, "index.json"), {"_aviso": AVISO, "trilhas": catalogo})
+    gen_catalogo_texto([(m, l) for m, l, _d, _o in trilhas], os.path.join(out_dir, "index.md"))
+    return [t[0] for t in trilhas]
+
+
+def main():
+    trilhas = carregar(TRILHAS_DIR)
+    criados = {}
+    for meta, levels, _d, _o in trilhas:          # esqueletos antes dos JSONs, como sempre
+        criados[meta["slug"]] = scaffold_missing(levels)
+    gerar(TRILHAS_DIR, OUT_DIR)
+    # TEMPORÁRIO até a Task 5: as páginas atuais ainda leem docs/trilhas/trilha.json
+    shutil.copyfile(os.path.join(OUT_DIR, "dashboards.json"), os.path.join(OUT_DIR, "trilha.json"))
+
+    for meta, levels, dropped, origem in trilhas:
+        aulas = sum(len(lv["items"]) for lv in levels)
+        print("%s: %d nível(is), %d aula(s)" % (meta["slug"], len(levels), aulas))
+        if dropped:
+            print("  AVISO: %d linha(s) de bullet IGNORADA(S) em %s — não são itens válidos" % (len(dropped), origem))
+            print("    formato esperado:  - [tipo] **Título** — papel — `caminho`")
+            for n, raw in dropped:
+                print("     L%-3d %r" % (n, raw))
+        for c in criados[meta["slug"]]:
+            print("  + esqueleto criado: %s" % c)
+        for w in warnings(levels):
+            print("  - %s" % w)
+    print("-> docs/trilhas/: <slug>.json|.md|.xmind, index.json, index.md")
 
 
 if __name__ == "__main__":
