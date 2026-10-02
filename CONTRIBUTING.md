@@ -53,18 +53,27 @@ Uma página com o marcador `Rascunho — a escrever` tem esqueleto, mas não tem
 
 ## 2. Editar a trilha
 
-Edite **apenas** [ROADMAP.md](ROADMAP.md). Depois rode:
+Edite **apenas** os arquivos `trilhas/<slug>.md` (um por trilha; veja [trilhas/dashboards.md](trilhas/dashboards.md)). Depois rode:
 
 ```bash
 python3 tools/gen_roadmap.py
 ```
 
-Isso regenera `roadmap.html`, `roadmap-dashboards.xmind`, `docs/trilhas/index.md`,
-`docs/trilhas/trilha.json` e a região de níveis de `index.html`.
+Isso regenera, para cada trilha, `docs/trilhas/<slug>.json`, `docs/trilhas/<slug>.md` e
+`docs/trilhas/<slug>.xmind`, mais o catálogo `docs/trilhas/index.json` e `docs/trilhas/index.md`.
 
-O `trilha.json` é o que liga uma página de conteúdo ao seu nó na trilha — é dele que sai o botão
-*Marcar como feito* no fim de cada página. Página nova no `ROADMAP.md` ganha o botão sozinha, ao
-rodar o gerador.
+O JSON da trilha é o que monta o mapa (`mapa.html?trilha=<slug>`) e liga uma página de conteúdo à sua
+trilha — é dele que sai o botão *Marcar como feito* no fim de cada página. Página nova em
+`trilhas/<slug>.md` ganha o botão sozinha, ao rodar o gerador.
+
+### Criar uma trilha nova
+
+1. Copie `trilhas/dashboards.md` para `trilhas/<slug>.md` e troque o cabeçalho (título e descrição).
+2. Liste os níveis e os itens. Aulas já existentes podem ser reaproveitadas: o progresso é da aula e
+   vale em todas as trilhas que a usam.
+3. Rode `python3 tools/gen_roadmap.py` e commite o resultado.
+
+A trilha aparece sozinha no catálogo da home.
 
 ### Formato do item
 
@@ -78,25 +87,22 @@ rodar o gerador.
 | papel | `core` `support` `capstone` `optional` `advanced` |
 
 O gerador **valida** esses valores e falha com mensagem clara. Ele também **cria um esqueleto** para
-todo `.md` referenciado que não exista — então adicionar uma linha em `ROADMAP.md` e rodar o gerador é
+todo `.md` referenciado que não exista — então adicionar uma linha em `trilhas/<slug>.md` e rodar o gerador é
 a forma correta de criar uma página nova.
 
-Caminhos repetidos são permitidos: vários nós podem apontar para o mesmo documento de propósito.
+Um mesmo documento pode estar em várias trilhas, mas **não se repete dentro da mesma trilha** (o gerador falha).
 
 ### Nunca edite à mão
 
-- a região entre `<!-- ROADMAP:START -->` e `<!-- ROADMAP:END -->` em `roadmap.html`;
-- a região entre `<!-- LEVELS:START -->` e `<!-- LEVELS:END -->` em `index.html`;
-- `roadmap-dashboards.xmind`;
-- `docs/trilhas/index.md`;
-- `docs/trilhas/trilha.json`.
+- `docs/trilhas/*.json`, `docs/trilhas/*.md` e `docs/trilhas/*.xmind`.
 
-Tudo o mais em `roadmap.html` e `index.html` (design, CSS, JS) é seu.
+As páginas (`index.html`, `mapa.html`, `doc.html`, `concluida.html`) não têm regiões geradas: o design,
+o CSS e o JS são seus.
 
 ## 3. Identidade visual
 
 O material segue a identidade do GovHub. Cores e tipografia estão em `assets/govhub.css` — é o único
-lugar onde se mexe nelas, e vale para `index.html`, `roadmap.html` e `doc.html`.
+lugar onde se mexe nelas, e vale para `index.html`, `mapa.html`, `doc.html` e `concluida.html`.
 
 - **Cor nova exige checar contraste**: 4,5:1 para texto, 3:1 para indicadores não textuais.
 - **Nunca use cor sozinha** para diferenciar coisas — o tipo de página, por exemplo, aparece também
@@ -185,5 +191,5 @@ Prefixo por tipo de mudança:
 docs: escreve a página de acessibilidade
 trilha: move storytelling para o nível 2
 tools: valida papéis duplicados no gerador
-site: ajusta contraste da legenda no roadmap
+site: ajusta contraste da legenda no mapa
 ```

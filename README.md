@@ -1,4 +1,4 @@
-# Trilha de Capacitação em Dashboards — GovHub
+# Trilhas de Capacitação — GovHub
 
 > Um material prático para quem constrói dashboards no **GovHub**, com **Apache Superset** e
 > **Power BI**. Da pergunta de negócio ao painel publicado — com acessibilidade tratada como
@@ -9,7 +9,7 @@ organizado (framework **Diátaxis**) e como editar e evoluir o material.
 
 - Estrutura do conteúdo: [Diátaxis](https://diataxis.fr/)
 - Acessibilidade: [eMAG](https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/acessibilidade-digital) e [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)
-- Trilha de aprendizagem: [roadmap.html](roadmap.html) · fonte única em [ROADMAP.md](ROADMAP.md)
+- Trilhas de aprendizagem: [index.html](index.html) (catálogo) · fonte de cada trilha em `trilhas/<slug>.md`
 
 > Vai editar o material? Pule para a seção 7 — [Como editar e contribuir](#7-como-editar-e-contribuir).
 
@@ -79,13 +79,14 @@ O mapeamento do levantamento de conteúdos original para esses tipos está regis
 ```
 Dashboards-Roadmap/
 ├── README.md                    visão geral + estrutura + como editar
-├── ROADMAP.md                   fonte única da trilha
+├── trilhas/                     fonte de cada trilha (<slug>.md)
 ├── CONTEXT.md                   linguagem ubíqua da autoria
 ├── CONTRIBUTING.md              como contribuir
-├── index.html                   landing page
-├── roadmap.html                 gen · trilha visual com progresso
-├── doc.html                     visualizador de Markdown
-├── roadmap-dashboards.xmind     gen · mapa mental
+├── index.html                   catálogo de trilhas
+├── mapa.html                    mapa de uma trilha (?trilha=<slug>)
+├── doc.html                     leitor de Markdown, por trilha
+├── concluida.html               página de conclusão da trilha
+├── roadmap.html                 redireciona para mapa.html?trilha=dashboards
 ├── assets/
 │   ├── govhub.css               identidade visual (tokens do modo sóbrio) e componentes comuns
 │   ├── leitor.css · leitor.js   leitor da trilha (doc.html)
@@ -96,12 +97,11 @@ Dashboards-Roadmap/
 ├── tests/                       node --test tests/*.test.js
 ├── firestore.rules              regras de segurança do progresso
 ├── firebase.json                configuração do Firebase CLI (regras)
-├── tools/gen_roadmap.py         ROADMAP.md -> html + xmind + trilhas
+├── tools/gen_roadmap.py         trilhas/*.md -> json + md + xmind
 ├── docs/
 │   ├── tutoriais/  guias/  referencia/  explicacao/  desafios/  pesquisa/
 │   ├── adr/                     decisões de arquitetura do material
-│   ├── trilhas/index.md         gen · trilha em texto
-│   ├── trilhas/trilha.json      gen · índice que liga cada página ao seu nó da trilha
+│   ├── trilhas/                 gen · <slug>.json|.md|.xmind por trilha, mais index.json e index.md (catálogo)
 │   └── index.md                 índice da documentação
 ├── exemplos/                    dados, temas e wireframes de apoio
 └── templates/                   um template por tipo de página
@@ -116,7 +116,7 @@ do GovHub ([ADR 0002](docs/adr/0002-identidade-visual-govhub.md)).
 
 ## 4. A trilha
 
-A trilha tem sete níveis, do vocabulário à publicação:
+A trilha de Dashboards tem sete níveis, do vocabulário à publicação:
 
 | Nível | Tema |
 |---|---|
@@ -131,14 +131,14 @@ A trilha tem sete níveis, do vocabulário à publicação:
 Em cada nível, faça primeiro os itens **essenciais**; os de **apoio/opcionais** vêm quando forem
 necessários.
 
-- Versão visual, com progresso salvo no navegador: [roadmap.html](roadmap.html)
+- Mapa com progresso: [mapa.html?trilha=dashboards](mapa.html?trilha=dashboards)
 - O progresso também pode ser marcado **de dentro de cada página**: quem está lendo clica em
   *Marcar como feito* e a trilha registra. É o mesmo progresso, nos dois lugares.
 - O progresso vive no navegador de quem estuda: **não sincroniza entre navegadores nem entre
   dispositivos**, e some se os dados do site forem limpos. Persistir por pessoa exigiria login,
   que o material não tem.
-- Versão em texto: [docs/trilhas/index.md](docs/trilhas/index.md)
-- Fonte única: [ROADMAP.md](ROADMAP.md)
+- Versão em texto: [docs/trilhas/dashboards.md](docs/trilhas/dashboards.md)
+- Fonte: [trilhas/dashboards.md](trilhas/dashboards.md)
 
 ### Formato dos itens
 
@@ -172,7 +172,7 @@ plataforma.
 
 ```bash
 python3 -m http.server 8000        # na raiz do repositório
-# abrir http://localhost:8000/  (Início)  e  /roadmap.html
+# abrir http://localhost:8000/  (catálogo)  e  /mapa.html?trilha=dashboards
 ```
 
 Testes do progresso e do índice da trilha (Node 20+):
@@ -197,17 +197,21 @@ Material de apoio (dados, temas, wireframes) vai em `exemplos/`.
 
 ### 7.2 Editar a trilha
 
-Edite **apenas** `ROADMAP.md` e rode:
+Edite **apenas** `trilhas/<slug>.md` e rode:
 
 ```bash
 python3 tools/gen_roadmap.py
 ```
 
-Isso regenera `roadmap.html`, `roadmap-dashboards.xmind`, `docs/trilhas/index.md` e
-`docs/trilhas/trilha.json`. O gerador
+Isso regenera, para cada trilha, `docs/trilhas/<slug>.json`, `.md` e `.xmind`, e o catálogo
+(`docs/trilhas/index.json` e `index.md`). O gerador
 **valida** tipos e papéis e falha com mensagem clara em caso de erro de digitação. Ele também **cria um
-esqueleto** para todo `.md` referenciado que ainda não exista, e **nunca renomeia** caminhos (vários
-nós podem apontar para o mesmo documento de propósito).
+esqueleto** para todo `.md` referenciado que ainda não exista, e **nunca renomeia** caminhos. Um mesmo
+documento pode estar em várias trilhas, mas não se repete dentro da mesma.
+
+**Criar uma trilha nova:** copie `trilhas/dashboards.md` para `trilhas/<slug>.md`, troque o cabeçalho,
+liste os itens (aulas já existentes podem ser reaproveitadas; o progresso é da aula) e rode o gerador.
+A trilha aparece no catálogo da home. Veja o [ADR 0005](docs/adr/0005-varias-trilhas.md).
 
 ### 7.3 Mudar cores, tipografia ou logotipo
 
@@ -223,12 +227,9 @@ paleta e verifique o contraste — texto precisa de **4,5:1** e indicadores não
 
 ### 7.4 Arquivos gerados — não edite à mão
 
-- `roadmap.html` — **apenas** a região entre `<!-- ROADMAP:START -->` e `<!-- ROADMAP:END -->`. Todo o
-  resto (design, CSS, JS) você pode editar livremente.
-- `index.html` — apenas a região entre `<!-- LEVELS:START -->` e `<!-- LEVELS:END -->`.
-- `roadmap-dashboards.xmind`
-- `docs/trilhas/index.md`
-- `docs/trilhas/trilha.json`
+- `docs/trilhas/*.json`, `docs/trilhas/*.md` e `docs/trilhas/*.xmind`.
+
+As páginas HTML não têm regiões geradas: o mapa e o catálogo são montados no navegador a partir do JSON.
 
 ### 7.5 Publicar
 
@@ -239,7 +240,7 @@ git add -A && git commit -m "docs: ..." && git push
 ```
 
 O workflow `.github/workflows/publicar.yml` roda `tools/gen_roadmap.py` antes de publicar e **falha
-se algum arquivo gerado estiver desatualizado** — ou seja, se alguém editou o `ROADMAP.md` sem
+se algum arquivo gerado estiver desatualizado** — ou seja, se alguém editou uma trilha em `trilhas/` sem
 regenerar, ou esqueceu de commitar o esqueleto de uma página nova. Não há build: o site vai ao ar como
 está no repositório, porque `doc.html` lê os `.md` em tempo de execução.
 

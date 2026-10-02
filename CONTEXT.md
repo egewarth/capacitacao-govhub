@@ -43,10 +43,14 @@ origem do material, não o material.
 _Evite_: ementa (quando você quer dizer especificamente o documento inteiro).
 
 **Nível**
-Uma etapa da trilha em `ROADMAP.md`, escrita como `## Nível N · Título`. Substitui a noção de "módulo"
+Uma etapa de uma trilha em `trilhas/<slug>.md`, escrita como `## Nível N · Título`. Substitui a noção de "módulo"
 do levantamento original, porque um nível agrupa páginas de tipos diferentes, e um módulo agrupava
 temas.
 _Evite_: módulo, capítulo.
+
+**Trilha**
+Uma sequência de níveis definida em `trilhas/<slug>.md`. Aulas podem estar em várias trilhas; o progresso é da aula.
+_Evite_: curso, módulo.
 
 **Papel**
 A prioridade do item dentro do nível: `core` (essencial), `support` (apoio), `capstone`, `optional`,
