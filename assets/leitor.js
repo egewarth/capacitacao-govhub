@@ -42,11 +42,14 @@ function corrigirLinks(raiz, path) {
     if (!href || href.startsWith('#') || /^[a-z]+:/i.test(href)) return;
     const i = href.indexOf('#');
     const frag = i >= 0 ? href.slice(i) : '';
-    const alvo = i >= 0 ? href.slice(0, i) : href;
+    const semFrag = i >= 0 ? href.slice(0, i) : href;
+    const q = semFrag.indexOf('?');
+    const busca = q >= 0 ? semFrag.slice(q) : '';   // ?query de links para outras páginas (ex.: ../mapa.html?trilha=...)
+    const alvo = q >= 0 ? semFrag.slice(0, q) : semFrag;
     if (alvo === '') { a.setAttribute('href', frag); return; }
     let r = resolver(path, alvo);
     if (r.endsWith('/')) r += 'index.md';
-    a.setAttribute('href', r.endsWith('.md') ? 'doc.html?trilha=' + encodeURIComponent(slug) + '&path=' + r + frag : r + frag);
+    a.setAttribute('href', r.endsWith('.md') ? 'doc.html?trilha=' + encodeURIComponent(slug) + '&path=' + r + frag : r + busca + frag);
   });
   raiz.querySelectorAll('img[src]').forEach((img) => {
     const s = img.getAttribute('src');
