@@ -12,6 +12,8 @@ Saídas, em docs/trilhas/:
   <slug>.xmind  o mapa mental (determinístico: data fixa no zip)
   index.json    o catálogo das trilhas (ordem de slug)
   index.md      o catálogo em texto
+Saídas de trilhas que não existem mais em trilhas/ são apagadas. O arquivo da trilha
+precisa se chamar <slug>.md, e cada doc precisa ser docs/<...>.md (sem .. nem \\).
 
 Regra de ids: id da aula = caminho do doc sem `docs/` e sem `.md`. Vale em todas as
 trilhas e é a chave do progresso; por isso um doc não pode se repetir na mesma trilha.
@@ -48,9 +50,10 @@ SUPPORT_ROLES = ("support", "optional")
 ITEM_RE  = re.compile(r'^- \[([^\]]+)\]\s+\*\*(.+?)\*\*\s+—\s+(.+?)\s+—\s+`([^`]+)`\s*$')
 LEVEL_RE = re.compile(r'^##\s+Nível\s+(\d+)\s+·\s+(.+)$')
 
-def parse(lines):
+def parse(lines, inicio=0):
+    """`inicio`: quantas linhas do arquivo vêm antes de `lines` (o cabeçalho), para as mensagens."""
     levels, cur, dropped = [], None, []
-    for idx, raw in enumerate(lines):
+    for idx, raw in enumerate(lines, start=inicio):
         s = raw.strip()
         m = LEVEL_RE.match(s)
         if m:
@@ -68,7 +71,7 @@ def parse(lines):
                 raise SystemExit("Tipo inválido %r (linha %d): %s" % (typ, idx + 1, s))
             if role not in ROLE_DISPLAY:
                 raise SystemExit("Papel inválido %r (linha %d): %s" % (role, idx + 1, s))
-            cur["items"].append({"type": typ, "title": title, "role": role, "doc": doc})
+            cur["items"].append({"type": typ, "title": title, "role": role, "doc": doc, "linha": idx + 1})
         elif s.startswith("- ") or s == "-":
             dropped.append((idx + 1, raw))      # bullet que NÃO é um item válido
         elif s and not s.startswith("#") and not s.startswith(">") and not cur["items"]:
@@ -145,6 +148,17 @@ def ler_cabecalho(texto, origem):
     if bool(meta.get("diagrama")) != bool(meta.get("diagrama_alt")):
         raise SystemExit("%s: diagrama e diagrama_alt andam juntos" % origem)
     return meta, linhas[fim + 1:]
+
+
+def validar_caminhos(levels, origem):
+    """O doc precisa ser um .md dentro de docs/: é o que o leitor abre e o que vira o id da aula."""
+    for lv in levels:
+        for it in lv["items"]:
+            doc = it["doc"]
+            if ("\\" in doc or not doc.startswith("docs/") or not doc.endswith(".md")
+                    or ".." in doc.split("/")):
+                raise SystemExit("%s (linha %s): caminho de doc inválido %r — use docs/<pasta>/<nome>.md, "
+                                 "sem .. nem barra invertida" % (origem, it.get("linha", "?"), doc))
 
 
 def validar_repetidos(levels, origem):
@@ -268,8 +282,13 @@ def carregar(trilhas_dir):
             continue
         origem = os.path.join("trilhas", nome)
         with open(os.path.join(trilhas_dir, nome), encoding="utf-8") as f:
-            meta, corpo = ler_cabecalho(f.read(), origem)
-        levels, dropped = parse(corpo)
+            texto = f.read()
+        meta, corpo = ler_cabecalho(texto, origem)
+        if nome != meta["slug"] + ".md":
+            raise SystemExit("%s: o arquivo deve se chamar %s.md (o slug do cabeçalho); "
+                             "os links gerados apontam para trilhas/<slug>.md" % (origem, meta["slug"]))
+        levels, dropped = parse(corpo, inicio=len(texto.split("\n")) - len(corpo))
+        validar_caminhos(levels, origem)
         validar_repetidos(levels, origem)
         trilhas.append((meta, levels, dropped, origem))
     slugs = [m["slug"] for m, _l, _d, _o in trilhas]
@@ -298,7 +317,20 @@ def gerar(trilhas_dir, out_dir):
         })
     escrever_json(os.path.join(out_dir, "index.json"), {"_aviso": AVISO, "trilhas": catalogo})
     gen_catalogo_texto([(m, l) for m, l, _d, _o in trilhas], os.path.join(out_dir, "index.md"))
+    apagar_orfaos(out_dir, {m["slug"] for m, _l, _d, _o in trilhas})
     return [t[0] for t in trilhas]
+
+
+def apagar_orfaos(out_dir, slugs):
+    """Apaga <slug>.json|.md|.xmind de trilhas que não existem mais (nunca o index.*)."""
+    apagados = []
+    for nome in sorted(os.listdir(out_dir)):
+        base, ext = os.path.splitext(nome)
+        if ext in (".json", ".md", ".xmind") and base != "index" and base not in slugs:
+            os.remove(os.path.join(out_dir, nome))
+            apagados.append(nome)
+            print("  - apagado (trilha não existe mais): docs/trilhas/%s" % nome)
+    return apagados
 
 
 def main():

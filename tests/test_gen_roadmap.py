@@ -64,9 +64,33 @@ class Geracao(unittest.TestCase):
         for nome in ("teste.md", "teste.xmind", "index.md"):
             self.assertTrue(os.path.exists(os.path.join(saida, nome)), nome)
 
-    def test_slug_repetido_entre_arquivos(self):
+    def test_nome_do_arquivo_igual_ao_slug(self):
+        # os links gerados apontam para trilhas/<slug>.md
+        with self.assertRaises(SystemExit) as cm:
+            self.gerar({"outro-nome.md": CABECALHO + CORPO})
+        self.assertIn("teste.md", str(cm.exception.code))
         with self.assertRaises(SystemExit):
             self.gerar({"a.md": CABECALHO + CORPO, "b.md": CABECALHO + CORPO})
+
+    def test_caminho_do_doc_validado(self):
+        for ruim in ("explicacao/x.md", "docs/explicacao/x.txt", "docs/../README.md",
+                     "docs/explicacao/../../x.md", "docs\\explicacao\\x.md", "/docs/x.md"):
+            corpo = CORPO + "- [reference] **Ruim** — core — `%s`\n" % ruim
+            with self.assertRaises(SystemExit, msg=ruim) as cm:
+                self.gerar({"teste.md": CABECALHO + corpo})
+            msg = str(cm.exception.code)
+            self.assertIn("trilhas/teste.md", msg)
+            self.assertIn("linha 13", msg)   # 5 linhas de cabeçalho + 8 do corpo
+
+    def test_apaga_saidas_de_trilha_removida(self):
+        trilhas = tempfile.mkdtemp()
+        saida = tempfile.mkdtemp()
+        open(os.path.join(trilhas, "teste.md"), "w", encoding="utf-8").write(CABECALHO + CORPO)
+        for nome in ("velha.json", "velha.md", "velha.xmind", "leia-me.txt"):
+            open(os.path.join(saida, nome), "w").write("x")
+        gen.gerar(trilhas, saida)
+        self.assertEqual(sorted(os.listdir(saida)),
+                         ["index.json", "index.md", "leia-me.txt", "teste.json", "teste.md", "teste.xmind"])
 
     def test_xmind_deterministico(self):
         _, s1 = self.gerar({"teste.md": CABECALHO + CORPO})
