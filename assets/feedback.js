@@ -23,7 +23,7 @@ export function montarFeedback(secao, progresso) {
   function titulo(texto) { return el('h2', { class: 'fb-titulo', id: 'feedback-titulo' }, texto); }
 
   function formulario() {
-    const contador = el('span', { class: 'fb-contador', 'aria-live': 'polite' }, `0/${LIMITE_COMENTARIO}`);
+    const contador = el('span', { class: 'fb-contador' }, `0/${LIMITE_COMENTARIO}`);
     const erro = el('p', { class: 'fb-erro', role: 'alert', hidden: true }, 'Não foi possível enviar; tente de novo.');
     const enviar = el('button', { class: 'btn', type: 'submit', disabled: true }, 'Enviar');
     const comentario = el('textarea', { id: 'fb-comentario', rows: 3, maxlength: LIMITE_COMENTARIO,
@@ -48,7 +48,7 @@ export function montarFeedback(secao, progresso) {
       } catch {
         erro.hidden = false;
       } finally {
-        enviando = false; enviar.textContent = 'Enviar'; atualizar();
+        if (minhaAula === aula) { enviando = false; enviar.textContent = 'Enviar'; atualizar(); }
       }
     });
     return form;
@@ -74,9 +74,10 @@ export function montarFeedback(secao, progresso) {
   }
 
   // Redesenha só quando muda o que importa (login, avaliada) — marcar aulas não apaga o que a pessoa digitou.
+  const chave = () => [aula, !!progresso.usuario(), progresso.nuvemDisponivel(), aula && progresso.foiAvaliada(aula)].join('|');
   let estado = null;
   progresso.aoMudar(() => {
-    const novo = [aula, !!progresso.usuario(), progresso.nuvemDisponivel(), aula && progresso.foiAvaliada(aula)].join('|');
+    const novo = chave();
     if (novo === estado) return;
     estado = novo;
     const tinhaFoco = secao.contains(document.activeElement) && document.activeElement.classList.contains('fb-titulo');
@@ -87,8 +88,9 @@ export function montarFeedback(secao, progresso) {
 
   return {
     mostrar(novaAula, novaTrilha) {
-      aula = novaAula; trilha = novaTrilha; enviada = false;
-      estado = null; secao.replaceChildren(); pintar();
+      aula = novaAula; trilha = novaTrilha; enviada = false; enviando = false;
+      secao.replaceChildren(); pintar();
+      estado = chave();
     },
   };
 }
