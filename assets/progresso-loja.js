@@ -27,11 +27,16 @@ export function normalizarUltima(valor) {
   return { trilha: valor.trilha || 'dashboards', path: valor.path };
 }
 
-export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
+export const CLAREZA = ['confuso', 'claro', 'muito-claro'];
+export const USO = ['sim', 'talvez', 'nao'];
+export const LIMITE_COMENTARIO = 1000;
+
+export function criarLoja({ armazenamento, criarNuvem = async () => null, agora = () => new Date() }) {
   let nuvem = null;
   let usuario = null;
   let feitos = {};
   let ultimaAula = null;
+  let avaliadas = {};
   let pararDeOuvir = null;
   let sessao = 0;   // muda a cada troca de login/logout: respostas de sessões antigas são descartadas
   // Sessão restaurada do cache, nuvem ainda não conectada: o que a pessoa fizer fica anotado aqui
@@ -51,7 +56,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
 
   function salvarLocal() {
     if (usuario) {
-      armazenamento.set(CHAVE_CONTA, JSON.stringify({ uid: usuario.uid, usuario, feitos, ultimaAula }));
+      armazenamento.set(CHAVE_CONTA, JSON.stringify({ uid: usuario.uid, usuario, feitos, ultimaAula, avaliadas }));
       return;
     }
     armazenamento.set(CHAVE_ANONIMO, JSON.stringify(feitos));
@@ -70,6 +75,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     pendentes = null;
     armazenamento.remove(CHAVE_CONTA);
     usuario = null;
+    avaliadas = {};
     carregarAnonimo();
     emitir();
   }
@@ -123,6 +129,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     usuario = u;
     feitos = novosFeitos;
     ultimaAula = novaUltima;
+    avaliadas = (remoto && remoto.avaliadas) || {};
     salvarLocal();
     emitir();
     if (!remoto || trazAlgo) {
@@ -141,6 +148,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       if (minha !== sessao) return;
       feitos = dados.feitos || {};
       ultimaAula = dados.ultimaAula || null;
+      avaliadas = dados.avaliadas || {};
       salvarLocal();
       emitir();
     }, () => {
@@ -189,6 +197,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
       usuario = cache.usuario;
       feitos = cache.feitos || {};
       ultimaAula = cache.ultimaAula || null;
+      avaliadas = cache.avaliadas || {};
       pendentes = { feitos: {}, ultimaAula: null };
     } else {
       carregarAnonimo();
@@ -254,6 +263,29 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
     else if (usuario && nuvem) nuvem.gravarUltimaAula(usuario.uid, ultimaAula).catch(() => {});
   }
 
+  async function avaliar(id, trilha, { clareza, uso, comentario } = {}) {
+    if (!usuario || !nuvem) throw new Error('sem-sessao');
+    const texto = typeof comentario === 'string' ? comentario.trim() : '';
+    if (!CLAREZA.includes(clareza) || !USO.includes(uso) || texto.length > LIMITE_COMENTARIO) {
+      throw new Error('resposta-invalida');
+    }
+    const d = agora();
+    const periodo = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    // Nada que identifique a pessoa: nem uid, nem nome, nem e-mail, nem horário.
+    const dados = { trilha, aula: id, clareza, uso, periodo };
+    if (texto) dados.comentario = texto;
+    const minha = sessao;
+    const uid = usuario.uid;
+    const n = nuvem;
+    await n.enviarFeedback(dados);
+    if (minha !== sessao) return;
+    avaliadas = { ...avaliadas, [id]: true };
+    salvarLocal();
+    emitir();
+    // O feedback já está salvo; se a marcação falhar, no pior caso a pessoa avalia de novo noutro dispositivo.
+    n.marcarAvaliada(uid, id).catch(() => {});
+  }
+
   function entrar() {
     if (!nuvem) return Promise.resolve();
     return nuvem.entrar().catch((e) => {
@@ -275,7 +307,9 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null }) {
 
   return {
     iniciar, alternar, zerar, registrarUltimaAula, entrar, sair, recarregar,
+    avaliar,
     feitos: () => feitos,
+    foiAvaliada: (id) => !!avaliadas[id],
     usuario: () => usuario,
     ultimaAula: () => normalizarUltima(ultimaAula),
     nuvemDisponivel: () => !!nuvem,

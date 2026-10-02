@@ -7,6 +7,7 @@ const CDN = `https://www.gstatic.com/firebasejs/${VERSAO}/`;
 const normalizar = (dados) => ({
   feitos: (dados && dados.feitos) || {},
   ultimaAula: (dados && dados.ultimaAula) || null,
+  avaliadas: (dados && dados.avaliadas) || {},
 });
 
 export async function criarNuvem(config) {
@@ -39,7 +40,10 @@ export async function criarNuvem(config) {
       },
       gravarTudo: (uid, { feitos, ultimaAula }) => fs.setDoc(documento(uid), {
         feitos, ultimaAula: ultimaAula || null, atualizadoEm: fs.serverTimestamp(),
-      }),
+      }, { merge: true }),   // merge para não apagar `avaliadas`; `feitos: {}` substitui o mapa inteiro (zerar)
+      enviarFeedback: (dados) => fs.addDoc(fs.collection(banco, 'feedback'), dados),
+      marcarAvaliada: (uid, id) => fs.setDoc(documento(uid),
+        { avaliadas: { [id]: true }, atualizadoEm: fs.serverTimestamp() }, { merge: true }),
       // Um campo por aula (feitos.<id>), numa única escrita: duas aulas marcadas ao mesmo
       // tempo em dispositivos diferentes não se sobrescrevem. setDoc com merge (e não updateDoc)
       // funciona também quando o documento ainda não existe (sessão restaurada, entrada recusada,

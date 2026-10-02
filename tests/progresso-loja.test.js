@@ -25,6 +25,12 @@ function nuvemFalsa(docs = {}) {
   const notificar = (uid) => { const cb = ouvintes.get(uid); if (cb) cb(copia(uid)); };
   const nuvem = {
     docs, chamadas: [], recusar: false,
+    feedbacks: [], recusarFeedback: false,
+    async enviarFeedback(d) { if (nuvem.recusarFeedback) throw new Error('x'); nuvem.feedbacks.push(structuredClone(d)); },
+    async marcarAvaliada(uid, id) {
+      (docs[uid] ||= { feitos: {}, ultimaAula: null }).avaliadas = { ...(docs[uid].avaliadas || {}), [id]: true };
+      notificar(uid);
+    },
     aoMudarUsuario(cb) { aoUsuario = cb; },
     async entrar() {},
     async sair() { aoUsuario(null); },
@@ -41,7 +47,8 @@ function nuvemFalsa(docs = {}) {
     async gravarTudo(uid, dados) {
       nuvem.chamadas.push('gravarTudo');
       const antes = docs[uid] ? structuredClone(docs[uid]) : null;
-      docs[uid] = structuredClone(dados);
+      // setDoc com merge: os campos enviados substituem os do documento; os demais (avaliadas) ficam.
+      docs[uid] = { ...(antes || {}), ...structuredClone(dados) };
       notificar(uid);
       if (nuvem.segurarGravarTudo) await new Promise((r) => { nuvem.pendentesGravar.push(r); });
       await Promise.resolve();
@@ -596,4 +603,49 @@ test('ultimaAula antiga salva no navegador é lida com a trilha dashboards', asy
   const loja = criarLoja({ armazenamento: arm });
   await loja.iniciar();
   assert.deepEqual(loja.ultimaAula(), { trilha: 'dashboards', path: 'docs/a.md' });
+});
+
+test('avaliar exige sessão', async () => {
+  const loja = criarLoja({ armazenamento: armazenamentoFalso() });
+  await loja.iniciar();
+  await assert.rejects(loja.avaliar('a', 'dashboards', { clareza: 'claro', uso: 'sim' }), /sem-sessao/);
+});
+
+test('avaliar grava sem identificar a pessoa e marca a aula como avaliada', async () => {
+  const arm = armazenamentoFalso();
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: async () => nuvem, agora: () => new Date(2026, 9, 15, 13, 45) });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  await loja.avaliar('explicacao/a', 'dashboards', { clareza: 'muito-claro', uso: 'talvez', comentario: '  ótima  ' });
+  assert.deepEqual(nuvem.feedbacks, [{ trilha: 'dashboards', aula: 'explicacao/a', clareza: 'muito-claro', uso: 'talvez', comentario: 'ótima', periodo: '2026-10' }]);
+  assert.equal(loja.foiAvaliada('explicacao/a'), true);
+  await esperar();
+  assert.deepEqual(nuvem.docs.ana.avaliadas, { 'explicacao/a': true });
+});
+
+test('comentário vazio não é enviado; respostas inválidas são recusadas', async () => {
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem, agora: () => new Date(2026, 0, 2) });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  await loja.avaliar('a', 'dashboards', { clareza: 'claro', uso: 'nao', comentario: '   ' });
+  assert.equal('comentario' in nuvem.feedbacks[0], false);
+  assert.equal(nuvem.feedbacks[0].periodo, '2026-01');
+  await assert.rejects(loja.avaliar('b', 'dashboards', { clareza: 'otimo', uso: 'sim' }), /resposta-invalida/);
+  await assert.rejects(loja.avaliar('b', 'dashboards', { clareza: 'claro', uso: 'sim', comentario: 'x'.repeat(1001) }), /resposta-invalida/);
+});
+
+test('falha ao enviar não marca a aula', async () => {
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  nuvem.recusarFeedback = true;
+  await assert.rejects(loja.avaliar('a', 'dashboards', { clareza: 'claro', uso: 'sim' }));
+  assert.equal(loja.foiAvaliada('a'), false);
+});
+
+test('avaliadas vêm da conta e somem no logout', async () => {
+  const { loja } = await lojaLogada({ docs: { ana: { feitos: {}, ultimaAula: null, avaliadas: { x: true } } } });
+  assert.equal(loja.foiAvaliada('x'), true);
+  await loja.sair();
+  assert.equal(loja.foiAvaliada('x'), false);
 });
