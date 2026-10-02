@@ -49,18 +49,7 @@ automatizado.
 
 O mesmo pedido — "os atendimentos caíram?" — percorre caminhos bem diferentes:
 
-```mermaid
-flowchart TD
-    subgraph P["Na planilha · o caminho se repete a cada pergunta"]
-        direction LR
-        P1["Abrir a base"] --> P2["Filtrar<br>colunas"] --> P3["Ordenar"] --> P4["Somar<br>à mão"] --> P5["Comparar<br>períodos"] --> P6(["Resposta"])
-    end
-    subgraph D["No dashboard · o caminho foi percorrido uma vez, na construção"]
-        direction LR
-        D1["Abrir o painel"] --> D2(["Resposta"])
-    end
-    P ~~~ D
-```
+![Comparação do caminho até a resposta para a pergunta "os atendimentos caíram?": na planilha, o caminho se repete a cada pergunta e passa por abrir a base, filtrar colunas, ordenar, somar à mão e comparar períodos até a resposta; no dashboard, o caminho foi percorrido uma vez, na construção, e basta abrir o painel para chegar à resposta.](../../assets/diagramas/por-que-fazer-um-dashboard.png)
 
 Com um dashboard:
 
