@@ -47,13 +47,7 @@ real ou quase real.
 
 Não existe uma opção melhor que a outra. Existe a opção mais adequada para cada necessidade.
 
-```mermaid
-flowchart LR
-    Q{"Que pergunta a<br>pessoa traz?"}
-    Q -->|"Estamos indo na<br>direção certa?"| D["Dashboard estratégico<br>gestão, coordenação, direção<br>KPIs, metas, tendências"]
-    Q -->|"Por que isso<br>aconteceu?"| R["Relatório analítico<br>analistas, auditoria<br>tabelas, segmentações, exportação"]
-    Q -->|"O que precisa ser<br>feito agora?"| O["Painel operacional<br>equipes, supervisão<br>filas, alertas, tempo real"]
-```
+![Árvore de decisão que parte da pergunta "Que pergunta a pessoa traz?": "Estamos indo na direção certa?" leva ao dashboard estratégico (gestão, coordenação, direção; KPIs, metas, tendências); "Por que isso aconteceu?" leva ao relatório analítico (analistas, auditoria; tabelas, segmentações, exportação); "O que precisa ser feito agora?" leva ao painel operacional (equipes, supervisão; filas, alertas, tempo real).](../../assets/diagramas/dashboard-relatorio-painel-operacional.png)
 
 | Use… | Quando | Exemplo |
 |---|---|---|
