@@ -131,25 +131,27 @@ regras que cobram de quem constrói dashboards:
 Uma página que descreve um **processo, uma decisão ou uma sequência** pede um diagrama. Uma que
 descreve um **arranjo visual** — posição na tela, destaque, leitura — pede uma ilustração.
 
-### Diagramas: Mermaid, no próprio Markdown
+### Diagramas: PNG no padrão Gov Hub, em `assets/diagramas/`
 
-Escreva em um bloco ` ```mermaid `. Funciona no GitHub e no visualizador `doc.html`, e o diagrama
-continua sendo texto — revisável em diff, sem arquivo binário para manter.
+As aulas **não usam Mermaid**. Cada diagrama tem dois arquivos em `assets/diagramas/`:
+`<nome>.html` é a fonte versionada (revisável em diff) e `<nome>.png` é a imagem que a aula mostra.
+Para criar ou regenerar, use a skill `govhub-diagramas` do plugin govhub-core; os comandos estão no
+[README, seção 7.3.1](README.md#731-diagramas). Commite sempre o `.html` e o `.png` juntos.
 
-````
-```mermaid
-flowchart LR
-    Q{"Que pergunta a<br>pessoa traz?"} -->|"Por que isso aconteceu?"| R["Relatório analítico"]
+Referencie o PNG com Markdown normal:
+
+```markdown
+![Descrição do diagrama inteiro: as etapas, as decisões e para onde cada caminho leva.](../../assets/diagramas/arquivo.png)
 ```
-````
 
 Convenções:
 
-- **Uma direção só**: `flowchart LR` na maioria dos casos. Fluxos verticais com losangos crescem
-  demais e deixam de caber na coluna de texto.
-- **Losango só para decisão de verdade.** Cada `{"..."}` vira um losango grande; etapas que não são
-  escolha vão em caixa retangular.
-- **Rótulo curto, quebrado com `<br>`.** Duas linhas de até ~30 caracteres.
+- **O texto alternativo descreve o diagrama inteiro**, não só o título: quem usa leitor de tela
+  precisa receber o mesmo caminho que quem vê a imagem.
+- **Paleta sóbria.** O pêssego `#FFE7E1` do template da skill deve ser trocado por `#F2F1F6` em
+  cada diagrama; o acento `#BE006E` fica para um detalhe, se tanto.
+- **Losango só para decisão de verdade**; etapas que não são escolha vão em caixa retangular.
+- **Rótulo curto.** Duas linhas de até ~30 caracteres.
 - **Um diagrama por página.** Se precisar de dois, provavelmente são duas páginas.
 - O diagrama **não substitui o texto**: ele mostra o caminho que o texto explica. Nada de informação
   que só existe no desenho.

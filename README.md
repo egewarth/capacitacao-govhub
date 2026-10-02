@@ -230,7 +230,8 @@ paleta e verifique o contraste — texto precisa de **4,5:1** e indicadores não
 Os diagramas das aulas ficam em `assets/diagramas/`: `<nome>.html` é a fonte versionada e
 `<nome>.png` (3000 px de largura) é o que as aulas mostram. As aulas **não usam Mermaid**.
 
-Para regenerar, use a skill `govhub-diagramas` (`SKILL=/home/joaoegewarth/.claude/plugins/cache/govhub/govhub-core/d56397136fcf/govhub-diagramas`):
+Para regenerar, use a skill `govhub-diagramas` do plugin govhub-core. Com `SKILL` apontando para a
+pasta da skill na sua instalação do plugin:
 
 ```bash
 node $SKILL/scripts/inline_assets.mjs $SKILL/templates/<familia>.html assets/diagramas/<nome>.html
