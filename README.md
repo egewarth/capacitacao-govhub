@@ -91,7 +91,8 @@ Dashboards-Roadmap/
 ├── quiz/<slug>.json             perguntas do quiz de revisão, uma por aula (editado à mão)
 ├── assets/
 │   ├── govhub.css               identidade visual (tokens do modo sóbrio) e componentes comuns
-│   ├── topo.js                  topo comum: busca, Início/Trilhas, Dúvidas, conta Google, rodapé
+│   ├── topo.js                  topo comum: busca, Início/Trilhas, Dúvidas, conta, rodapé
+│   ├── login.js                 modal Entrar: Google, e-mail e senha, criar conta, recuperar a senha
 │   ├── mapa.css · mapa.js       mapa da trilha · hub-nucleo.js: regras puras do mapa, busca e quiz
 │   ├── leitor.css · leitor.js   página da aula (doc.html) · feedback.js: avaliação da aula
 │   ├── celebracao.js            modal de conclusão da trilha, com a nota de 1 a 5
@@ -142,7 +143,7 @@ necessários.
 - O progresso também pode ser marcado **de dentro de cada página**: quem está lendo clica em
   *Marcar como feito* e a trilha registra. É o mesmo progresso, nos dois lugares.
 - Sem login, o progresso vive no navegador de quem estuda: não sincroniza entre navegadores nem
-  entre dispositivos, e some se os dados do site forem limpos. O login com Google é **opcional**:
+  entre dispositivos, e some se os dados do site forem limpos. O login (Google, ou e-mail e senha) é **opcional**:
   quem entra leva o progresso (de todas as trilhas) para qualquer computador, salvo no Firebase
   (seção 7.6).
 - Versão em texto: [docs/trilhas/dashboards.md](docs/trilhas/dashboards.md)
@@ -289,15 +290,17 @@ está no repositório, porque `doc.html` lê os `.md` em tempo de execução.
 
 ### 7.6 Salvar o progresso no Firebase
 
-Sem configuração, o site funciona e o progresso fica só no navegador. Para que quem entra com a conta
-Google leve o progresso para qualquer computador:
+Sem configuração, o site funciona e o progresso fica só no navegador. Para que quem entra (com o Google
+ou com e-mail e senha) leve o progresso para qualquer computador:
 
 1. Em <https://console.firebase.google.com>, crie um projeto (o Google Analytics não é necessário).
 2. **Configurações do projeto → Seus apps → Web (`</>`)**: registre um app e copie o objeto
    `firebaseConfig` para `assets/firebase-config.js` (pelo menos `apiKey`, `authDomain`, `projectId`
    e `appId`). Esse arquivo já está preenchido para o projeto `capacitacao-gov-hub`; estes passos
    servem para recriar o projeto ou trocá-lo por outro.
-3. **Authentication → Método de login**: ative **Google**.
+3. **Authentication → Método de login**: ative **Google** e **E-mail/senha** (sem "link de e-mail").
+   Em **Authentication → Modelos**, os e-mails de confirmação e de nova senha saem em português (o site
+   pede `pt-BR`); dá para trocar o remetente e o texto ali.
 4. **Authentication → Configurações → Domínios autorizados**: adicione o domínio do GitHub Pages
    (ex.: `<usuario>.github.io`). `localhost` já vem autorizado.
 5. **Firestore Database**: crie o banco em **modo de produção**.
@@ -307,8 +310,8 @@ Google leve o progresso para qualquer computador:
    iguais. Elas incluem as das coleções `feedback` (avaliação da aula) e `avaliacao_trilha` (nota de
    1 a 5 da trilha), ambas só de criação e com campos validados, e precisam estar publicadas
    **antes** do deploy que as usa; sem elas o envio falha.
-7. Commite `assets/firebase-config.js`. Ao abrir o site, o botão **Entrar com Google** aparece na barra
-   superior.
+7. Commite `assets/firebase-config.js`. Ao abrir o site, o botão **Entrar** aparece na barra superior e
+   abre o modal com Google, e-mail e senha, criar conta e recuperar a senha (`assets/login.js`).
 
 Os valores de `firebaseConfig` são públicos por natureza; o que protege os dados são as regras do
 passo 6. A decisão está no [ADR 0004](docs/adr/0004-progresso-no-firebase.md).

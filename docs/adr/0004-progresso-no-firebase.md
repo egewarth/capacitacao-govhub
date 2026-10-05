@@ -46,3 +46,12 @@ depender do Firebase para abrir.
 superfície de suporte.
 
 **Backend próprio:** fugiria do modelo estático no GitHub Pages, sem ganho para o caso de uso.
+
+## Atualização (2026-10-05): e-mail e senha também
+
+O login passou a aceitar **e-mail e senha** além do Google, para quem não usa conta Google. Qualquer
+e-mail pode criar conta; o Firebase manda o link de confirmação, mas a conta funciona sem confirmar.
+"Esqueci minha senha" usa o e-mail de redefinição do Firebase (que também cria uma senha para uma
+conta que entrava só com o Google, já que o Firebase mantém uma conta por e-mail). O botão "Entrar"
+abre um modal com as duas formas (`assets/login.js`). O custo de suporte citado em "Alternativas"
+foi aceito.
