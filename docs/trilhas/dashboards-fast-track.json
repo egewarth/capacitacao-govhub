@@ -1,0 +1,141 @@
+{
+  "_aviso": "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao.",
+  "slug": "dashboards-fast-track",
+  "titulo": "Fast track: Dashboards no Gov Hub",
+  "descricao": "As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essencial ao painel publicado.",
+  "categoria": "negocial",
+  "chamada": "Pouco tempo? Aqui está o essencial da trilha de Dashboards em 10 aulas: o que faz um bom painel, como escolher o gráfico e como publicar no Gov Hub.",
+  "etapas": [
+    {
+      "rotulo": "Entender",
+      "caixa": "O essencial"
+    },
+    {
+      "rotulo": "Fazer",
+      "caixa": "Do problema à publicação"
+    }
+  ],
+  "etapas_subtitulo": "Duas etapas: do essencial ao painel publicado",
+  "etapas_nota": "Quer se aprofundar? A trilha completa **Dashboards no Gov Hub** tem 44 aulas, e o que você concluir aqui já conta lá.",
+  "quiz": "quiz/dashboards-fast-track.json",
+  "niveis": [
+    {
+      "numero": 0,
+      "titulo": "O essencial",
+      "descricao": "O que um dashboard resolve, o que estraga um painel e como organizar o que se vê primeiro: números-chave no topo e o gráfico certo para cada pergunta.",
+      "etapa": "Entender",
+      "icone": "assets/icones/light-bulb-sober.svg",
+      "itens": [
+        {
+          "id": "explicacao/por-que-fazer-um-dashboard",
+          "titulo": "Por que fazer um dashboard?",
+          "doc": "docs/explicacao/por-que-fazer-um-dashboard.md",
+          "tipo": "explicacao",
+          "tipo_nome": "Explicação",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/light-bulb-sober.svg"
+        },
+        {
+          "id": "explicacao/o-que-faz-um-dashboard-ruim",
+          "titulo": "O que faz um dashboard ruim",
+          "doc": "docs/explicacao/o-que-faz-um-dashboard-ruim.md",
+          "tipo": "explicacao",
+          "tipo_nome": "Explicação",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/light-bulb-sober.svg"
+        },
+        {
+          "id": "explicacao/hierarquia-visual",
+          "titulo": "Hierarquia visual",
+          "doc": "docs/explicacao/hierarquia-visual.md",
+          "tipo": "explicacao",
+          "tipo_nome": "Explicação",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/light-bulb-sober.svg"
+        },
+        {
+          "id": "explicacao/kpis-e-big-numbers",
+          "titulo": "KPIs e Big Numbers",
+          "doc": "docs/explicacao/kpis-e-big-numbers.md",
+          "tipo": "explicacao",
+          "tipo_nome": "Explicação",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/light-bulb-sober.svg"
+        },
+        {
+          "id": "explicacao/qual-e-o-grafico-certo",
+          "titulo": "Qual é o gráfico certo para o meu dado?",
+          "doc": "docs/explicacao/qual-e-o-grafico-certo.md",
+          "tipo": "explicacao",
+          "tipo_nome": "Explicação",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/light-bulb-sober.svg"
+        }
+      ]
+    },
+    {
+      "numero": 1,
+      "titulo": "Do problema ao painel publicado",
+      "descricao": "Mão na massa: da pergunta ao gráfico, a acessibilidade como requisito, o passo a passo completo e o checklist que precede a publicação no Gov Hub.",
+      "etapa": "Fazer",
+      "icone": "assets/icones/wrench-sober.svg",
+      "itens": [
+        {
+          "id": "referencia/guia-rapido-pergunta-para-grafico",
+          "titulo": "Guia rápido: pergunta → gráfico",
+          "doc": "docs/referencia/guia-rapido-pergunta-para-grafico.md",
+          "tipo": "referencia",
+          "tipo_nome": "Referência",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/document-text-sober.svg"
+        },
+        {
+          "id": "referencia/checklist-de-acessibilidade",
+          "titulo": "Checklist de acessibilidade",
+          "doc": "docs/referencia/checklist-de-acessibilidade.md",
+          "tipo": "referencia",
+          "tipo_nome": "Referência",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/document-text-sober.svg"
+        },
+        {
+          "id": "tutoriais/do-problema-ao-dashboard-publicado",
+          "titulo": "Do problema ao dashboard publicado",
+          "doc": "docs/tutoriais/do-problema-ao-dashboard-publicado.md",
+          "tipo": "tutorial",
+          "tipo_nome": "Tutorial",
+          "papel": "capstone",
+          "papel_nome": "Capstone",
+          "icone": "assets/icones/book-open-sober.svg"
+        },
+        {
+          "id": "referencia/checklist-final-de-qualidade",
+          "titulo": "Checklist final de qualidade antes de publicar",
+          "doc": "docs/referencia/checklist-final-de-qualidade.md",
+          "tipo": "referencia",
+          "tipo_nome": "Referência",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/document-text-sober.svg"
+        },
+        {
+          "id": "guias/publicar-e-homologar-no-govhub",
+          "titulo": "Publicar e homologar um dashboard no GovHub",
+          "doc": "docs/guias/publicar-e-homologar-no-govhub.md",
+          "tipo": "guia",
+          "tipo_nome": "Guia",
+          "papel": "core",
+          "papel_nome": "Essencial",
+          "icone": "assets/icones/wrench-sober.svg"
+        }
+      ]
+    }
+  ]
+}

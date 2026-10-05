@@ -1,0 +1,55 @@
+{
+  "_sobre": "Quiz de revisão do fast track de Dashboards: as perguntas de quiz/dashboards.json das aulas desta trilha. correta = índice em opcoes. Editado à mão.",
+  "perguntas": {
+    "explicacao/por-que-fazer-um-dashboard": {
+      "pergunta": "Qual é a principal diferença entre uma planilha e um dashboard?",
+      "opcoes": [
+        "A planilha mostra os dados, o dashboard mostra o significado dos dados",
+        "O dashboard armazena mais dados que a planilha",
+        "A planilha é sempre mais rápida de atualizar",
+        "Não há diferença, são a mesma coisa"
+      ],
+      "correta": 0
+    },
+    "explicacao/o-que-faz-um-dashboard-ruim": {
+      "pergunta": "Qual das opções abaixo é um sinal característico de um dashboard ruim?",
+      "opcoes": [
+        "Poucos indicadores bem escolhidos",
+        "Excesso de gráficos e cores sem propósito",
+        "Uso de filtros simples",
+        "Poucas cores na tela"
+      ],
+      "correta": 1
+    },
+    "explicacao/kpis-e-big-numbers": {
+      "pergunta": "Qual é a diferença entre um KPI e um Big Number?",
+      "opcoes": [
+        "KPI define o que acompanhar, Big Number define como apresentar essa informação",
+        "São sinônimos, não há diferença entre eles",
+        "KPI é visual, Big Number é numérico",
+        "Big Number é sempre mais importante que um KPI"
+      ],
+      "correta": 0
+    },
+    "explicacao/qual-e-o-grafico-certo": {
+      "pergunta": "Segundo a \"regra prática\" do levantamento, qual gráfico é indicado quando o objetivo é mostrar uma evolução?",
+      "opcoes": [
+        "Pizza",
+        "Linha",
+        "Scatter Plot",
+        "Mapa"
+      ],
+      "correta": 1
+    },
+    "referencia/guia-rapido-pergunta-para-grafico": {
+      "pergunta": "Qual gráfico é recomendado quando a resposta desejada é \"participação\"?",
+      "opcoes": [
+        "Histograma",
+        "Pizza, Donut ou Treemap",
+        "Linha",
+        "Tabela"
+      ],
+      "correta": 1
+    }
+  }
+}

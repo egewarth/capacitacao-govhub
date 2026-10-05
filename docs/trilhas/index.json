@@ -55,6 +55,25 @@
       ]
     },
     {
+      "slug": "dashboards-fast-track",
+      "titulo": "Fast track: Dashboards no Gov Hub",
+      "descricao": "As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essencial ao painel publicado.",
+      "categoria": "negocial",
+      "niveis": 2,
+      "aulas": [
+        "explicacao/por-que-fazer-um-dashboard",
+        "explicacao/o-que-faz-um-dashboard-ruim",
+        "explicacao/hierarquia-visual",
+        "explicacao/kpis-e-big-numbers",
+        "explicacao/qual-e-o-grafico-certo",
+        "referencia/guia-rapido-pergunta-para-grafico",
+        "referencia/checklist-de-acessibilidade",
+        "tutoriais/do-problema-ao-dashboard-publicado",
+        "referencia/checklist-final-de-qualidade",
+        "guias/publicar-e-homologar-no-govhub"
+      ]
+    },
+    {
       "slug": "adocao",
       "titulo": "Adotar o Gov Hub no seu órgão",
       "descricao": "Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.",
