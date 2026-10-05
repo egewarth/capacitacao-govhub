@@ -89,6 +89,21 @@ function nuvemFalsa(docs = {}) {
     },
     ouvir(uid, cb) { ouvintes.set(uid, cb); cb(copia(uid)); return () => ouvintes.delete(uid); },
     logar(usuario) { aoUsuario(usuario); },
+    // Como o Firebase: a conta nova dispara a troca de usuário ainda sem o nome (updateProfile vem depois).
+    contas: {}, chamadasEmail: [],
+    async criarConta(nome, email, senha) {
+      if (nuvem.contas[email]) throw Object.assign(new Error('x'), { code: 'auth/email-already-in-use' });
+      const uid = 'u-' + email;
+      nuvem.contas[email] = senha;
+      aoUsuario({ uid, nome: email, email, foto: null });
+      return uid;
+    },
+    async entrarComEmail(email, senha) {
+      nuvem.chamadasEmail.push(['entrar', email]);
+      if (nuvem.contas[email] !== senha) throw Object.assign(new Error('x'), { code: 'auth/invalid-credential' });
+      aoUsuario({ uid: 'u-' + email, nome: email, email, foto: null });
+    },
+    async redefinirSenha(email) { nuvem.chamadasEmail.push(['redefinir', email]); },
   };
   return nuvem;
 }
@@ -720,4 +735,36 @@ test('falha ao enviar a nota da trilha não a marca como avaliada', async () => 
   await loja.iniciar(); nuvem.logar(ANA); await esperar();
   await assert.rejects(loja.avaliarTrilha('dashboards', 3));
   assert.equal(loja.trilhaAvaliada('dashboards'), null);
+});
+
+test('criarConta: valida, cria e mostra o nome mesmo com o Firebase avisando antes do nome', async () => {
+  const nuvem = nuvemFalsa();
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await loja.iniciar();
+  await assert.rejects(loja.criarConta({ nome: ' ', email: 'a@b.br', senha: '123456' }), /nome-vazio/);
+  await assert.rejects(loja.criarConta({ nome: 'Ana', email: 'sem-arroba', senha: '123456' }), /email-invalido/);
+  await assert.rejects(loja.criarConta({ nome: 'Ana', email: 'a@b.br', senha: '123' }), /senha-curta/);
+  await loja.criarConta({ nome: '  Ana Souza ', email: ' ana@exemplo.gov.br ', senha: '123456' });
+  await esperar();
+  assert.equal(loja.usuario().uid, 'u-ana@exemplo.gov.br');
+  assert.equal(loja.usuario().nome, 'Ana Souza');
+  await assert.rejects(loja.criarConta({ nome: 'Ana', email: 'ana@exemplo.gov.br', senha: '123456' }), (e) => e.code === 'auth/email-already-in-use');
+});
+
+test('entrarComEmail e redefinirSenha passam o e-mail limpo para a nuvem; sem nuvem, recusam', async () => {
+  const sem = criarLoja({ armazenamento: armazenamentoFalso() });
+  await sem.iniciar();
+  await assert.rejects(sem.entrarComEmail('a@b.br', 'x'), /sem-nuvem/);
+  await assert.rejects(sem.redefinirSenha('a@b.br'), /sem-nuvem/);
+  const nuvem = nuvemFalsa();
+  nuvem.contas['ana@b.br'] = 'segredo1';
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await loja.iniciar();
+  await assert.rejects(loja.entrarComEmail('ana@b.br', 'errada'), (e) => e.code === 'auth/invalid-credential');
+  await loja.entrarComEmail(' ana@b.br ', 'segredo1');
+  await esperar();
+  assert.equal(loja.usuario().uid, 'u-ana@b.br');
+  await loja.redefinirSenha(' ana@b.br ');
+  assert.deepEqual(nuvem.chamadasEmail.at(-1), ['redefinir', 'ana@b.br']);
+  await assert.rejects(loja.redefinirSenha('sem-arroba'), /email-invalido/);
 });

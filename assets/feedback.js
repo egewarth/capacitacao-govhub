@@ -1,6 +1,7 @@
 // Bloco "Conte como foi esta aula" no fim de cada aula (doc.html). Exige login; a resposta não leva
 // uid, nome, e-mail nem horário (ver ADR 0006, que explica o limite dessa garantia). Estados: convite para entrar, formulário, enviando, obrigado, erro.
-import { el, botaoGoogle } from './dom.js';
+import { el } from './dom.js';
+import { botaoEntrar } from './login.js';
 import { CLAREZA, USO, LIMITE_COMENTARIO } from './progresso-loja.js';
 
 const ROTULOS_CLAREZA = { confuso: 'Confuso', claro: 'Claro', 'muito-claro': 'Muito claro' };
@@ -71,7 +72,7 @@ export function montarFeedback(secao, progresso) {
     if (!progresso.usuario()) {
       secao.replaceChildren(titulo('Conte como foi esta aula'),
         ...(progresso.nuvemDisponivel()
-          ? [el('p', { class: 'fb-texto' }, 'Entre com sua conta Google para avaliar este conteúdo.'), botaoGoogle(() => progresso.entrar(), { contornado: true })]
+          ? [el('p', { class: 'fb-texto' }, 'Entre na sua conta para avaliar este conteúdo.'), botaoEntrar(progresso, { contornado: true })]
           : [el('p', { class: 'fb-texto' }, 'A avaliação fica disponível quando o login estiver funcionando.')]));
       return;
     }

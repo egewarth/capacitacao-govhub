@@ -32,6 +32,8 @@ export function normalizarUltima(valor) {
 export const CLAREZA = ['confuso', 'claro', 'muito-claro'];
 export const USO = ['sim', 'talvez', 'nao'];
 export const LIMITE_COMENTARIO = 1000;
+export const SENHA_MINIMA = 6;   // mínimo do Firebase Auth
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function criarLoja({ armazenamento, criarNuvem = async () => null, agora = () => new Date() }) {
   let nuvem = null;
@@ -45,6 +47,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
   // (por aula, a última intenção; e a última aula aberta) e vai para a conta quando ela conectar.
   // null fora dessa janela.
   let pendentes = null;
+  // Conta criada agora: o Firebase avisa a troca de usuário antes de gravar o nome (updateProfile).
+  const nomesNovos = {};
   const ouvintes = new Set();
   const ouvintesAviso = new Set();
 
@@ -128,7 +132,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
     // O anônimo foi absorvido pela conta: não volta a ser somado numa próxima entrada.
     armazenamento.remove(CHAVE_ANONIMO);
     armazenamento.remove(CHAVE_ULTIMA_ANONIMO);
-    usuario = u;
+    usuario = nomesNovos[u.uid] ? { ...u, nome: nomesNovos[u.uid] } : u;
     feitos = novosFeitos;
     ultimaAula = novaUltima;
     avaliadas = (remoto && remoto.avaliadas) || {};
@@ -311,6 +315,35 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
     });
   }
 
+  // E-mail e senha (além do Google). Os erros do Firebase sobem com o `code` para a tela traduzir.
+  function emailLimpo(email) {
+    const e = String(email || '').trim();
+    if (!EMAIL_RE.test(e)) throw new Error('email-invalido');
+    return e;
+  }
+  async function entrarComEmail(email, senha) {
+    if (!nuvem) throw new Error('sem-nuvem');
+    await nuvem.entrarComEmail(emailLimpo(email), String(senha || ''));
+  }
+  async function criarConta({ nome, email, senha }) {
+    if (!nuvem) throw new Error('sem-nuvem');
+    const n = String(nome || '').trim();
+    if (!n) throw new Error('nome-vazio');
+    const e = emailLimpo(email);
+    if (String(senha || '').length < SENHA_MINIMA) throw new Error('senha-curta');
+    const uid = await nuvem.criarConta(n, e, senha);
+    nomesNovos[uid] = n;
+    if (usuario && usuario.uid === uid && usuario.nome !== n) {
+      usuario = { ...usuario, nome: n };
+      salvarLocal();
+      emitir();
+    }
+  }
+  async function redefinirSenha(email) {
+    if (!nuvem) throw new Error('sem-nuvem');
+    await nuvem.redefinirSenha(emailLimpo(email));
+  }
+
   function sair() {
     return nuvem ? nuvem.sair() : Promise.resolve();
   }
@@ -325,6 +358,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
 
   return {
     iniciar, alternar, zerar, registrarUltimaAula, entrar, sair, recarregar,
+    entrarComEmail, criarConta, redefinirSenha,
     avaliar, avaliarTrilha,
     trilhaAvaliada: (trilha) => lerJSON(armazenamento, CHAVE_NOTAS_TRILHA, {})[trilha] || null,
     feitos: () => feitos,

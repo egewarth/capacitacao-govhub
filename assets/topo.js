@@ -1,6 +1,7 @@
 // Topo comum a todas as páginas (marca, busca, Início/Trilhas, Dúvidas, conta Google), o rodapé
 // e o aviso de sincronização. Cada página tem só <header class="site" id="topo"></header>.
-import { el, svg, ICONES, botaoGoogle } from './dom.js';
+import { el, svg, ICONES } from './dom.js';
+import { botaoEntrar } from './login.js';
 import { carregarCatalogo, carregarTrilha } from './trilha.js';
 import { buscarAulas } from './hub-nucleo.js';
 import { hrefDoItem } from './progresso-nucleo.js';
@@ -97,7 +98,7 @@ function montarConta(raiz, progresso) {
     if (estado === desenhado) return;   // marcar aulas não redesenha o menu (que fecharia)
     desenhado = estado;
     if (!u) {
-      raiz.replaceChildren(progresso.nuvemDisponivel() ? botaoGoogle(() => progresso.entrar()) : '');
+      raiz.replaceChildren(progresso.nuvemDisponivel() ? botaoEntrar(progresso) : '');
       return;
     }
     const avatar = u.foto

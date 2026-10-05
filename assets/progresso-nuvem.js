@@ -20,6 +20,7 @@ export async function criarNuvem(config) {
     ]);
     const firebase = app.initializeApp(config);
     const autenticacao = auth.getAuth(firebase);
+    autenticacao.languageCode = 'pt-BR';   // e-mails de confirmação e de nova senha em português
     const banco = fs.getFirestore(firebase);
     const documento = (uid) => fs.doc(banco, 'progresso', uid);
 
@@ -34,6 +35,14 @@ export async function criarNuvem(config) {
       },
       entrar: () => auth.signInWithPopup(autenticacao, new auth.GoogleAuthProvider()),
       sair: () => auth.signOut(autenticacao),
+      entrarComEmail: (email, senha) => auth.signInWithEmailAndPassword(autenticacao, email, senha),
+      async criarConta(nome, email, senha) {
+        const { user } = await auth.createUserWithEmailAndPassword(autenticacao, email, senha);
+        await auth.updateProfile(user, { displayName: nome }).catch(() => {});
+        auth.sendEmailVerification(user).catch(() => {});   // confirma o e-mail, sem bloquear nada
+        return user.uid;
+      },
+      redefinirSenha: (email) => auth.sendPasswordResetEmail(autenticacao, email),
       async ler(uid) {
         const snap = await fs.getDoc(documento(uid));
         return snap.exists() ? normalizar(snap.data()) : null;

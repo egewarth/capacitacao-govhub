@@ -200,7 +200,7 @@ header.site :focus-visible,.hero :focus-visible{outline-color:#fff}
 .celebration-box h2{font-size:19px;margin-bottom:10px}
 .celebration-box>p{text-align:left}
 .celebration-rating{background:var(--bg-soft);border-radius:var(--radius-md);padding:18px;margin-bottom:20px}
-.celebration-rating .btn-google{margin:4px auto 0}
+.celebration-rating .btn-entrar{margin:4px auto 0}
 .rating-label{font-size:13.5px;font-weight:700;color:var(--dark-navy);margin:0 0 10px}
 .rating-hint{font-size:12px;color:var(--text-muted);margin:10px 0 0}
 .rating-erro{font-size:12.5px;font-weight:700;color:var(--color-danger);margin:10px 0 0}
@@ -212,3 +212,28 @@ button.star-btn:hover{background:var(--border-soft)}
 .star-btn.filled{color:var(--primary-purple)}
 .rating-thanks{font-size:13px;font-weight:700;color:var(--success-text);margin:10px 0 0}
 .celebration-box .modal-actions{justify-content:center;margin-top:4px}
+
+/* ---------- Entrar (botão e modal) ---------- */
+.btn-entrar{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:var(--dark-navy);border:none;border-radius:999px;
+    padding:8px 20px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-entrar:hover{background:var(--bg-soft)}
+.btn-entrar.contornado{background:var(--primary-purple);color:#fff}
+.btn-entrar.contornado:hover{background:var(--purple-600)}
+.login-box{max-width:420px}
+.login-box h2{font-size:20px;margin-bottom:6px}
+.login-box .login-intro{font-size:13.5px;margin:0 0 18px;padding-right:28px}
+.login-google .btn-google{width:100%;justify-content:center;padding:9px 16px}
+.login-box .login-ou{display:flex;align-items:center;gap:10px;margin:16px 0;font-size:12px;line-height:1;color:var(--text-muted)}
+.login-ou::before,.login-ou::after{content:"";flex:1;height:1px;background:var(--border-soft)}
+.login-form{display:grid;gap:12px}
+.login-campo{display:grid;gap:5px}
+.login-campo label{font-size:13px;font-weight:700;color:var(--dark-navy)}
+.login-campo input{font:inherit;font-size:14px;border:1.5px solid var(--text-muted);border-radius:var(--radius-sm);padding:10px 12px;color:var(--text-strong)}
+.login-campo input:focus-visible{outline:3px solid var(--purple-700);outline-offset:1px}
+.login-dica{font-size:12px;color:var(--text-muted);margin:0}
+.login-box .login-erro{font-size:13px;font-weight:700;color:var(--color-danger);margin:0}
+.login-box .login-ok{font-size:13px;color:var(--success-text);margin:0}
+.login-erro:empty,.login-ok:empty{display:none}
+.login-enviar{width:100%;padding:11px 20px}
+.login-box .login-links{font-size:13px;margin:16px 0 0;text-align:center}
+.login-link{background:none;border:none;padding:0;font:inherit;font-weight:700;color:var(--purple-700);cursor:pointer;text-decoration:underline}

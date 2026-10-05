@@ -1,7 +1,8 @@
 // Página inicial (index.html): apresentação e cartão de login.
 import { progresso } from './progresso.js';
 import { montarTopo } from './topo.js';
-import { el, svg, ICONES, botaoGoogle } from './dom.js';
+import { el, svg, ICONES } from './dom.js';
+import { botaoEntrar } from './login.js';
 
 montarTopo(progresso, { ativo: 'inicio' });
 const cartao = document.getElementById('login-card');
@@ -11,8 +12,8 @@ function pintar() {
   cartao.hidden = false;
   const u = progresso.usuario();
   if (!u) {
-    cartao.replaceChildren(botaoGoogle(() => progresso.entrar(), { contornado: true }),
-      el('p', { class: 'landing-login-hint' }, 'Entrar salva o seu progresso automaticamente e permite continuar de qualquer computador.'));
+    cartao.replaceChildren(botaoEntrar(progresso, { contornado: true, texto: 'Entrar ou criar conta' }),
+      el('p', { class: 'landing-login-hint' }, 'Entre com o Google ou com e-mail e senha. Assim o seu progresso fica salvo e você continua de qualquer computador.'));
     return;
   }
   cartao.replaceChildren(el('div', { class: 'landing-logado' },

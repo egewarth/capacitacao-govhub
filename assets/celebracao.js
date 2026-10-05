@@ -1,6 +1,7 @@
 // Modal "Você concluiu a trilha" (mapa e aula): abre uma vez quando a última aula da trilha é
 // marcada, com a nota de 1 a 5 para a trilha e o link para o quiz de revisão.
-import { el, svg, ICONES, botaoGoogle } from './dom.js';
+import { el, svg, ICONES } from './dom.js';
+import { botaoEntrar } from './login.js';
 import { todosFeitos } from './progresso-nucleo.js';
 
 const chave = (slug) => 'govhub-celebrada-' + slug;
@@ -34,8 +35,8 @@ export function montarCelebracao(progresso, slug, trilha, { temQuiz }) {
         el('p', { class: 'rating-thanks' }, 'Obrigado pelo feedback!')];
     }
     if (!progresso.usuario()) {
-      return [rotulo, el('p', { class: 'rating-hint' }, 'Entre com sua conta Google para avaliar. A nota não leva seu nome nem seu e-mail.'),
-        progresso.nuvemDisponivel() ? botaoGoogle(() => progresso.entrar(), { contornado: true }) : null];
+      return [rotulo, el('p', { class: 'rating-hint' }, 'Entre na sua conta para avaliar. A nota não leva seu nome nem seu e-mail.'),
+        progresso.nuvemDisponivel() ? botaoEntrar(progresso, { contornado: true }) : null];
     }
     const erro = el('p', { class: 'rating-erro', role: 'alert', hidden: true }, 'Não foi possível enviar; tente de novo.');
     const grupo = el('div', { class: 'star-rating', role: 'radiogroup', 'aria-labelledby': 'nota-rotulo' });
@@ -78,7 +79,7 @@ export function montarCelebracao(progresso, slug, trilha, { temQuiz }) {
     if (antes && antes.isConnected) antes.focus();
   }
   document.addEventListener('keydown', (ev) => {
-    if (fundo.hidden) return;
+    if (fundo.hidden || !caixa.contains(document.activeElement)) return;   // o modal de login está por cima
     if (ev.key === 'Escape') { esconder(); return; }
     if (ev.key !== 'Tab') return;
     const lista = focaveis();
