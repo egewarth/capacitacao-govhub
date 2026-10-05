@@ -9,7 +9,7 @@ organizado (framework **Diátaxis**) e como editar e evoluir o material.
 
 - Estrutura do conteúdo: [Diátaxis](https://diataxis.fr/)
 - Acessibilidade: [eMAG](https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/acessibilidade-digital) e [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)
-- Trilhas de aprendizagem: [index.html](index.html) (catálogo) · fonte de cada trilha em `trilhas/<slug>.md`
+- Trilhas de aprendizagem: [trilhas.html](trilhas.html) (catálogo) · fonte de cada trilha em `trilhas/<slug>.md`
 
 > Vai editar o material? Pule para a seção 7 — [Como editar e contribuir](#7-como-editar-e-contribuir).
 
@@ -82,14 +82,20 @@ Dashboards-Roadmap/
 ├── trilhas/                     fonte de cada trilha (<slug>.md)
 ├── CONTEXT.md                   linguagem ubíqua da autoria
 ├── CONTRIBUTING.md              como contribuir
-├── index.html                   catálogo de trilhas
-├── mapa.html                    mapa de uma trilha (?trilha=<slug>)
-├── doc.html                     leitor de Markdown, por trilha
-├── concluida.html               página de conclusão da trilha
-├── roadmap.html                 redireciona para mapa.html?trilha=dashboards
+├── index.html                   página inicial (apresentação e login)
+├── trilhas.html                 catálogo de trilhas
+├── mapa.html                    mapa de uma trilha (?trilha=<slug>), um nível por vez
+├── doc.html                     página da aula (Markdown), por trilha
+├── quiz.html                    quiz de revisão (?trilha=<slug>), liberado ao concluir a trilha
+├── concluida.html · roadmap.html   endereços antigos, só redirecionam
+├── quiz/<slug>.json             perguntas do quiz de revisão, uma por aula (editado à mão)
 ├── assets/
 │   ├── govhub.css               identidade visual (tokens do modo sóbrio) e componentes comuns
-│   ├── leitor.css · leitor.js   leitor da trilha (doc.html)
+│   ├── topo.js                  topo comum: busca, Início/Trilhas, Dúvidas, conta Google, rodapé
+│   ├── mapa.css · mapa.js       mapa da trilha · hub-nucleo.js: regras puras do mapa, busca e quiz
+│   ├── leitor.css · leitor.js   página da aula (doc.html) · feedback.js: avaliação da aula
+│   ├── celebracao.js            modal de conclusão da trilha, com a nota de 1 a 5
+│   ├── paginas.css              página inicial, catálogo e quiz
 │   ├── caminho.js               quais ?path= o leitor aceita (só .md do próprio site)
 │   ├── progresso-*.js           progresso: núcleo, loja e Firebase (ADR 0004)
 │   ├── firebase-config.js       configuração do Firebase (vazia = só navegador)
@@ -109,7 +115,8 @@ Dashboards-Roadmap/
 
 `gen` marca arquivos **regenerados** por `tools/gen_roadmap.py` — não edite à mão.
 
-As cores e a tipografia das três páginas vêm de `assets/govhub.css`, que segue a identidade visual
+O desenho das páginas segue o protótipo da designer (hub da trilha, versão 2_6; [ADR 0007](docs/adr/0007-hub-da-trilha.md)).
+As cores e a tipografia de todas as páginas vêm de `assets/govhub.css`, que segue a identidade visual
 do GovHub ([ADR 0002](docs/adr/0002-identidade-visual-govhub.md)).
 
 ---
@@ -213,7 +220,23 @@ documento pode estar em várias trilhas, mas não se repete dentro da mesma.
 **Criar uma trilha nova:** copie `trilhas/dashboards.md` para `trilhas/<slug>.md`, troque o cabeçalho,
 liste os itens (aulas já existentes podem ser reaproveitadas; o progresso é da aula) e rode o gerador.
 O campo `categoria` do cabeçalho é `negocial` (para quem usa os dados) ou `tecnica` (para quem opera
-a plataforma): o catálogo da home mostra essa etiqueta no card e lista as negociais primeiro. Veja o [ADR 0005](docs/adr/0005-varias-trilhas.md).
+a plataforma): o catálogo mostra essa etiqueta no card e lista as negociais primeiro. Veja o [ADR 0005](docs/adr/0005-varias-trilhas.md).
+
+Campos opcionais do cabeçalho, usados pelo mapa (ADR 0007):
+
+| Campo | Para quê |
+|---|---|
+| `chamada` | frase do topo do mapa (sem ela, vale a `descricao`) |
+| `status: em-breve` | o card aparece desabilitado no catálogo |
+| `etapas` | "A lógica da trilha": `Rótulo=Descrição \| Rótulo=Descrição \| …` |
+| `etapas_subtitulo` · `etapas_nota` | linha abaixo do título e nota no pé do quadro (`**trecho**` vira negrito) |
+
+Logo abaixo de cada `## Nível N · Título`, a linha opcional `Etapa: <rótulo> · Ícone: <nome>` liga o nível
+a uma etapa e escolhe o ícone do nível (`assets/icones/<nome>-sober.svg`, da biblioteca
+`GovHub-br/skills-assets`). O gerador falha se a etapa não estiver em `etapas` ou se o ícone não existir.
+
+**Quiz de revisão:** `quiz/<slug>.json` traz uma pergunta por aula (chave = id da aula, `correta` =
+índice da opção certa). Trilha sem esse arquivo não tem quiz.
 
 ### 7.3 Mudar cores, tipografia ou logotipo
 
@@ -281,8 +304,9 @@ Google leve o progresso para qualquer computador:
 6. Publique as regras de [`firestore.rules`](firestore.rules): cole o conteúdo em
    **Firestore → Regras → Publicar**, ou rode `firebase deploy --only firestore:rules` (Firebase CLI).
    As regras de `firestore.rules` são as que estão publicadas no console; mantenha os dois sempre
-   iguais. Elas incluem as da coleção `feedback` (só criar, campos validados) e precisam estar
-   publicadas **antes** do deploy do bloco de avaliação; sem elas o envio falha.
+   iguais. Elas incluem as das coleções `feedback` (avaliação da aula) e `avaliacao_trilha` (nota de
+   1 a 5 da trilha), ambas só de criação e com campos validados, e precisam estar publicadas
+   **antes** do deploy que as usa; sem elas o envio falha.
 7. Commite `assets/firebase-config.js`. Ao abrir o site, o botão **Entrar com Google** aparece na barra
    superior.
 
@@ -292,7 +316,7 @@ A avaliação das aulas está no [ADR 0006](docs/adr/0006-feedback-anonimo.md): 
 uid, nome, e-mail nem horário, mas não é anônima diante de quem administra o projeto Firebase.
 
 **Ler o feedback.** Console do Firebase → Firestore → coleção `feedback` (filtros por `trilha` e
-`aula`). Para ter uma tabela, exporte a coleção para o BigQuery (ou leia com um script pequeno usando
+`aula`) e coleção `avaliacao_trilha` (`trilha`, `nota`, `periodo`). Para ter uma tabela, exporte a coleção para o BigQuery (ou leia com um script pequeno usando
 o Admin SDK). `gcloud firestore export` gera um export do Firestore no Cloud Storage, não uma planilha.
 
 ---

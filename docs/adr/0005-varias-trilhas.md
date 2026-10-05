@@ -17,7 +17,8 @@ duplicar texto e sem que a pessoa tenha de marcar a mesma aula duas vezes.
 - **JSON por trilha e um catálogo** (`docs/trilhas/<slug>.json`, `docs/trilhas/index.json`), gerados por
   `tools/gen_roadmap.py`, junto com `<slug>.md` e `<slug>.xmind`.
 - **Páginas montadas no navegador:** `mapa.html?trilha=<slug>`, `doc.html?trilha=<slug>&path=<doc>` e
-  `concluida.html?trilha=<slug>` leem o JSON da trilha; não há mais HTML de mapa gerado.
+  `concluida.html?trilha=<slug>` leem o JSON da trilha; não há mais HTML de mapa gerado. (Atualização,
+  ADR 0007: a conclusão virou um modal no mapa e na aula, e o catálogo foi para `trilhas.html`.)
 - **Progresso por aula.** O id da aula é o caminho do doc sem `docs/` e sem `.md` (por exemplo,
   `explicacao/hierarquia-visual`) e vale em todas as trilhas. Um doc não se repete dentro de uma trilha.
 - **`ultimaAula = { trilha, path }`.** O formato antigo `{ path, item }` é lido como
