@@ -16,6 +16,8 @@ function buscar(url) {
 
 export const carregarCatalogo = () => buscar('docs/trilhas/index.json');
 export const carregarTrilha = (slug) => buscar('docs/trilhas/' + encodeURIComponent(slug) + '.json');
+// Quiz de revisão (quiz/<slug>.json, editado à mão; o JSON da trilha diz se existe em `quiz`). Falha: null.
+export const carregarQuiz = (slug) => buscar('quiz/' + encodeURIComponent(slug) + '.json').catch(() => null);
 
 // O slug pedido, se existir no catálogo; senão a primeira trilha; senão null.
 export function escolherTrilha(catalogo, slug) {

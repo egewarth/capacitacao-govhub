@@ -2,66 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trilha concluída · Gov Hub</title>
+<title>Trilha · Gov Hub</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Reddit+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/govhub.css">
-<style>
-*{box-sizing:border-box} body{margin:0;line-height:1.6;background:var(--bg-soft)}
-.conclusao{position:relative;overflow:hidden;background:var(--dark-navy);color:#fff;text-align:center;padding:64px 20px 56px}
-.conclusao .wrap{position:relative;z-index:1;max-width:720px;margin:0 auto}
-.selo{width:72px;height:72px;border-radius:50%;background:#fff;color:var(--primary-purple);font-size:2.2rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
-.eyebrow{font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0}
-.conclusao h1{font-size:2.4rem;font-weight:800;letter-spacing:-.025em;line-height:1.08;margin:8px 0 10px}
-.conclusao p{margin:0 0 22px}
-.conclusao a:not(.btn){color:#fff}
-.conclusao a:focus-visible{outline-color:#fff}
-.pendentes{width:calc(100% - 32px);max-width:720px;margin:-24px auto 40px;position:relative;z-index:2;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-xl);padding:22px 24px}
-.pendentes h2{font-size:1.1rem;font-weight:800;color:var(--dark-navy);margin:0 0 10px}
-.pendentes a:not(.btn){color:var(--purple-700)}
-.pendentes ul{margin:0 0 16px;padding-left:1.2em}
-.acoes{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-[hidden]{display:none !important}
-</style>
+<script>
+  // A conclusão da trilha virou um modal no mapa e na aula; links antigos vão para o mapa da trilha.
+  const t = new URLSearchParams(location.search).get('trilha');
+  location.replace(t ? 'mapa.html?trilha=' + encodeURIComponent(t) : 'trilhas.html');
+</script>
 </head>
 <body>
-<a class="pular" href="#principal">Pular para o conteúdo</a>
-<header class="topo"><div class="topo-wrap">
-  <a class="marca" href="index.html"><img src="assets/logo/logomarca-horizontal-white.svg" alt="Gov Hub" width="103" height="24"><span>Trilhas de capacitação</span></a>
-  <nav class="topo-links" aria-label="Principal">
-    <a href="index.html">Início</a>
-    <a id="topo-mapa" href="mapa.html?trilha=dashboards">Mapa da trilha</a>
-  </nav>
-  <div class="conta" id="conta"></div>
-</div></header>
-
-<main id="principal">
-  <section class="conclusao">
-    <span class="forma forma-quarto" aria-hidden="true"></span>
-    <span class="forma forma-anel" aria-hidden="true"></span>
-    <div class="wrap">
-      <div class="selo" id="selo" aria-hidden="true" hidden>✓</div>
-      <p class="eyebrow" id="eyebrow">Carregando…</p>
-      <h1 id="titulo"></h1>
-      <p id="resumo"></p>
-      <div class="acoes" id="acoes-completa" hidden style="justify-content:center">
-        <a class="btn btn-cta" href="index.html">Ver outras trilhas</a>
-        <a id="voltar-mapa" href="#">Voltar ao mapa desta trilha</a>
-      </div>
-    </div>
-  </section>
-  <section class="pendentes" id="pendentes" aria-labelledby="pendentes-titulo" hidden>
-    <h2 id="pendentes-titulo"></h2>
-    <ul id="pendentes-lista"></ul>
-    <div class="acoes">
-      <a class="btn" id="ver-pendentes" href="#">Ver as aulas pendentes no mapa</a>
-      <a href="index.html">Ver outras trilhas</a>
-    </div>
-  </section>
-</main>
-<script type="module" src="assets/concluida.js"></script>
+<p><a href="trilhas.html">Ver as trilhas</a></p>
 </body>
 </html>

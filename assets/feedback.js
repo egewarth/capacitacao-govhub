@@ -1,6 +1,6 @@
 // Bloco "Conte como foi esta aula" no fim de cada aula (doc.html). Exige login; a resposta não leva
 // uid, nome, e-mail nem horário (ver ADR 0006, que explica o limite dessa garantia). Estados: convite para entrar, formulário, enviando, obrigado, erro.
-import { el } from './dom.js';
+import { el, botaoGoogle } from './dom.js';
 import { CLAREZA, USO, LIMITE_COMENTARIO } from './progresso-loja.js';
 
 const ROTULOS_CLAREZA = { confuso: 'Confuso', claro: 'Claro', 'muito-claro': 'Muito claro' };
@@ -19,13 +19,14 @@ export function montarFeedback(secao, progresso) {
   let trilha = null;
   let enviando = false;
   let enviada = false;   // nesta visita, para não piscar o formulário antes do snapshot
+  let refazer = false;   // "Avaliar novamente": mostra o formulário mesmo com a aula já avaliada
 
   function titulo(texto) { return el('h2', { class: 'fb-titulo', id: 'feedback-titulo' }, texto); }
 
   function formulario() {
     const contador = el('span', { class: 'fb-contador' }, `0/${LIMITE_COMENTARIO}`);
     const erro = el('p', { class: 'fb-erro', role: 'alert', hidden: true }, 'Não foi possível enviar; tente de novo.');
-    const enviar = el('button', { class: 'btn', type: 'submit', disabled: true }, 'Enviar');
+    const enviar = el('button', { class: 'btn-primario', type: 'submit', disabled: true }, 'Enviar');
     const comentario = el('textarea', { id: 'fb-comentario', rows: 3, maxlength: LIMITE_COMENTARIO,
       oninput: () => { contador.textContent = `${comentario.value.length}/${LIMITE_COMENTARIO}`; } });
     const form = el('form', { class: 'fb-form', novalidate: true },
@@ -44,7 +45,7 @@ export function montarFeedback(secao, progresso) {
       const minhaAula = aula;
       try {
         await progresso.avaliar(minhaAula, trilha, { clareza: valor('fb-clareza'), uso: valor('fb-uso'), comentario: comentario.value });
-        if (minhaAula === aula) { enviada = true; pintar(); secao.querySelector('.fb-titulo').focus(); }
+        if (minhaAula === aula) { enviada = true; refazer = false; secao.replaceChildren(); pintar(); secao.querySelector('.fb-titulo').focus(); }
       } catch {
         erro.hidden = false;
       } finally {
@@ -57,18 +58,21 @@ export function montarFeedback(secao, progresso) {
   function pintar() {
     if (!aula) { secao.hidden = true; secao.replaceChildren(); return; }
     secao.hidden = false;
-    if (enviada || progresso.foiAvaliada(aula)) {
-      const t = titulo('Obrigado pela avaliação.');
+    if ((enviada || progresso.foiAvaliada(aula)) && !refazer && progresso.usuario()) {
+      const t = titulo('Obrigado por avaliar esta aula.');
       t.setAttribute('tabindex', '-1');
       secao.replaceChildren(el('div', { class: 'fb-obrigado' },
-        el('img', { src: 'assets/icones/heart-sober.svg', alt: '', width: '48', height: '48' }), t));
+        el('img', { src: 'assets/icones/heart-sober.svg', alt: '', width: '48', height: '48' }),
+        el('div', {}, t, el('button', { class: 'btn-secundario', type: 'button',
+          onclick: () => { refazer = true; secao.replaceChildren(); pintar(); const r = secao.querySelector('input'); if (r) r.focus(); } },
+        'Avaliar novamente'))));
       return;
     }
     if (!progresso.usuario()) {
       secao.replaceChildren(titulo('Conte como foi esta aula'),
-        progresso.nuvemDisponivel()
-          ? el('p', {}, el('button', { class: 'btn btn-secundario', type: 'button', onclick: () => progresso.entrar() }, 'Entrar com Google'), ' para avaliar esta aula.')
-          : el('p', {}, 'A avaliação fica disponível quando o login estiver funcionando.'));
+        ...(progresso.nuvemDisponivel()
+          ? [el('p', { class: 'fb-texto' }, 'Entre com sua conta Google para avaliar este conteúdo.'), botaoGoogle(() => progresso.entrar(), { contornado: true })]
+          : [el('p', { class: 'fb-texto' }, 'A avaliação fica disponível quando o login estiver funcionando.')]));
       return;
     }
     if (!secao.querySelector('form')) secao.replaceChildren(titulo('Conte como foi esta aula'), formulario());
@@ -89,7 +93,7 @@ export function montarFeedback(secao, progresso) {
 
   return {
     mostrar(novaAula, novaTrilha) {
-      aula = novaAula; trilha = novaTrilha; enviada = false; enviando = false;
+      aula = novaAula; trilha = novaTrilha; enviada = false; enviando = false; refazer = false;
       secao.replaceChildren(); pintar();
       estado = chave();
     },

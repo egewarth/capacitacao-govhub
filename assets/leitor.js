@@ -1,12 +1,14 @@
-// Leitor da trilha (doc.html): barra lateral com os níveis, aula em Markdown e a sequência
+// Página da aula (doc.html): aulas do nível à esquerda, aula em Markdown, avaliação e a sequência
 // anterior/próxima, sem recarregar a página. Links antigos doc.html?path=... continuam valendo.
 import { progresso } from './progresso.js';
 import { carregarCatalogo, carregarTrilha, escolherTrilha, trilhaParaDoc } from './trilha.js';
-import { montarConta, montarAviso } from './conta.js';
-import { el } from './dom.js';
+import { montarTopo } from './topo.js';
+import { el, svg, ICONES } from './dom.js';
 import { montarFeedback } from './feedback.js';
+import { montarCelebracao } from './celebracao.js';
 import { caminhoSeguro } from './caminho.js';
-import { contar, hrefDoItem, idDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
+import { hrefDoItem, idDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
+import { nivelPadrao, papelVisual } from './hub-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
 const feedback = montarFeedback($('feedback'), progresso);
@@ -14,6 +16,8 @@ let niveis = [];
 let trilha = null;   // objeto da trilha aberta
 let slug = null;     // slug da trilha aberta
 let atual = { path: null, item: null };   // item: nó da trilha, ou null para página fora dela
+let celebracao = null;
+const ROTULO_PAPEL = { essencial: 'Essencial', apoio: 'Apoio', marco: 'Marco' };
 
 // ---- URL e Markdown -----------------------------------------------------------
 function lerUrl() {
@@ -115,80 +119,47 @@ function desenharDiagramas(raiz) {
   }).catch(() => {});
 }
 
-// ---- Barra lateral --------------------------------------------------------------
-function montarSumario() {
-  $('sumario-niveis').replaceChildren(...niveis.map((nivel) => el('li', { class: 'nivel' },
-    el('details', { 'data-nivel': nivel.numero },
-      el('summary', {},
-        el('span', { class: 'nivel-num', 'aria-hidden': 'true' }, String(nivel.numero)),
-        el('span', { class: 'nivel-titulo' }, el('span', { class: 'sr-only' }, `Nível ${nivel.numero} · `), nivel.titulo),
-        el('span', { class: 'nivel-contador' })),
-      el('ol', { class: 'aulas' }, ...nivel.itens.map((item) => el('li', { class: 'aula', 'data-id': item.id },
-        el('button', {
-          class: 'check', type: 'button', 'aria-pressed': 'false',
-          'aria-label': 'Marcar como concluída: ' + item.titulo,
-          onclick: () => progresso.alternar([item.id]),
-        }),
-        el('a', { class: 'aula-link', href: hrefDoItem(slug, item) },
-          el('span', { class: 'aula-titulo' }, item.titulo),
-          el('span', { class: 'aula-meta' },
-            el('img', { src: item.icone, alt: '', width: 16, height: 16 }),
-            item.tipo_nome,
-            item.papel !== 'core' ? ' · ' + item.papel_nome : null)))))))));
-}
-
-function marcarAtiva() {
-  let ativa = null;
-  document.querySelectorAll('.aula').forEach((li) => {
-    const eh = !!atual.item && li.dataset.id === atual.item.id;
-    li.classList.toggle('ativa', eh);
-    const link = li.querySelector('.aula-link');
-    if (eh) { link.setAttribute('aria-current', 'page'); ativa = li; } else link.removeAttribute('aria-current');
-  });
-  if (!ativa) return;
-  ativa.closest('details').open = true;
-  const sumario = $('sumario');
-  const topo = ativa.offsetTop - sumario.clientHeight / 3;
-  if (ativa.offsetTop < sumario.scrollTop || ativa.offsetTop > sumario.scrollTop + sumario.clientHeight - 40) sumario.scrollTop = topo;
+// ---- Aulas do nível (à esquerda) ------------------------------------------------------
+let nivelMontado = null;
+function montarNivel() {
+  const item = atual.item;
+  $('lateral').hidden = !item;
+  document.body.classList.toggle('sem-nivel', !item);
+  if (!item || item.nivel === nivelMontado) return;
+  nivelMontado = item.nivel;
+  const nivel = niveis.find((n) => n.numero === item.nivel);
+  $('nivel-card-titulo').textContent = `Nível ${nivel.numero} · ${nivel.titulo}`;
+  $('nivel-lista').replaceChildren(...nivel.itens.map((it) => el('li', {},
+    el('a', { class: 'content-nav-item', href: hrefDoItem(slug, it), 'data-id': it.id },
+      el('span', { class: 'content-nav-dot', 'aria-hidden': 'true' }),
+      el('span', {}, it.titulo, el('span', { class: 'sr-only estado' }))))));
 }
 
 function pintarProgresso() {
   const feitos = progresso.feitos();
-  const c = contar(feitos, niveis);
-  $('progresso-geral-texto').textContent = `${c.feitas} de ${c.total} aulas concluídas`;
-  $('progresso-geral-barra').style.width = c.percentual + '%';
-  $('topo-percentual').textContent = c.percentual + '%';
-  $('topo-barra').style.width = c.percentual + '%';
-  document.querySelectorAll('.aula').forEach((li) => {
-    const feito = !!feitos[li.dataset.id];
-    li.classList.toggle('feita', feito);
-    li.querySelector('.check').setAttribute('aria-pressed', String(feito));
-  });
-  document.querySelectorAll('details[data-nivel]').forEach((d) => {
-    const n = c.porNivel[d.dataset.nivel];
-    d.querySelector('.nivel-contador').textContent = `${n.feitas}/${n.total}`;
+  document.querySelectorAll('.content-nav-item').forEach((a) => {
+    const feito = !!feitos[a.dataset.id];
+    a.classList.toggle('complete', feito);
+    a.querySelector('.content-nav-dot').replaceChildren(...(feito ? [svg(ICONES.check)] : []));
+    a.querySelector('.estado').textContent = feito ? ' (concluída)' : '';
+    if (atual.item && a.dataset.id === atual.item.id) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
   });
   pintarRodape();
+  if (celebracao) celebracao.verificar();
 }
 
 // ---- Contexto e sequência da aula -------------------------------------------------
 function pintarContexto() {
-  const ctx = $('aula-contexto');
+  const meta = $('aula-meta');
   const item = atual.item;
-  ctx.hidden = !item;
-  if (!item) { ctx.replaceChildren(); return; }
-  ctx.replaceChildren(...[
-    el('span', {}, `Nível ${item.nivel} · `, el('b', {}, item.nivel_titulo)),
-    el('span', { class: 'tag-tipo' }, el('img', { src: item.icone, alt: '', width: 18, height: 18 }), item.tipo_nome),
-    item.papel !== 'core' ? el('span', { class: 'papel' }, item.papel_nome) : null,
-  ].filter(Boolean));
-}
-
-function apontar(link, item) {
-  link.hidden = !item;
-  if (!item) return;
-  link.href = hrefDoItem(slug, item);
-  link.querySelector('.rotulo-titulo').textContent = item.titulo;
+  meta.hidden = !item;
+  if (!item) { meta.replaceChildren(); return; }
+  const papel = papelVisual(item.papel);
+  meta.replaceChildren(
+    el('span', { class: 'tipo-aula' }, el('img', { src: item.icone, alt: '' }), el('span', {}, item.tipo_nome)),
+    el('span', { class: 'tag ' + papel }, ROTULO_PAPEL[papel]));
+  const mapa = 'mapa.html?trilha=' + encodeURIComponent(slug) + '#nivel-' + item.nivel;
+  $('voltar-trilha').href = mapa;
 }
 
 function pintarRodape() {
@@ -196,13 +167,16 @@ function pintarRodape() {
   rodape.hidden = !atual.item;
   if (!atual.item) return;
   const { anterior, proxima } = vizinhos(niveis, atual.item.id);
-  apontar($('aula-anterior'), anterior);
-  apontar($('aula-proxima'), proxima);
+  const link = $('aula-anterior');
+  link.hidden = !anterior;
+  if (anterior) {
+    link.href = hrefDoItem(slug, anterior);
+    link.querySelector('.nav-btn-label').textContent = anterior.titulo;
+  }
   const feita = todosFeitos(progresso.feitos(), [atual.item.id]);
-  const cta = $('aula-cta');
-  cta.classList.toggle('feita', feita);
-  if (!proxima) cta.textContent = 'Concluir a trilha';
-  else cta.textContent = feita ? 'Próxima aula →' : 'Concluir e avançar';
+  let rotulo = feita ? 'Avançar' : 'Concluir e avançar';
+  if (!proxima) rotulo = feita ? 'Voltar para a trilha' : 'Concluir a trilha';
+  $('aula-cta').querySelector('.nav-btn-label').textContent = rotulo;
 }
 
 function aoClicarCta() {
@@ -211,8 +185,11 @@ function aoClicarCta() {
   const feita = todosFeitos(progresso.feitos(), ids);
   const { proxima } = vizinhos(niveis, atual.item.id);
   if (!feita) progresso.alternar(ids);
-  if (proxima) navegar(hrefDoItem(slug, proxima));
-  else location.href = 'concluida.html?trilha=' + encodeURIComponent(slug);
+  if (proxima) { navegar(hrefDoItem(slug, proxima)); return; }
+  // Última aula: com a trilha completa, o modal de conclusão abre aqui mesmo (celebracao.verificar);
+  // senão, volta ao mapa no primeiro nível com aula pendente.
+  if (celebracao && celebracao.completa() && !feita) return;
+  location.href = 'mapa.html?trilha=' + encodeURIComponent(slug) + '#nivel-' + nivelPadrao(progresso.feitos(), niveis);
 }
 
 // ---- Abrir aula ---------------------------------------------------------------------
@@ -223,8 +200,8 @@ function mostrarMensagem(...partes) {
 async function abrir({ path }, { foco = false } = {}) {
   atual = { path, item: localizar(niveis, path) };
   pintarContexto();
-  marcarAtiva();
-  pintarRodape();
+  montarNivel();
+  pintarProgresso();
   feedback.mostrar(null, slug);   // some enquanto a aula carrega
   const conteudo = $('conteudo');
   conteudo.setAttribute('aria-busy', 'true');
@@ -241,6 +218,7 @@ async function abrir({ path }, { foco = false } = {}) {
       return;
     }
     conteudo.innerHTML = marked.parse(md);
+    tirarLinhaDeTipo(conteudo);
     idsNosTitulos(conteudo);
     corrigirLinks(conteudo, path);
     desenharDiagramas(conteudo);
@@ -258,7 +236,7 @@ async function abrir({ path }, { foco = false } = {}) {
   } catch (e) {
     if (path !== atual.path) return;
     mostrarMensagem('Não foi possível abrir ', el('code', {}, path), ` (${e.message}). `,
-      el('a', { href: 'index.html' }, 'Voltar para o início'));
+      el('a', { href: 'trilhas.html' }, 'Ver as trilhas'));
   } finally {
     if (path === atual.path) conteudo.removeAttribute('aria-busy');
   }
@@ -267,7 +245,6 @@ async function abrir({ path }, { foco = false } = {}) {
 // ---- Navegação sem recarregar ----------------------------------------------------
 function navegar(href) {
   history.pushState(null, '', new URL(href, location.href));
-  fecharGaveta();
   abrir(lerUrl(), { foco: true });
 }
 
@@ -281,7 +258,7 @@ function interceptarLinks(ev) {
   const mesmaAula = url.searchParams.get('path') === new URLSearchParams(location.search).get('path');   // a ordem dos parâmetros não importa
   if (mesmaAula && url.hash) return;   // âncora na mesma aula: o navegador rola
   ev.preventDefault();
-  if (mesmaAula) { fecharGaveta(); return; }   // aula já aberta: sem entrada duplicada no histórico
+  if (mesmaAula) return;   // aula já aberta: sem entrada duplicada no histórico
   navegar(url.href);
 }
 
@@ -290,45 +267,35 @@ function aoVoltar() {
   if (destino.path !== atual.path) abrir(destino);   // se só o #fragmento mudou, o navegador já rolou
 }
 
-// ---- Gaveta (celular) -----------------------------------------------------------------
-function abrirGaveta() {
-  $('sumario').classList.add('aberto');
-  $('abrir-sumario').setAttribute('aria-expanded', 'true');
-  $('fundo-gaveta').hidden = false;
-  const alvo = document.querySelector('.aula.ativa .aula-link') || $('fechar-sumario');
-  alvo.focus();
-}
-function fecharGaveta({ devolverFoco = false } = {}) {
-  if (!$('sumario').classList.contains('aberto')) return;
-  $('sumario').classList.remove('aberto');
-  $('abrir-sumario').setAttribute('aria-expanded', 'false');
-  $('fundo-gaveta').hidden = true;
-  if (devolverFoco) $('abrir-sumario').focus();
-}
-function iniciarGaveta() {
-  $('abrir-sumario').addEventListener('click', () => {
-    if ($('sumario').classList.contains('aberto')) fecharGaveta({ devolverFoco: true });
-    else abrirGaveta();
-  });
-  $('fechar-sumario').addEventListener('click', () => fecharGaveta({ devolverFoco: true }));
-  $('fundo-gaveta').addEventListener('click', () => fecharGaveta({ devolverFoco: true }));
-  document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape') fecharGaveta({ devolverFoco: true }); });
+// O tipo da aula aparece acima do título (ícone + nome); a linha "> Tipo: **X**" do Markdown sobra.
+function tirarLinhaDeTipo(raiz) {
+  const h1 = raiz.querySelector('h1');
+  const q = h1 && h1.nextElementSibling;
+  if (q && q.tagName === 'BLOCKQUOTE' && /^\s*Tipo:/.test(q.textContent)) q.remove();
 }
 
 // ---- Início ----------------------------------------------------------------------------
-montarConta($('conta'), progresso);
-montarAviso(progresso);
+montarTopo(progresso, { ativo: 'trilhas' });
+$('voltar-icone').replaceChildren(svg(ICONES.voltar));
+document.querySelector('.seta-voltar').replaceChildren(svg(ICONES.voltar));
+document.querySelector('.seta-avancar').replaceChildren(svg(ICONES.avancar));
+$('nivel-card-botao').replaceChildren(svg(ICONES.seta));
+$('nivel-card-botao').addEventListener('click', () => {
+  const recolhida = $('nivel-card').classList.toggle('collapsed');
+  $('nivel-card-botao').setAttribute('aria-expanded', String(!recolhida));
+  $('nivel-card-botao').setAttribute('aria-label', (recolhida ? 'Mostrar' : 'Recolher') + ' a lista de aulas do nível');
+});
 let catalogo = null;
 try { catalogo = await carregarCatalogo(); } catch { catalogo = null; }
 {
-  // Sem ?trilha= válido (menu "Documentação", links antigos, links dentro das aulas): a trilha da
-  // última aula, se tiver este doc; senão dashboards; senão a primeira que tiver o doc.
+  // Sem ?trilha= válido (links antigos, links dentro das aulas): a trilha da última aula, se tiver
+  // este doc; senão dashboards; senão a primeira que tiver o doc.
   const pedido = lerUrl();
   const valida = escolherTrilha(catalogo, pedido.trilha) === pedido.trilha ? pedido.trilha : null;
   const ultima = progresso.ultimaAula();
   slug = valida || trilhaParaDoc(catalogo, idDoDoc(pedido.path), ultima && ultima.trilha) || 'dashboards';
 }
-try { trilha = await carregarTrilha(slug); niveis = trilha.niveis || []; } catch { trilha = null; niveis = []; }   // sem a trilha o leitor ainda abre o Markdown, só sem a barra lateral
+try { trilha = await carregarTrilha(slug); niveis = trilha.niveis || []; } catch { trilha = null; niveis = []; }   // sem a trilha o leitor ainda abre o Markdown, só sem a lista do nível
 if (lerUrl().trilha !== slug) {
   const u = new URL(location.href);
   const resto = new URLSearchParams(u.search);
@@ -336,11 +303,8 @@ if (lerUrl().trilha !== slug) {
   u.search = new URLSearchParams({ trilha: slug, ...Object.fromEntries(resto) }).toString();   // trilha antes de path, como nos links gerados
   history.replaceState(null, '', u);
 }
-$('link-mapa').href = 'mapa.html?trilha=' + encodeURIComponent(slug);
-document.querySelector('.sumario-titulo').textContent = trilha ? trilha.titulo : 'Conteúdo da trilha';
-if (!niveis.length) document.body.classList.add('sem-trilha');
-montarSumario();
-iniciarGaveta();
+$('voltar-trilha').href = trilha ? 'mapa.html?trilha=' + encodeURIComponent(slug) : 'trilhas.html';
+if (trilha) celebracao = montarCelebracao(progresso, slug, trilha, { temQuiz: !!trilha.quiz });
 $('aula-cta').addEventListener('click', aoClicarCta);
 document.addEventListener('click', interceptarLinks);
 window.addEventListener('popstate', aoVoltar);
