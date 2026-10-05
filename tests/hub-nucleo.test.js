@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nivelPadrao, papelVisual, buscarAulas, corrigirQuiz, perguntasDaTrilha, normalizarBusca } from '../assets/hub-nucleo.js';
+import { nivelPadrao, papelVisual, buscarAulas, corrigirQuiz, perguntasDaTrilha, normalizarBusca, niveisConcluidos } from '../assets/hub-nucleo.js';
 
 const NIVEIS = [
   { numero: 0, titulo: 'Base', itens: [{ id: 'a', titulo: 'Por que fazer um dashboard?', doc: 'docs/a.md' }, { id: 'b', titulo: 'Glossário', doc: 'docs/b.md' }] },
@@ -44,4 +44,12 @@ test('corrigirQuiz: acertos sobre o total de perguntas', () => {
   const perguntas = [{ id: 'a', correta: 0 }, { id: 'c', correta: 1 }];
   assert.deepEqual(corrigirQuiz(perguntas, { a: 0, c: 0 }), { acertos: 1, total: 2, completo: true });
   assert.deepEqual(corrigirQuiz(perguntas, { a: 0 }), { acertos: 1, total: 2, completo: false });
+});
+
+test('niveisConcluidos: conta só níveis com todas as aulas feitas', () => {
+  assert.deepEqual(niveisConcluidos({}, NIVEIS), { feitos: 0, total: 2, percentual: 0 });
+  assert.deepEqual(niveisConcluidos({ a: true }, NIVEIS), { feitos: 0, total: 2, percentual: 0 });
+  assert.deepEqual(niveisConcluidos({ a: true, b: true }, NIVEIS), { feitos: 1, total: 2, percentual: 50 });
+  assert.deepEqual(niveisConcluidos({ a: true, b: true, c: true }, NIVEIS), { feitos: 2, total: 2, percentual: 100 });
+  assert.deepEqual(niveisConcluidos({}, []), { feitos: 0, total: 0, percentual: 0 });
 });

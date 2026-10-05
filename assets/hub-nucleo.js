@@ -52,3 +52,9 @@ export function corrigirQuiz(perguntas, respostas) {
   const completo = perguntas.every((p) => respostas[p.id] !== undefined);
   return { acertos, total: perguntas.length, completo };
 }
+
+// Andamento da trilha em níveis: um nível conta quando todas as suas aulas estão feitas.
+export function niveisConcluidos(feitos, niveis) {
+  const feitosN = niveis.filter((n) => n.itens.length > 0 && n.itens.every((i) => feitos[i.id])).length;
+  return { feitos: feitosN, total: niveis.length, percentual: niveis.length ? Math.round((feitosN / niveis.length) * 100) : 0 };
+}

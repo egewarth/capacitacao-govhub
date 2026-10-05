@@ -4,7 +4,7 @@ import { progresso } from './progresso.js';
 import { montarTopo } from './topo.js';
 import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
 import { contar, hrefDoItem } from './progresso-nucleo.js';
-import { nivelPadrao, papelVisual } from './hub-nucleo.js';
+import { nivelPadrao, papelVisual, niveisConcluidos } from './hub-nucleo.js';
 import { montarCelebracao } from './celebracao.js';
 import { el, svg, ICONES } from './dom.js';
 
@@ -110,8 +110,10 @@ function montarNiveis() {
 function pintar() {
   const feitos = progresso.feitos();
   const c = contar(feitos, trilha.niveis);
-  $('progresso-texto').textContent = `${c.feitas} de ${c.total} concluídas`;
-  $('progresso-barra').style.width = c.percentual + '%';
+  // No topo, o andamento é por nível; na lista de níveis e no painel, por aula.
+  const nv = niveisConcluidos(feitos, trilha.niveis);
+  $('progresso-texto').textContent = `${nv.feitos} de ${nv.total} níveis concluídos`;
+  $('progresso-barra').style.width = nv.percentual + '%';
   $('limpar').disabled = c.feitas === 0;
   document.querySelectorAll('.trail-nav-item').forEach((a) => {
     const n = c.porNivel[a.dataset.nivel];
