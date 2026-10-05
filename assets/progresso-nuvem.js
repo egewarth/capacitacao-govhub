@@ -42,6 +42,7 @@ export async function criarNuvem(config) {
         feitos, ultimaAula: ultimaAula || null, atualizadoEm: fs.serverTimestamp(),
       }, { merge: true }),   // merge para não apagar `avaliadas`; `feitos: {}` substitui o mapa inteiro (zerar)
       enviarFeedback: (dados) => fs.addDoc(fs.collection(banco, 'feedback'), dados),
+      enviarAvaliacaoTrilha: (dados) => fs.addDoc(fs.collection(banco, 'avaliacao_trilha'), dados),
       marcarAvaliada: (uid, id) => fs.setDoc(documento(uid),
         { avaliadas: { [id]: true }, atualizadoEm: fs.serverTimestamp() }, { merge: true }),
       // Um campo por aula (feitos.<id>), numa única escrita: duas aulas marcadas ao mesmo

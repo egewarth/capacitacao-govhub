@@ -25,8 +25,9 @@ function nuvemFalsa(docs = {}) {
   const notificar = (uid) => { const cb = ouvintes.get(uid); if (cb) cb(copia(uid)); };
   const nuvem = {
     docs, chamadas: [], recusar: false,
-    feedbacks: [], recusarFeedback: false,
+    feedbacks: [], recusarFeedback: false, notasTrilha: [],
     async enviarFeedback(d) { if (nuvem.recusarFeedback) throw new Error('x'); nuvem.feedbacks.push(structuredClone(d)); },
+    async enviarAvaliacaoTrilha(d) { if (nuvem.recusarFeedback) throw new Error('x'); nuvem.notasTrilha.push(structuredClone(d)); },
     async marcarAvaliada(uid, id) {
       (docs[uid] ||= { feitos: {}, ultimaAula: null }).avaliadas = { ...(docs[uid].avaliadas || {}), [id]: true };
       notificar(uid);
@@ -682,4 +683,41 @@ test('avaliar com uso inválido é recusado', async () => {
   const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
   await loja.iniciar(); nuvem.logar(ANA); await esperar();
   await assert.rejects(loja.avaliar('a', 'dashboards', { clareza: 'claro', uso: 'talvezsim' }), /resposta-invalida/);
+});
+
+test('avaliarTrilha exige sessão e nota inteira de 1 a 5', async () => {
+  const loja = criarLoja({ armazenamento: armazenamentoFalso() });
+  await loja.iniciar();
+  await assert.rejects(loja.avaliarTrilha('dashboards', 4), /sem-sessao/);
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const outra = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await outra.iniciar(); nuvem.logar(ANA); await esperar();
+  for (const ruim of [0, 6, 2.5, '4', null]) await assert.rejects(outra.avaliarTrilha('dashboards', ruim), /nota-invalida/);
+  assert.deepEqual(nuvem.notasTrilha, []);
+});
+
+test('avaliarTrilha grava só trilha, nota e período, e lembra neste navegador', async () => {
+  const arm = armazenamentoFalso();
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  const loja = criarLoja({ armazenamento: arm, criarNuvem: async () => nuvem, agora: () => new Date(2026, 9, 4) });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  assert.equal(loja.trilhaAvaliada('dashboards'), null);
+  await loja.avaliarTrilha('dashboards', 5);
+  assert.deepEqual(nuvem.notasTrilha, [{ trilha: 'dashboards', nota: 5, periodo: '2026-10' }]);
+  assert.equal(loja.trilhaAvaliada('dashboards'), 5);
+  // sobrevive ao logout e a uma nova página (é deste navegador, não da conta)
+  await nuvem.sair(); await esperar();
+  const nova = criarLoja({ armazenamento: arm });
+  await nova.iniciar();
+  assert.equal(nova.trilhaAvaliada('dashboards'), 5);
+  assert.equal(nova.trilhaAvaliada('adocao'), null);
+});
+
+test('falha ao enviar a nota da trilha não a marca como avaliada', async () => {
+  const nuvem = nuvemFalsa({ ana: { feitos: {}, ultimaAula: null } });
+  nuvem.recusarFeedback = true;
+  const loja = criarLoja({ armazenamento: armazenamentoFalso(), criarNuvem: async () => nuvem });
+  await loja.iniciar(); nuvem.logar(ANA); await esperar();
+  await assert.rejects(loja.avaliarTrilha('dashboards', 3));
+  assert.equal(loja.trilhaAvaliada('dashboards'), null);
 });

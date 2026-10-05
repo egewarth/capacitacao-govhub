@@ -1,10 +1,12 @@
 ---
 slug: dashboards
 titulo: Dashboards no Gov Hub
-diagrama: assets/diagramas/logica-da-trilha.png
-diagrama_alt: A lógica da trilha em cinco etapas, da esquerda para a direita: por quê (fundamentos), o quê (princípios transversais), como (execução na ferramenta), governança (padrões Gov Hub) e prática (estudo de caso). Acessibilidade e arquitetura da informação aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.
 descricao: Do "por que um dashboard" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.
 categoria: negocial
+chamada: Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu, do primeiro gráfico à publicação, com Apache Superset e Power BI.
+etapas: Por quê=Fundamentos | O quê=Princípios transversais | Como=Execução na ferramenta | Prática=Estudo de caso | Governança=Padrões Gov Hub
+etapas_subtitulo: Cinco etapas em sequência: do "por quê" à governança
+etapas_nota: **Acessibilidade e arquitetura da informação** não são um módulo isolado no fim: aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.
 ---
 # Trilha de aprendizagem — Dashboards no GovHub
 
@@ -24,6 +26,7 @@ categoria: negocial
 
 
 ## Nível 0 · Fundamentos de visualização de dados
+Etapa: Por quê · Ícone: light-bulb
 O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o
 diferencia de um relatório ou de um painel operacional, e por que um dashboard bom parece simples.
 
@@ -35,6 +38,7 @@ diferencia de um relatório ou de um painel operacional, e por que um dashboard 
 - [reference] **Glossário** — support — `docs/referencia/glossario.md`
 
 ## Nível 1 · Arquitetura da informação
+Etapa: O quê · Ícone: rectangle-group
 Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: posição dos elementos,
 fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filtros.
 
@@ -46,6 +50,7 @@ fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filt
 - [explanation] **Filtros e segmentação** — core — `docs/explicacao/filtros-e-segmentacao.md`
 
 ## Nível 2 · Hierarquia visual e storytelling
+Etapa: O quê · Ícone: presentation-chart-line
 Definir o que se enxerga primeiro e transformar o dashboard em uma narrativa que gera decisão,
 em vez de um mural de números sem prioridade.
 
@@ -55,6 +60,7 @@ em vez de um mural de números sem prioridade.
 - [explanation] **Viés e distorção na apresentação dos dados** — support — `docs/explicacao/vies-e-distorcao-nos-dados.md`
 
 ## Nível 3 · Design visual e acessibilidade
+Etapa: O quê · Ícone: swatch
 Base de design aplicada a dados, sem exigir formação em design — e acessibilidade como requisito legal
 da plataforma de governo (eMAG e WCAG), não como polimento opcional no fim do projeto.
 
@@ -66,6 +72,7 @@ da plataforma de governo (eMAG e WCAG), não como polimento opcional no fim do p
 - [explanation] **Experiência do usuário e performance** — support — `docs/explicacao/experiencia-do-usuario-e-performance.md`
 
 ## Nível 4 · Escolha do gráfico
+Etapa: Como · Ícone: chart-pie
 O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo
 raciocínio (as duas primeiras páginas) e volte às referências sempre que estiver construindo.
 
@@ -84,6 +91,7 @@ raciocínio (as duas primeiras páginas) e volte às referências sempre que est
 - [research] **Mapas: Superset vs. Power BI** — support — `docs/pesquisa/mapas-superset-vs-power-bi.md`
 
 ## Nível 5 · Prática guiada
+Etapa: Prática · Ícone: wrench
 Mão na massa: do entendimento do problema até o dashboard publicado, passando por KPIs, wireframe,
 construção na ferramenta e revisão de qualidade.
 
@@ -94,6 +102,7 @@ construção na ferramenta e revisão de qualidade.
 - [challenge] **Transformar um dashboard ruim em um dashboard bom** — capstone — `docs/desafios/dashboard-ruim-para-dashboard-bom.md`
 
 ## Nível 6 · Governança e publicação no GovHub
+Etapa: Governança · Ícone: shield-check
 Como tudo isso se conecta às regras da plataforma: nomenclatura, papéis, homologação e o checklist que
 precede qualquer publicação para o público final.
 

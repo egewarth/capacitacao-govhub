@@ -4,13 +4,38 @@
   "titulo": "Dashboards no Gov Hub",
   "descricao": "Do \"por que um dashboard\" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.",
   "categoria": "negocial",
-  "diagrama": "assets/diagramas/logica-da-trilha.png",
-  "diagrama_alt": "A lógica da trilha em cinco etapas, da esquerda para a direita: por quê (fundamentos), o quê (princípios transversais), como (execução na ferramenta), governança (padrões Gov Hub) e prática (estudo de caso). Acessibilidade e arquitetura da informação aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.",
+  "chamada": "Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu, do primeiro gráfico à publicação, com Apache Superset e Power BI.",
+  "etapas": [
+    {
+      "rotulo": "Por quê",
+      "caixa": "Fundamentos"
+    },
+    {
+      "rotulo": "O quê",
+      "caixa": "Princípios transversais"
+    },
+    {
+      "rotulo": "Como",
+      "caixa": "Execução na ferramenta"
+    },
+    {
+      "rotulo": "Prática",
+      "caixa": "Estudo de caso"
+    },
+    {
+      "rotulo": "Governança",
+      "caixa": "Padrões Gov Hub"
+    }
+  ],
+  "etapas_subtitulo": "Cinco etapas em sequência: do \"por quê\" à governança",
+  "etapas_nota": "**Acessibilidade e arquitetura da informação** não são um módulo isolado no fim: aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.",
   "niveis": [
     {
       "numero": 0,
       "titulo": "Fundamentos de visualização de dados",
       "descricao": "O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o diferencia de um relatório ou de um painel operacional, e por que um dashboard bom parece simples.",
+      "etapa": "Por quê",
+      "icone": "assets/icones/light-bulb-sober.svg",
       "itens": [
         {
           "id": "explicacao/por-que-fazer-um-dashboard",
@@ -78,6 +103,8 @@
       "numero": 1,
       "titulo": "Arquitetura da informação",
       "descricao": "Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: posição dos elementos, fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filtros.",
+      "etapa": "O quê",
+      "icone": "assets/icones/rectangle-group-sober.svg",
       "itens": [
         {
           "id": "explicacao/arquitetura-da-informacao",
@@ -145,6 +172,8 @@
       "numero": 2,
       "titulo": "Hierarquia visual e storytelling",
       "descricao": "Definir o que se enxerga primeiro e transformar o dashboard em uma narrativa que gera decisão, em vez de um mural de números sem prioridade.",
+      "etapa": "O quê",
+      "icone": "assets/icones/presentation-chart-line-sober.svg",
       "itens": [
         {
           "id": "explicacao/hierarquia-visual",
@@ -192,6 +221,8 @@
       "numero": 3,
       "titulo": "Design visual e acessibilidade",
       "descricao": "Base de design aplicada a dados, sem exigir formação em design — e acessibilidade como requisito legal da plataforma de governo (eMAG e WCAG), não como polimento opcional no fim do projeto.",
+      "etapa": "O quê",
+      "icone": "assets/icones/swatch-sober.svg",
       "itens": [
         {
           "id": "explicacao/consistencia-visual",
@@ -259,6 +290,8 @@
       "numero": 4,
       "titulo": "Escolha do gráfico",
       "descricao": "O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo raciocínio (as duas primeiras páginas) e volte às referências sempre que estiver construindo.",
+      "etapa": "Como",
+      "icone": "assets/icones/chart-pie-sober.svg",
       "itens": [
         {
           "id": "explicacao/qual-e-o-grafico-certo",
@@ -396,6 +429,8 @@
       "numero": 5,
       "titulo": "Prática guiada",
       "descricao": "Mão na massa: do entendimento do problema até o dashboard publicado, passando por KPIs, wireframe, construção na ferramenta e revisão de qualidade.",
+      "etapa": "Prática",
+      "icone": "assets/icones/wrench-sober.svg",
       "itens": [
         {
           "id": "tutoriais/do-problema-ao-dashboard-publicado",
@@ -453,6 +488,8 @@
       "numero": 6,
       "titulo": "Governança e publicação no GovHub",
       "descricao": "Como tudo isso se conecta às regras da plataforma: nomenclatura, papéis, homologação e o checklist que precede qualquer publicação para o público final.",
+      "etapa": "Governança",
+      "icone": "assets/icones/shield-check-sober.svg",
       "itens": [
         {
           "id": "referencia/padroes-e-governanca-govhub",

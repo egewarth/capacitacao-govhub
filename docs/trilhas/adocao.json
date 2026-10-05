@@ -4,11 +4,41 @@
   "titulo": "Adotar o Gov Hub no seu órgão",
   "descricao": "Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.",
   "categoria": "tecnica",
+  "status": "em-breve",
+  "etapas": [
+    {
+      "rotulo": "Entender",
+      "caixa": "A plataforma"
+    },
+    {
+      "rotulo": "Planejar",
+      "caixa": "Requisitos e fontes"
+    },
+    {
+      "rotulo": "Implantar",
+      "caixa": "Infraestrutura e deploy"
+    },
+    {
+      "rotulo": "Integrar",
+      "caixa": "Primeira fonte"
+    },
+    {
+      "rotulo": "Governar",
+      "caixa": "Acesso e segurança"
+    },
+    {
+      "rotulo": "Expandir",
+      "caixa": "Fork temático"
+    }
+  ],
+  "etapas_subtitulo": "Seis etapas em sequência: do que é a plataforma ao fork temático",
   "niveis": [
     {
       "numero": 0,
       "titulo": "Entender a plataforma",
       "descricao": "O que o Gov Hub resolve e como as peças se encaixam: das fontes governamentais ao consumo analítico, passando pelas camadas bronze, silver e gold.",
+      "etapa": "Entender",
+      "icone": "assets/icones/light-bulb-sober.svg",
       "itens": [
         {
           "id": "plataforma/index",
@@ -66,6 +96,8 @@
       "numero": 1,
       "titulo": "Planejar a adoção",
       "descricao": "Antes de tocar no cluster: maturidade de dados do órgão, equipe, infraestrutura mínima e quais fontes entram primeiro.",
+      "etapa": "Planejar",
+      "icone": "assets/icones/clipboard-document-list-sober.svg",
       "itens": [
         {
           "id": "plataforma/adocao/requisitos",
@@ -103,6 +135,8 @@
       "numero": 2,
       "titulo": "Preparar a infraestrutura",
       "descricao": "Os serviços que sustentam a plataforma e como as credenciais são guardadas. Consulte as referências conforme a sua equipe for precisando delas.",
+      "etapa": "Implantar",
+      "icone": "assets/icones/server-sober.svg",
       "itens": [
         {
           "id": "plataforma/infraestrutura/kubernetes",
@@ -160,6 +194,8 @@
       "numero": 3,
       "titulo": "Primeiro deploy",
       "descricao": "O passo a passo do primeiro deploy no cluster do órgão, do Argo CD ao acesso pelos serviços.",
+      "etapa": "Implantar",
+      "icone": "assets/icones/deploy-sober.svg",
       "itens": [
         {
           "id": "plataforma/adocao/deploy-inicial",
@@ -177,6 +213,8 @@
       "numero": 4,
       "titulo": "Conectar a primeira fonte",
       "descricao": "Da fonte documentada ao dataset no Superset: DAG de ingestão, modelos dbt, testes e qualidade.",
+      "etapa": "Integrar",
+      "icone": "assets/icones/database-sober.svg",
       "itens": [
         {
           "id": "plataforma/adocao/conectar-fontes",
@@ -224,6 +262,8 @@
       "numero": 5,
       "titulo": "Governança e acesso",
       "descricao": "Quem vê quais dados, como tratar dados sensíveis e credenciais, e onde fica o catálogo.",
+      "etapa": "Governar",
+      "icone": "assets/icones/governance-sober.svg",
       "itens": [
         {
           "id": "plataforma/governanca/acesso",
@@ -271,6 +311,8 @@
       "numero": 6,
       "titulo": "Fork temático",
       "descricao": "Como isolar o contexto do seu órgão num fork do pipeline, com dois forks reais como exemplo.",
+      "etapa": "Expandir",
+      "icone": "assets/icones/square-2-stack-sober.svg",
       "itens": [
         {
           "id": "plataforma/forks/index",

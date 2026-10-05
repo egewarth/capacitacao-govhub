@@ -3,8 +3,10 @@
 Gera os artefatos de todas as trilhas a partir de trilhas/*.md.
 
 Entrada: cada trilhas/<slug>.md começa com um cabeçalho `---` (slug, titulo, descricao,
-categoria e, opcionalmente, diagrama + diagrama_alt) seguido do corpo em Markdown com níveis
-(`## Nível N · Título`) e itens (`- [tipo] **Título** — papel — `docs/....md``).
+categoria e, opcionalmente, chamada, status, etapas + etapas_subtitulo + etapas_nota,
+diagrama + diagrama_alt) seguido do corpo em Markdown com níveis (`## Nível N · Título`,
+seguido opcionalmente de `Etapa: <rótulo> · Ícone: <nome>`) e itens
+(`- [tipo] **Título** — papel — `docs/....md``).
 
 Saídas, em docs/trilhas/:
   <slug>.json   a trilha para o mapa, o leitor e o catálogo
@@ -31,6 +33,8 @@ AVISO = "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao.
 CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao", "categoria")
 # categoria -> posição no catálogo. Negocial: para quem usa os dados; técnica: para quem opera a plataforma.
 CATEGORIAS = {"negocial": 0, "tecnica": 1}
+STATUS = ("em-breve",)   # trilha listada no catálogo, mas ainda fechada
+ICONES_DIR = os.path.join(REPO, "assets", "icones")   # ícone do nível: assets/icones/<nome>-sober.svg
 XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa e sem compressão (ZIP_STORED): o .xmind só muda com o conteúdo e é idêntico em qualquer
                                       # versão do zlib (a saída do deflate varia entre builds)
 
@@ -51,6 +55,7 @@ SUPPORT_ROLES = ("support", "optional")
 
 ITEM_RE  = re.compile(r'^- \[([^\]]+)\]\s+\*\*(.+?)\*\*\s+—\s+(.+?)\s+—\s+`([^`]+)`\s*$')
 LEVEL_RE = re.compile(r'^##\s+Nível\s+(\d+)\s+·\s+(.+)$')
+ETAPA_RE = re.compile(r'^Etapa:\s*(.+?)\s*·\s*Ícone:\s*([a-z0-9-]+)$')
 
 def parse(lines, inicio=0):
     """`inicio`: quantas linhas do arquivo vêm antes de `lines` (o cabeçalho), para as mensagens."""
@@ -59,10 +64,14 @@ def parse(lines, inicio=0):
         s = raw.strip()
         m = LEVEL_RE.match(s)
         if m:
-            cur = {"num": int(m.group(1)), "title": m.group(2).strip(), "desc": "", "items": []}
+            cur = {"num": int(m.group(1)), "title": m.group(2).strip(), "desc": "", "items": [], "linha": idx + 1}
             levels.append(cur)
             continue
         if cur is None:
+            continue
+        em = ETAPA_RE.match(s)
+        if em and not cur["items"]:
+            cur["etapa"], cur["icone"] = em.group(1), em.group(2)
             continue
         if s.startswith("- ["):
             im = ITEM_RE.match(s)
@@ -149,9 +158,40 @@ def ler_cabecalho(texto, origem):
         raise SystemExit("%s: slug inválido %r (use letras minúsculas, números e hífen)" % (origem, meta["slug"]))
     if meta["categoria"] not in CATEGORIAS:
         raise SystemExit("%s: categoria inválida %r (use %s)" % (origem, meta["categoria"], " ou ".join(CATEGORIAS)))
+    if meta.get("status") and meta["status"] not in STATUS:
+        raise SystemExit("%s: status inválido %r (use %s, ou omita)" % (origem, meta["status"], " ou ".join(STATUS)))
+    if meta.get("etapas"):
+        meta["etapas"] = ler_etapas(meta["etapas"], origem)
     if bool(meta.get("diagrama")) != bool(meta.get("diagrama_alt")):
         raise SystemExit("%s: diagrama e diagrama_alt andam juntos" % origem)
     return meta, linhas[fim + 1:]
+
+
+def ler_etapas(texto, origem):
+    """`Rótulo=Caixa | Rótulo=Caixa` -> [{"rotulo", "caixa"}], na ordem."""
+    etapas = []
+    for parte in texto.split("|"):
+        if "=" not in parte:
+            raise SystemExit("%s: etapa sem '=' em %r (use Rótulo=Descrição | ...)" % (origem, parte.strip()))
+        rotulo, caixa = (x.strip() for x in parte.split("=", 1))
+        if not rotulo or not caixa:
+            raise SystemExit("%s: etapa incompleta %r" % (origem, parte.strip()))
+        etapas.append({"rotulo": rotulo, "caixa": caixa})
+    return etapas
+
+
+def validar_etapas(meta, levels, origem):
+    """A etapa de cada nível precisa estar nas etapas do cabeçalho; o ícone precisa existir."""
+    rotulos = [e["rotulo"] for e in meta.get("etapas") or []]
+    for lv in levels:
+        if "etapa" not in lv:
+            continue
+        if lv["etapa"] not in rotulos:
+            raise SystemExit("%s (linha %d): etapa %r não está em `etapas:` do cabeçalho"
+                             % (origem, lv["linha"], lv["etapa"]))
+        if not os.path.exists(os.path.join(ICONES_DIR, lv["icone"] + "-sober.svg")):
+            raise SystemExit("%s (linha %d): ícone %r não existe em assets/icones/ (baixe %s-sober.svg da "
+                             "biblioteca GovHub-br/skills-assets)" % (origem, lv["linha"], lv["icone"], lv["icone"]))
 
 
 def validar_caminhos(levels, origem):
@@ -188,9 +228,17 @@ def json_da_trilha(meta, levels):
                 "papel": it["role"], "papel_nome": ROLE_DISPLAY[it["role"]],
                 "icone": icone,
             })
-        niveis.append({"numero": lv["num"], "titulo": lv["title"], "descricao": lv["desc"], "itens": itens})
+        nivel = {"numero": lv["num"], "titulo": lv["title"], "descricao": lv["desc"]}
+        if "etapa" in lv:
+            nivel["etapa"] = lv["etapa"]
+            nivel["icone"] = "assets/icones/%s-sober.svg" % lv["icone"]
+        nivel["itens"] = itens
+        niveis.append(nivel)
     dados = {"_aviso": AVISO, "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"],
              "categoria": meta["categoria"]}
+    for campo in ("chamada", "status", "etapas", "etapas_subtitulo", "etapas_nota"):
+        if meta.get(campo):
+            dados[campo] = meta[campo]
     if meta.get("diagrama"):
         dados["diagrama"] = meta["diagrama"]
         dados["diagrama_alt"] = meta["diagrama_alt"]
@@ -295,6 +343,7 @@ def carregar(trilhas_dir):
         levels, dropped = parse(corpo, inicio=len(texto.split("\n")) - len(corpo))
         validar_caminhos(levels, origem)
         validar_repetidos(levels, origem)
+        validar_etapas(meta, levels, origem)
         trilhas.append((meta, levels, dropped, origem))
     slugs = [m["slug"] for m, _l, _d, _o in trilhas]
     repetidos = sorted(set(s for s in slugs if slugs.count(s) > 1))
@@ -318,6 +367,7 @@ def gerar(trilhas_dir, out_dir):
         gen_xmind(meta, levels, os.path.join(out_dir, meta["slug"] + ".xmind"))
         catalogo.append({
             "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"], "categoria": meta["categoria"],
+            **({"status": meta["status"]} if meta.get("status") else {}),
             "niveis": len(levels), "aulas": [i["id"] for n in dados["niveis"] for i in n["itens"]],
         })
     escrever_json(os.path.join(out_dir, "index.json"), {"_aviso": AVISO, "trilhas": catalogo})

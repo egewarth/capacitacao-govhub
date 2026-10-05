@@ -118,5 +118,57 @@ class Geracao(unittest.TestCase):
                 self.assertEqual(info.compress_type, zipfile.ZIP_STORED)
 
 
+class Etapas(unittest.TestCase):
+    """Lógica da trilha (etapas), etapa e ícone de cada nível, chamada e status."""
+    CAB = ("---\nslug: teste\ntitulo: T\ndescricao: D\ncategoria: negocial\n"
+           "chamada: Frase do mapa.\nstatus: em-breve\n"
+           "etapas: Por quê=Fundamentos | Como=Execução\n"
+           "etapas_subtitulo: Duas etapas\netapas_nota: **Nota** com destaque.\n---\n")
+    CORPO = ("# T\n\n## Nível 0 · Base\nEtapa: Por quê · Ícone: light-bulb\nAbertura.\n\n"
+             "- [explanation] **A** — core — `docs/explicacao/por-que-fazer-um-dashboard.md`\n\n"
+             "## Nível 1 · Prática\nEtapa: Como · Ícone: wrench\n\n"
+             "- [reference] **B** — capstone — `docs/referencia/glossario.md`\n")
+
+    def gerar(self, texto):
+        trilhas, saida = tempfile.mkdtemp(), tempfile.mkdtemp()
+        open(os.path.join(trilhas, "teste.md"), "w", encoding="utf-8").write(texto)
+        gen.gerar(trilhas, saida)
+        return (json.load(open(os.path.join(saida, "teste.json"), encoding="utf-8")),
+                json.load(open(os.path.join(saida, "index.json"), encoding="utf-8")))
+
+    def test_campos_no_json(self):
+        trilha, catalogo = self.gerar(self.CAB + self.CORPO)
+        self.assertEqual(trilha["chamada"], "Frase do mapa.")
+        self.assertEqual(trilha["status"], "em-breve")
+        self.assertEqual(catalogo["trilhas"][0]["status"], "em-breve")
+        self.assertEqual(trilha["etapas"], [{"rotulo": "Por quê", "caixa": "Fundamentos"},
+                                            {"rotulo": "Como", "caixa": "Execução"}])
+        self.assertEqual(trilha["etapas_subtitulo"], "Duas etapas")
+        self.assertEqual(trilha["etapas_nota"], "**Nota** com destaque.")
+        n0, n1 = trilha["niveis"]
+        self.assertEqual((n0["etapa"], n0["icone"]), ("Por quê", "assets/icones/light-bulb-sober.svg"))
+        self.assertEqual(n0["descricao"], "Abertura.")   # a linha de etapa não entra na abertura
+        self.assertEqual(n1["etapa"], "Como")
+
+    def test_campos_opcionais(self):
+        trilha, catalogo = self.gerar(CABECALHO + CORPO)
+        for campo in ("chamada", "status", "etapas", "etapas_subtitulo", "etapas_nota"):
+            self.assertNotIn(campo, trilha)
+        self.assertNotIn("etapa", trilha["niveis"][0])
+        self.assertNotIn("status", catalogo["trilhas"][0])
+
+    def test_etapa_do_nivel_precisa_existir(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(self.CAB + self.CORPO.replace("Etapa: Como", "Etapa: Outra"))
+
+    def test_icone_precisa_existir(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(self.CAB + self.CORPO.replace("Ícone: wrench", "Ícone: nao-existe"))
+
+    def test_status_conhecido(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(self.CAB.replace("em-breve", "talvez") + self.CORPO)
+
+
 if __name__ == "__main__":
     unittest.main()

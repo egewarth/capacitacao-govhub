@@ -3,6 +3,9 @@ slug: adocao
 titulo: Adotar o Gov Hub no seu órgão
 descricao: Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.
 categoria: tecnica
+status: em-breve
+etapas: Entender=A plataforma | Planejar=Requisitos e fontes | Implantar=Infraestrutura e deploy | Integrar=Primeira fonte | Governar=Acesso e segurança | Expandir=Fork temático
+etapas_subtitulo: Seis etapas em sequência: do que é a plataforma ao fork temático
 ---
 # Trilha de aprendizagem: Adotar o Gov Hub no seu órgão
 
@@ -11,6 +14,7 @@ categoria: tecnica
 > As aulas são cópias adaptadas da documentação técnica oficial; a origem está em `docs/plataforma/LEIA-ME.md`.
 
 ## Nível 0 · Entender a plataforma
+Etapa: Entender · Ícone: light-bulb
 O que o Gov Hub resolve e como as peças se encaixam: das fontes governamentais ao consumo analítico,
 passando pelas camadas bronze, silver e gold.
 
@@ -21,6 +25,7 @@ passando pelas camadas bronze, silver e gold.
 - [reference] **Componentes** — support — `docs/plataforma/arquitetura/componentes.md`
 
 ## Nível 1 · Planejar a adoção
+Etapa: Planejar · Ícone: clipboard-document-list
 Antes de tocar no cluster: maturidade de dados do órgão, equipe, infraestrutura mínima e quais fontes
 entram primeiro.
 
@@ -29,6 +34,7 @@ entram primeiro.
 - [reference] **Dicionário de dados** — support — `docs/plataforma/dados/dicionario.md`
 
 ## Nível 2 · Preparar a infraestrutura
+Etapa: Implantar · Ícone: server
 Os serviços que sustentam a plataforma e como as credenciais são guardadas. Consulte as referências
 conforme a sua equipe for precisando delas.
 
@@ -39,11 +45,13 @@ conforme a sua equipe for precisando delas.
 - [how-to] **Gerenciamento de secrets** — core — `docs/plataforma/infraestrutura/secrets.md`
 
 ## Nível 3 · Primeiro deploy
+Etapa: Implantar · Ícone: deploy
 O passo a passo do primeiro deploy no cluster do órgão, do Argo CD ao acesso pelos serviços.
 
 - [tutorial] **Deploy inicial** — core — `docs/plataforma/adocao/deploy-inicial.md`
 
 ## Nível 4 · Conectar a primeira fonte
+Etapa: Integrar · Ícone: database
 Da fonte documentada ao dataset no Superset: DAG de ingestão, modelos dbt, testes e qualidade.
 
 - [how-to] **Conectar fontes de dados** — core — `docs/plataforma/adocao/conectar-fontes.md`
@@ -52,6 +60,7 @@ Da fonte documentada ao dataset no Superset: DAG de ingestão, modelos dbt, test
 - [explanation] **Qualidade de dados** — support — `docs/plataforma/pipeline/qualidade.md`
 
 ## Nível 5 · Governança e acesso
+Etapa: Governar · Ícone: governance
 Quem vê quais dados, como tratar dados sensíveis e credenciais, e onde fica o catálogo.
 
 - [explanation] **Controle de acesso** — core — `docs/plataforma/governanca/acesso.md`
@@ -60,6 +69,7 @@ Quem vê quais dados, como tratar dados sensíveis e credenciais, e onde fica o 
 - [reference] **Trino + Ranger** — support — `docs/plataforma/governanca/trino-ranger.md`
 
 ## Nível 6 · Fork temático
+Etapa: Expandir · Ícone: square-2-stack
 Como isolar o contexto do seu órgão num fork do pipeline, com dois forks reais como exemplo.
 
 - [explanation] **Forks temáticos** — core — `docs/plataforma/forks/index.md`

@@ -20,5 +20,14 @@ service cloud.firestore {
         && request.resource.data.periodo is string
         && request.resource.data.periodo.matches('^[0-9]{4}-[0-9]{2}$');
     }
+    match /avaliacao_trilha/{id} {
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly(['trilha', 'nota', 'periodo'])
+        && request.resource.data.keys().hasAll(['trilha', 'nota', 'periodo'])
+        && request.resource.data.trilha is string && request.resource.data.trilha.size() <= 60
+        && request.resource.data.nota is int && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
+        && request.resource.data.periodo is string
+        && request.resource.data.periodo.matches('^[0-9]{4}-[0-9]{2}$');
+    }
   }
 }

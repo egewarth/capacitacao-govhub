@@ -8,6 +8,8 @@ import { mesclar, alternar as alternarIds } from './progresso-nucleo.js';
 export const CHAVE_ANONIMO = 'govhub-dashboards-roadmap-v1';
 export const CHAVE_ULTIMA_ANONIMO = 'govhub-dashboards-ultima-aula';
 export const CHAVE_CONTA = 'govhub-dashboards-progresso-conta';
+// Notas que este navegador deu às trilhas ({slug: nota}). Fica no navegador, não na conta.
+export const CHAVE_NOTAS_TRILHA = 'govhub-trilhas-notas';
 
 // Fechar a janela do Google não é erro de quem lê: não merece aviso.
 const ERROS_SILENCIOSOS = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
@@ -270,8 +272,7 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
     if (!CLAREZA.includes(clareza) || !USO.includes(uso) || texto.length > LIMITE_COMENTARIO) {
       throw new Error('resposta-invalida');
     }
-    const d = agora();
-    const periodo = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const periodo = periodoAtual();
     // Nada que identifique a pessoa: nem uid, nem nome, nem e-mail, nem horário.
     const dados = { trilha, aula: id, clareza, uso, periodo };
     if (texto) dados.comentario = texto;
@@ -285,6 +286,22 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
     emitir();
     // O feedback já está salvo; se a marcação falhar, no pior caso a pessoa avalia de novo noutro dispositivo.
     n.marcarAvaliada(uid, id).catch(() => {});
+  }
+
+  function periodoAtual() {
+    const d = agora();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  // Nota de 1 a 5 para a trilha inteira, dada ao concluir. Como o feedback da aula: sem nada que
+  // identifique a pessoa.
+  async function avaliarTrilha(trilha, nota) {
+    if (!usuario || !nuvem) throw new Error('sem-sessao');
+    if (!Number.isInteger(nota) || nota < 1 || nota > 5) throw new Error('nota-invalida');
+    await nuvem.enviarAvaliacaoTrilha({ trilha, nota, periodo: periodoAtual() });
+    const notas = lerJSON(armazenamento, CHAVE_NOTAS_TRILHA, {});
+    armazenamento.set(CHAVE_NOTAS_TRILHA, JSON.stringify({ ...notas, [trilha]: nota }));
+    emitir();
   }
 
   function entrar() {
@@ -308,7 +325,8 @@ export function criarLoja({ armazenamento, criarNuvem = async () => null, agora 
 
   return {
     iniciar, alternar, zerar, registrarUltimaAula, entrar, sair, recarregar,
-    avaliar,
+    avaliar, avaliarTrilha,
+    trilhaAvaliada: (trilha) => lerJSON(armazenamento, CHAVE_NOTAS_TRILHA, {})[trilha] || null,
     feitos: () => feitos,
     foiAvaliada: (id) => !!avaliadas[id],
     usuario: () => usuario,
