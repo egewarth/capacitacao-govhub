@@ -29,6 +29,7 @@
   ],
   "etapas_subtitulo": "Cinco etapas em sequência: do \"por quê\" à governança",
   "etapas_nota": "**Acessibilidade e arquitetura da informação** não são um módulo isolado no fim: aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.",
+  "quiz": "quiz/dashboards.json",
   "niveis": [
     {
       "numero": 0,

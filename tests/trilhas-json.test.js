@@ -24,6 +24,7 @@ for (const resumo of catalogo.trilhas) {
   test(`${resumo.slug}: cabeçalho e níveis completos`, () => {
     assert.equal(trilha.slug, resumo.slug);
     assert.equal(trilha.categoria, resumo.categoria);
+    assert.equal(trilha.quiz, existsSync(new URL(`../quiz/${resumo.slug}.json`, import.meta.url)) ? `quiz/${resumo.slug}.json` : undefined);
     assert.ok(trilha.titulo && trilha.descricao);
     assert.equal(!!trilha.diagrama, !!trilha.diagrama_alt);
     if (trilha.diagrama) assert.ok(existsSync(new URL('../' + trilha.diagrama, import.meta.url)), trilha.diagrama);

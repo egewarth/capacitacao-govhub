@@ -34,7 +34,8 @@ CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao", "categoria")
 # categoria -> posição no catálogo. Negocial: para quem usa os dados; técnica: para quem opera a plataforma.
 CATEGORIAS = {"negocial": 0, "tecnica": 1}
 STATUS = ("em-breve",)   # trilha listada no catálogo, mas ainda fechada
-ICONES_DIR = os.path.join(REPO, "assets", "icones")   # ícone do nível: assets/icones/<nome>-sober.svg
+ICONES_DIR = os.path.join(REPO, "assets", "icones")
+QUIZ_DIR = os.path.join(REPO, "quiz")   # quiz/<slug>.json, editado à mão: o JSON da trilha aponta para ele   # ícone do nível: assets/icones/<nome>-sober.svg
 XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa e sem compressão (ZIP_STORED): o .xmind só muda com o conteúdo e é idêntico em qualquer
                                       # versão do zlib (a saída do deflate varia entre builds)
 
@@ -239,6 +240,8 @@ def json_da_trilha(meta, levels):
     for campo in ("chamada", "status", "etapas", "etapas_subtitulo", "etapas_nota"):
         if meta.get(campo):
             dados[campo] = meta[campo]
+    if os.path.exists(os.path.join(QUIZ_DIR, meta["slug"] + ".json")):
+        dados["quiz"] = "quiz/%s.json" % meta["slug"]
     if meta.get("diagrama"):
         dados["diagrama"] = meta["diagrama"]
         dados["diagrama_alt"] = meta["diagrama_alt"]
