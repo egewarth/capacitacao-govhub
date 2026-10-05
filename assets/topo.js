@@ -5,7 +5,7 @@ import { carregarCatalogo, carregarTrilha } from './trilha.js';
 import { buscarAulas } from './hub-nucleo.js';
 import { hrefDoItem } from './progresso-nucleo.js';
 
-export const EMAIL_CONTATO = 'contato@govhub.gov.br';
+export const EMAIL_CONTATO = 'govhub@unb.br';
 
 export function montarTopo(progresso, { ativo = null } = {}) {
   const raiz = document.getElementById('topo');

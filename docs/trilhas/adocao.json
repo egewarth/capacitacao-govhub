@@ -8,30 +8,34 @@
   "etapas": [
     {
       "rotulo": "Entender",
-      "caixa": "A plataforma"
+      "caixa": "Entender a plataforma"
     },
     {
       "rotulo": "Planejar",
-      "caixa": "Requisitos e fontes"
+      "caixa": "Planejar a adoção"
+    },
+    {
+      "rotulo": "Preparar",
+      "caixa": "Preparar a infraestrutura"
     },
     {
       "rotulo": "Implantar",
-      "caixa": "Infraestrutura e deploy"
+      "caixa": "Primeiro deploy"
     },
     {
-      "rotulo": "Integrar",
-      "caixa": "Primeira fonte"
+      "rotulo": "Conectar",
+      "caixa": "Conectar a primeira fonte"
     },
     {
       "rotulo": "Governar",
-      "caixa": "Acesso e segurança"
+      "caixa": "Governança e acesso"
     },
     {
       "rotulo": "Expandir",
       "caixa": "Fork temático"
     }
   ],
-  "etapas_subtitulo": "Seis etapas em sequência: do que é a plataforma ao fork temático",
+  "etapas_subtitulo": "Sete etapas em sequência: do que é a plataforma ao fork temático",
   "niveis": [
     {
       "numero": 0,
@@ -135,7 +139,7 @@
       "numero": 2,
       "titulo": "Preparar a infraestrutura",
       "descricao": "Os serviços que sustentam a plataforma e como as credenciais são guardadas. Consulte as referências conforme a sua equipe for precisando delas.",
-      "etapa": "Implantar",
+      "etapa": "Preparar",
       "icone": "assets/icones/server-sober.svg",
       "itens": [
         {
@@ -213,7 +217,7 @@
       "numero": 4,
       "titulo": "Conectar a primeira fonte",
       "descricao": "Da fonte documentada ao dataset no Superset: DAG de ingestão, modelos dbt, testes e qualidade.",
-      "etapa": "Integrar",
+      "etapa": "Conectar",
       "icone": "assets/icones/database-sober.svg",
       "itens": [
         {

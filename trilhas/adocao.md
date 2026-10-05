@@ -4,8 +4,8 @@ titulo: Adotar o Gov Hub no seu órgão
 descricao: Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.
 categoria: tecnica
 status: em-breve
-etapas: Entender=A plataforma | Planejar=Requisitos e fontes | Implantar=Infraestrutura e deploy | Integrar=Primeira fonte | Governar=Acesso e segurança | Expandir=Fork temático
-etapas_subtitulo: Seis etapas em sequência: do que é a plataforma ao fork temático
+etapas: Entender=Entender a plataforma | Planejar=Planejar a adoção | Preparar=Preparar a infraestrutura | Implantar=Primeiro deploy | Conectar=Conectar a primeira fonte | Governar=Governança e acesso | Expandir=Fork temático
+etapas_subtitulo: Sete etapas em sequência: do que é a plataforma ao fork temático
 ---
 # Trilha de aprendizagem: Adotar o Gov Hub no seu órgão
 
@@ -34,7 +34,7 @@ entram primeiro.
 - [reference] **Dicionário de dados** — support — `docs/plataforma/dados/dicionario.md`
 
 ## Nível 2 · Preparar a infraestrutura
-Etapa: Implantar · Ícone: server
+Etapa: Preparar · Ícone: server
 Os serviços que sustentam a plataforma e como as credenciais são guardadas. Consulte as referências
 conforme a sua equipe for precisando delas.
 
@@ -51,7 +51,7 @@ O passo a passo do primeiro deploy no cluster do órgão, do Argo CD ao acesso p
 - [tutorial] **Deploy inicial** — core — `docs/plataforma/adocao/deploy-inicial.md`
 
 ## Nível 4 · Conectar a primeira fonte
-Etapa: Integrar · Ícone: database
+Etapa: Conectar · Ícone: database
 Da fonte documentada ao dataset no Superset: DAG de ingestão, modelos dbt, testes e qualidade.
 
 - [how-to] **Conectar fontes de dados** — core — `docs/plataforma/adocao/conectar-fontes.md`
