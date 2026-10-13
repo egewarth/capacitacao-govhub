@@ -105,6 +105,7 @@ Dashboards-Roadmap/
 ├── firestore.rules              regras de segurança do progresso
 ├── firebase.json                configuração do Firebase CLI (regras)
 ├── tools/gen_roadmap.py         trilhas/*.md -> json + md + xmind
+├── tools/gen_pdf.py             PDFs das aulas e das trilhas (no deploy; fontes e logos em tools/pdf/)
 ├── docs/
 │   ├── tutoriais/  guias/  referencia/  explicacao/  desafios/  pesquisa/
 │   ├── adr/                     decisões de arquitetura do material
@@ -269,9 +270,26 @@ node $SKILL/scripts/render.mjs assets/diagramas/<nome>.html     # gera assets/di
 Regra de cor: paleta sóbria. O pêssego `#FFE7E1` do template da skill deve ser trocado por
 `#F2F1F6` em cada diagrama.
 
+### 7.3.2 PDFs das aulas e das trilhas
+
+Cada aula tem o botão **Baixar PDF** e cada mapa, **Baixar a trilha em PDF** (capa, sumário e um
+capítulo por nível). Os arquivos são gerados no deploy por `tools/gen_pdf.py`, adaptado do
+`build_doc.py` da skill govhub-visual-identity (mesma capa, faixa de capítulo, rodapé e tabela), e
+ficam em `pdf/` no site publicado, fora do git. Fontes (Reddit Sans, OFL) e logos ficam em `tools/pdf/`.
+
+Para gerar localmente (pasta `pdf/`, ignorada pelo git):
+
+```bash
+pip install markdown beautifulsoup4 lxml weasyprint
+python3 tools/gen_pdf.py                       # tudo; --trilha <slug> ou --aula <id> para um só
+# diagramas Mermaid viram imagem com o mermaid-cli; sem ele, viram um aviso para a versão on-line:
+MMDC="npx -y @mermaid-js/mermaid-cli@11" python3 tools/gen_pdf.py
+```
+
 ### 7.4 Arquivos gerados — não edite à mão
 
 - `docs/trilhas/*.json`, `docs/trilhas/*.md` e `docs/trilhas/*.xmind`.
+- `pdf/` (só existe no site publicado ou depois de rodar `tools/gen_pdf.py`).
 
 As páginas HTML não têm regiões geradas: o mapa e o catálogo são montados no navegador a partir do JSON.
 

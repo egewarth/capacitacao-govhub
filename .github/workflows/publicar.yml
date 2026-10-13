@@ -1,7 +1,7 @@
 name: Publicar no GitHub Pages
 
-# O site é estático: não há build. O pipeline existe para garantir que o que vai
-# ao ar corresponde a trilhas/ — a fonte das trilhas.
+# O site é estático: o único build são os PDFs das aulas e das trilhas (tools/gen_pdf.py).
+# O pipeline também garante que o que vai ao ar corresponde a trilhas/ — a fonte das trilhas.
 
 on:
   push:
@@ -67,8 +67,32 @@ jobs:
 
       - uses: actions/configure-pages@v6
 
+      # PDFs das aulas e das trilhas (pasta pdf/, fora do git): WeasyPrint para o
+      # PDF e mermaid-cli, com o Chrome do runner, para os diagramas Mermaid.
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.x'
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Dependências dos PDFs
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q libpango-1.0-0 libpangoft2-1.0-0 fonts-dejavu-core
+          pip install -q markdown beautifulsoup4 lxml weasyprint
+          echo '{"executablePath":"/usr/bin/google-chrome","args":["--no-sandbox"]}' > "$RUNNER_TEMP/puppeteer.json"
+
+      - name: Gerar os PDFs
+        env:
+          MMDC: npx -y @mermaid-js/mermaid-cli@11
+          MMDC_PUPPETEER: ${{ runner.temp }}/puppeteer.json
+          PUPPETEER_SKIP_DOWNLOAD: '1'
+        run: python3 tools/gen_pdf.py --saida pdf
+
       # O site vai como está — doc.html lê os .md em tempo de execução, então
-      # o repositório inteiro precisa estar publicado.
+      # o repositório inteiro precisa estar publicado (com a pasta pdf/ gerada acima).
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
