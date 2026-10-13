@@ -25,6 +25,14 @@ REPO = Path(__file__).resolve().parent.parent
 PDF_DIR = REPO / "tools" / "pdf"
 SITE = "https://egewarth.github.io/capacitacao-govhub/"
 NAVY, PURPLE, SOFT = "#0A005A", "#613EFF", "#F2F1F6"
+AUTORES = ["Marina Alves", "Pedro Vieira", "João Egewarth"]
+CONTATO = ("gov-hub.io", "govhub@unb.br")
+# Contracapa: Lab Livre e UnB (realização) e os projetos, na ordem da skill (partners.md):
+# Ipea, depois os ministérios. Período de defeso eleitoral: logos `-defeso`.
+REALIZACAO = [("lab-livre-black.svg", "Lab Livre"), ("unb-dark-outlined.svg", "UnB")]
+PROJETOS = [("ipea_positivo.png", "Ipea"), ("cultura_positivo-defeso.svg", "Ministério da Cultura (MinC)"),
+            ("mir_positivo-defeso.svg", "Ministério da Igualdade Racial (MIR)"), ("cidades_positivo-defeso.svg", "Ministério das Cidades (MCID)"),
+            ("mgi_positivo-defeso.svg", "Ministério da Gestão e da Inovação em Serviços Públicos (MGI)")]
 PAPEL = {"core": "Essencial", "support": "Apoio", "optional": "Apoio", "advanced": "Apoio", "capstone": "Marco"}
 
 
@@ -258,6 +266,19 @@ strong { color: var(--text-strong); }
 .gh-cover__footer { position: absolute; left: 20mm; bottom: 16mm; }
 .gh-cover__footer img { height: 34px; width: auto; vertical-align: middle; margin-right: 36px; }
 
+/* contracapa (encerramento da skill, em A4) */
+.gh-back__block { position: absolute; left: 20mm; right: 60mm; bottom: 112mm; }
+.gh-back__label { text-transform: uppercase; letter-spacing: 2px; font-size: 10px; font-weight: 700; color: var(--dark-navy); opacity: .7; margin: 0 0 6px; }
+.gh-back__autores { font-size: 15px; line-height: 1.6; font-weight: 700; color: var(--dark-navy); margin: 0 0 10mm; }
+.gh-back__contato { font-size: 14px; line-height: 1.6; color: var(--text-body); margin: 0; }
+.gh-back__contato strong { color: var(--dark-navy); }
+.gh-back__logos { position: absolute; left: 20mm; bottom: 16mm; }
+.gh-back__row { margin: 0 0 9mm; }
+.gh-back__row:last-child { margin: 0; }
+.gh-back__row img { height: 22px; width: auto; vertical-align: middle; margin-right: 26px; }
+.gh-back__row--projetos img { height: 40px; margin: 0 18px 10px 0; }
+.gh-back__row--projetos img.gh-back__ipea { height: 26px; }
+
 /* sumário */
 .gh-toc { page: content; break-before: page; }
 .gh-toc h2 { color: var(--primary-purple); font-size: 22pt; font-weight: 800; margin: 0 0 10mm; }
@@ -351,6 +372,33 @@ def capa(eyebrow, titulo, subtitulo):
              "lab": logo("parceiros/lab-livre-black.svg"), "unb": logo("parceiros/unb-dark-outlined.svg")}
 
 
+def contracapa():
+    def linha(classe, rotulo, logos):
+        imgs = []
+        for i, (f, a) in enumerate(logos):
+            extra = ' class="gh-back__ipea"' if f.startswith("ipea") else ""
+            imgs.append('<img%s src="%s" alt="%s">' % (extra, logo("parceiros/" + f), html.escape(a)))
+            if classe and i == 2:
+                imgs.append("<br>")   # projetos em duas linhas: Ipea, MinC, MIR / MCID, MGI
+        return '<div class="gh-back__row %s"><p class="gh-back__label">%s</p>%s</div>' % (classe, rotulo, "".join(imgs))
+    return """
+<div class="gh-page">
+  <svg class="gh-shape" viewBox="0 0 100 100" style="right:-1px; bottom:-1px; width:60mm; height:60mm"><path fill="%(p)s" d="M100 100H0A100 100 0 0 1 100 0z"/></svg>
+  <svg class="gh-shape" viewBox="0 0 100 100" style="right:-12mm; top:22mm; width:40mm; height:40mm"><path fill="%(n)s" fill-rule="evenodd" d="M50 0a50 50 0 1 0 0 100a50 50 0 1 0 0-100zM50 25.6a24.4 24.4 0 1 1 0 48.8a24.4 24.4 0 1 1 0-48.8z"/></svg>
+  <svg class="gh-shape" viewBox="0 0 266 100" style="left:-26mm; top:64mm; width:74mm; height:27.8mm"><rect width="266" height="100" rx="50" fill="%(s)s"/></svg>
+  <img class="gh-cover__logo" src="%(logo)s" alt="Gov Hub">
+  <div class="gh-back__block">
+    <p class="gh-back__label">Autoria</p>
+    <p class="gh-back__autores">%(autores)s</p>
+    <p class="gh-back__label">Contato</p>
+    <p class="gh-back__contato"><strong>%(site)s</strong><br>%(email)s</p>
+  </div>
+  <div class="gh-back__logos">%(real)s%(proj)s</div>
+</div>""" % {"p": PURPLE, "s": SOFT, "n": NAVY, "logo": logo("logomarca-horizontal-navy.svg"),
+             "autores": "<br>".join(html.escape(a) for a in AUTORES), "site": CONTATO[0], "email": CONTATO[1],
+             "real": linha("", "Realização", REALIZACAO), "proj": linha("gh-back__row--projetos", "Projetos", PROJETOS)}
+
+
 def documento(titulo, partes):
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><title>%s · Gov Hub</title>'
             '<style>%s</style></head><body>%s</body></html>' % (html.escape(titulo), CSS, "".join(partes)))
@@ -395,6 +443,7 @@ def html_da_trilha(trilha, corpos, base):
             sec.append(bloco_aula(it, corpos[it["id"]], base))
         sec.append("</section>")
         partes.append("".join(sec))
+    partes.append(contracapa())
     return documento(trilha["titulo"], partes)
 
 

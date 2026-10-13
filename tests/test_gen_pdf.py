@@ -99,6 +99,12 @@ class Html(unittest.TestCase):
         self.assertIn('id="aula-guias-b"', h)
         self.assertIn("Guia · Apoio", h)
         self.assertIn(">00<", h)
+        # contracapa no fim: autoria e parceiros na ordem Lab Livre, UnB, Ipea, ministérios
+        fim = h[h.rindex('class="gh-page"'):]
+        for nome in gen.AUTORES:
+            self.assertIn(nome, fim)
+        ordem = [fim.index(f) for f in ("lab-livre", "unb-dark", "ipea_", "cultura_", "mir_", "cidades_", "mgi_")]
+        self.assertEqual(ordem, sorted(ordem))
 
 
 @unittest.skipUnless(TEM_MARKDOWN and TEM_WEASYPRINT, "weasyprint não instalado")
