@@ -30,6 +30,24 @@ class Caminhos(unittest.TestCase):
         self.assertEqual(gen.url_do_site("assets/x.png", "https://x/"), "https://x/assets/x.png")
 
 
+class Svg(unittest.TestCase):
+    def test_estilo_de_classe_vira_atributo(self):
+        svg = ('<svg><defs><style>.rot{font:600 12.5px Reddit Sans,sans-serif;fill:#202020}'
+               '.cam{stroke:#613EFF;fill:none}</style></defs>'
+               '<text class="rot" x="1">A</text><text class="rot" fill="#fff">B</text><path class="cam" d="M0 0"/></svg>')
+        out = gen.svg_achatado(svg)
+        self.assertNotIn("<style>", out)
+        self.assertIn('<text font-weight="600" font-size="12.5px" font-family="Reddit Sans,sans-serif" fill="#202020" class="rot" x="1">', out)
+        self.assertIn('<text font-weight="600" font-size="12.5px" font-family="Reddit Sans,sans-serif" class="rot" fill="#fff">', out)   # o atributo do elemento vence
+        self.assertIn('<path stroke="#613EFF" fill="none" class="cam"', out)
+
+    def test_as_ilustracoes_do_site_ficam_sem_style(self):
+        pasta = os.path.join(REPO, "assets", "ilustracoes")
+        for nome in os.listdir(pasta):
+            with open(os.path.join(pasta, nome), encoding="utf-8") as f:
+                self.assertNotIn("<style>", gen.svg_achatado(f.read()), nome)
+
+
 class Markdown(unittest.TestCase):
     def test_tira_titulo_e_tipo_e_travessao_fora_do_codigo(self):
         titulo, md = gen.preparar_markdown(

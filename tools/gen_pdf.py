@@ -112,6 +112,62 @@ def renderizar_mermaid(src, pasta, nome):
     return saida.read_text(encoding="utf-8").replace("](./", "](%s/" % Path(pasta).as_uri())
 
 
+FONT_RE = re.compile(r"^\s*(?:(normal|bold|[1-9]00)\s+)?([\d.]+px)\s+(.+)$")
+_svgs = {}
+_svg_tmp = None
+
+
+def svg_achatado(texto):
+    """O SVG das ilustrações estiliza o texto por classe (`.rot{font:600 12px ...;fill:...}`), e o
+    renderizador de SVG do WeasyPrint não aplica <style> nem o atalho `font:`: o texto sai preto e
+    enorme. Aqui cada regra vira atributo de apresentação nos elementos da classe."""
+    m = re.search(r"<style>(.*?)</style>", texto, flags=re.S)
+    if not m:
+        return texto
+    regras = {}
+    for nome, corpo in re.findall(r"\.([\w-]+)\s*\{([^}]*)\}", m.group(1)):
+        attrs = {}
+        for decl in corpo.split(";"):
+            if ":" not in decl:
+                continue
+            prop, val = (x.strip() for x in decl.split(":", 1))
+            if prop == "font":
+                f = FONT_RE.match(val)
+                if f:
+                    if f.group(1):
+                        attrs["font-weight"] = f.group(1)
+                    attrs["font-size"] = f.group(2)
+                    attrs["font-family"] = f.group(3).replace('"', "'")
+            else:
+                attrs[prop] = val.replace('"', "'")
+        regras[nome] = attrs
+    texto = texto[:m.start()] + texto[m.end():]
+
+    def aplicar(t):
+        tag = t.group(0)
+        c = re.search(r'\sclass="([^"]*)"', tag)
+        extras = {}
+        for nome in c.group(1).split():
+            for k, v in regras.get(nome, {}).items():
+                if not re.search(r"\s%s=" % re.escape(k), tag):
+                    extras[k] = v
+        novo = "".join(' %s="%s"' % kv for kv in extras.items())
+        return tag[:c.start()] + novo + tag[c.start():]
+    return re.sub(r'<[a-zA-Z]+\b[^>]*\sclass="[^"]*"[^>]*>', aplicar, texto)
+
+
+def svg_para_pdf(caminho):
+    """Caminho (file URI) de uma cópia do SVG que o WeasyPrint desenha direito."""
+    global _svg_tmp
+    if caminho not in _svgs:
+        if _svg_tmp is None:
+            _svg_tmp = Path(tempfile.mkdtemp(prefix="svg-pdf-"))
+        destino = _svg_tmp / ("%d-%s" % (len(_svgs), caminho.name))
+        destino.write_text(svg_achatado(caminho.read_text(encoding="utf-8")), encoding="utf-8")
+        _svgs[caminho] = destino.as_uri()
+    return _svgs[caminho]
+
+
 def url_do_site(caminho_repo, base):
     """Link para a versão on-line: .md vira doc.html?path=...; o resto, o próprio arquivo."""
     if caminho_repo.endswith(".md"):
@@ -140,7 +196,8 @@ def aula_para_html(md, doc, base=SITE, deslocar=1):
     for img in corpo.find_all("img", src=True):
         s = img["src"]
         if not re.match(r"^[a-z]+:", s, flags=re.I):
-            img["src"] = (pasta / s).resolve().as_uri()
+            local = (pasta / s).resolve()
+            img["src"] = svg_para_pdf(local) if local.suffix == ".svg" and local.exists() else local.as_uri()
         if not img.get("alt") or img.get("alt") == "diagram":
             img["alt"] = "Diagrama"
     for p in corpo.find_all("p"):
