@@ -4,7 +4,7 @@ import { progresso } from './progresso.js';
 import { montarTopo } from './topo.js';
 import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
 import { contar, hrefDoItem } from './progresso-nucleo.js';
-import { nivelPadrao, papelVisual, niveisConcluidos } from './hub-nucleo.js';
+import { nivelPadrao, papelVisual, niveisConcluidos, pdfDaTrilha } from './hub-nucleo.js';
 import { montarCelebracao } from './celebracao.js';
 import { el, svg, ICONES } from './dom.js';
 
@@ -183,6 +183,9 @@ if (!trilha) {
   document.title = trilha.titulo + ' · Gov Hub';
   $('trilha-titulo').textContent = trilha.titulo;
   $('trilha-chamada').textContent = trilha.chamada || trilha.descricao;
+  $('trilha-pdf').href = pdfDaTrilha(slug);
+  $('trilha-pdf').replaceChildren(svg(ICONES.baixar), 'Baixar a trilha em PDF');
+  $('trilha-pdf').hidden = false;
   temQuiz = !!trilha.quiz;
   $('banner-quiz').href = 'quiz.html?trilha=' + encodeURIComponent(slug);
   celebracao = montarCelebracao(progresso, slug, trilha, { temQuiz });

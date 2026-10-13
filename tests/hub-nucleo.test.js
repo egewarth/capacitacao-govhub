@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nivelPadrao, papelVisual, buscarAulas, corrigirQuiz, perguntasDaTrilha, normalizarBusca, niveisConcluidos } from '../assets/hub-nucleo.js';
+import { nivelPadrao, papelVisual, buscarAulas, corrigirQuiz, perguntasDaTrilha, normalizarBusca, niveisConcluidos, pdfDaAula, pdfDaTrilha } from '../assets/hub-nucleo.js';
 
 const NIVEIS = [
   { numero: 0, titulo: 'Base', itens: [{ id: 'a', titulo: 'Por que fazer um dashboard?', doc: 'docs/a.md' }, { id: 'b', titulo: 'Glossário', doc: 'docs/b.md' }] },
@@ -52,4 +52,9 @@ test('niveisConcluidos: conta só níveis com todas as aulas feitas', () => {
   assert.deepEqual(niveisConcluidos({ a: true, b: true }, NIVEIS), { feitos: 1, total: 2, percentual: 50 });
   assert.deepEqual(niveisConcluidos({ a: true, b: true, c: true }, NIVEIS), { feitos: 2, total: 2, percentual: 100 });
   assert.deepEqual(niveisConcluidos({}, []), { feitos: 0, total: 0, percentual: 0 });
+});
+
+test('caminhos dos PDFs: os mesmos que tools/gen_pdf.py escreve em pdf/', () => {
+  assert.equal(pdfDaAula('explicacao/hierarquia-visual'), 'pdf/aulas/explicacao/hierarquia-visual.pdf');
+  assert.equal(pdfDaTrilha('dashboards'), 'pdf/trilhas/dashboards.pdf');
 });

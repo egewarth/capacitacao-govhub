@@ -19,3 +19,6 @@ __pycache__/
 # Credenciais locais (nunca commitar)
 .env
 .superpowers/
+
+# PDFs das aulas e trilhas: gerados no deploy (tools/gen_pdf.py)
+pdf/

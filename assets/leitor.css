@@ -28,6 +28,7 @@ body.sem-nivel .layout{grid-template-columns:minmax(0,1fr);max-width:920px}   /*
 
 .content-main{background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:28px 32px;min-width:0}
 .content-meta-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.content-meta-row .btn-pdf{margin-left:auto}
 .conteudo{line-height:1.7;color:var(--text-body);font-size:15.5px}
 .conteudo:focus{outline:none}
 .conteudo h1{font-size:26px;font-weight:800;letter-spacing:-.025em;line-height:1.15;color:var(--dark-navy);margin:0 0 .7em}

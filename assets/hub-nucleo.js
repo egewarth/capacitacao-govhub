@@ -58,3 +58,7 @@ export function niveisConcluidos(feitos, niveis) {
   const feitosN = niveis.filter((n) => n.itens.length > 0 && n.itens.every((i) => feitos[i.id])).length;
   return { feitos: feitosN, total: niveis.length, percentual: niveis.length ? Math.round((feitosN / niveis.length) * 100) : 0 };
 }
+
+// PDFs gerados por tools/gen_pdf.py no deploy (pasta pdf/ do site publicado).
+export const pdfDaAula = (id) => 'pdf/aulas/' + id + '.pdf';
+export const pdfDaTrilha = (slug) => 'pdf/trilhas/' + encodeURIComponent(slug) + '.pdf';

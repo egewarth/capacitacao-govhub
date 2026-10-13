@@ -8,7 +8,7 @@ import { montarFeedback } from './feedback.js';
 import { montarCelebracao } from './celebracao.js';
 import { caminhoSeguro } from './caminho.js';
 import { hrefDoItem, idDoDoc, localizar, todosFeitos, vizinhos } from './progresso-nucleo.js';
-import { nivelPadrao, papelVisual } from './hub-nucleo.js';
+import { nivelPadrao, papelVisual, pdfDaAula } from './hub-nucleo.js';
 
 const $ = (id) => document.getElementById(id);
 const feedback = montarFeedback($('feedback'), progresso);
@@ -157,7 +157,9 @@ function pintarContexto() {
   const papel = papelVisual(item.papel);
   meta.replaceChildren(
     el('span', { class: 'tipo-aula' }, el('img', { src: item.icone, alt: '' }), el('span', {}, item.tipo_nome)),
-    el('span', { class: 'tag ' + papel }, ROTULO_PAPEL[papel]));
+    el('span', { class: 'tag ' + papel }, ROTULO_PAPEL[papel]),
+    el('a', { class: 'btn-pdf', href: pdfDaAula(item.id), download: '', 'aria-label': 'Baixar esta aula em PDF' },
+      svg(ICONES.baixar), 'Baixar PDF'));
   const mapa = 'mapa.html?trilha=' + encodeURIComponent(slug) + '#nivel-' + item.nivel;
   $('voltar-trilha').href = mapa;
 }
