@@ -21,4 +21,4 @@ __pycache__/
 .superpowers/
 
 # PDFs das aulas e trilhas: gerados no deploy (tools/gen_pdf.py)
-pdf/
+/pdf/
