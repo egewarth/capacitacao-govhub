@@ -65,7 +65,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/configure-pages@v6
+      - id: pages
+        uses: actions/configure-pages@v6
 
       # PDFs das aulas e das trilhas (pasta pdf/, fora do git): WeasyPrint para o
       # PDF e mermaid-cli, com o Chrome do runner, para os diagramas Mermaid.
@@ -91,11 +92,33 @@ jobs:
           PUPPETEER_SKIP_DOWNLOAD: '1'
         run: python3 tools/gen_pdf.py --saida pdf
 
-      # O site vai como está — doc.html lê os .md em tempo de execução, então
-      # o repositório inteiro precisa estar publicado (com a pasta pdf/ gerada acima).
+      # Site combinado, como vai ficar no domínio: o Gov Hub (gov-hub.io, com a
+      # identidade visual nova) na raiz e as trilhas em /capacitacao/.
+      # GOVHUB_REF aponta a branch do gov-hub-io que está em avaliação.
+      - name: Código do site do Gov Hub
+        uses: actions/checkout@v7
+        with:
+          repository: GovHub-br/gov-hub-io
+          ref: ${{ vars.GOVHUB_REF || 'feat/idv-govhub' }}
+          path: _govhub
+
+      - name: Gerar o site do Gov Hub (MkDocs)
+        working-directory: _govhub
+        run: |
+          pip install -q -r requirements.txt "mkdocs-material[recommended]"
+          mkdocs build --site-dir "$GITHUB_WORKSPACE/_site"
+
+      # As trilhas vão como estão: doc.html lê os .md em tempo de execução, então
+      # o repositório inteiro precisa ir junto (com a pasta pdf/ gerada acima).
+      - name: Montar o site (trilhas em /capacitacao/)
+        run: |
+          mkdir -p _site/capacitacao
+          rsync -a --exclude .git --exclude .github --exclude _govhub --exclude _site ./ _site/capacitacao/
+          python3 tools/montar_site.py _site "${{ steps.pages.outputs.base_path }}"
+
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: .
+          path: _site
 
       - id: deploy
         uses: actions/deploy-pages@v5

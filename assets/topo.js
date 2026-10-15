@@ -19,7 +19,8 @@ export function montarTopo(progresso, { ativo = null } = {}) {
     montarBusca(),
     el('div', { class: 'nav-actions' },
       el('nav', { class: 'nav-links', 'aria-label': 'Principal' },
-        link('index.html', 'Início', 'inicio'), link('trilhas.html', 'Trilhas', 'trilhas')),
+        link('index.html', 'Início', 'inicio'), link('trilhas.html', 'Trilhas', 'trilhas'),
+        link('../', 'Gov Hub', 'govhub')),   // as trilhas moram em /capacitacao/ do site do Gov Hub
       el('a', { class: 'btn-contact', href: 'mailto:' + EMAIL_CONTATO, title: 'Dúvidas ou contato: ' + EMAIL_CONTATO, 'aria-label': 'Dúvidas? Escreva para ' + EMAIL_CONTATO },
         svg(ICONES.email), el('span', {}, 'Dúvidas?')),
       conta)));
