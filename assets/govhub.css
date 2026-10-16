@@ -44,8 +44,14 @@
   --shadow-lg:0 4px 20px rgba(10,0,90,.12);
   --shadow-xl:0 8px 30px rgba(10,0,90,.16);
   --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
-  --largura:1120px;
+  /* largura útil igual à do .container do site do Gov Hub (margens alinhadas), + 24px de cada lado */
+  --largura:100%;
 }
+@media(min-width:576px){:root{--largura:564px}}
+@media(min-width:768px){:root{--largura:744px}}
+@media(min-width:992px){:root{--largura:984px}}
+@media(min-width:1200px){:root{--largura:1164px}}
+@media(min-width:1400px){:root{--largura:1344px}}
 
 *{box-sizing:border-box}
 [hidden]{display:none !important}   /* o atributo vence qualquer display dos componentes */
@@ -57,17 +63,39 @@ button{font-family:inherit}
 h1,h2,h3{font-weight:var(--heading-weight);letter-spacing:var(--heading-tracking);line-height:var(--heading-leading);margin:0}
 
 /* ---------- Topo ---------- */
-header.site{background:var(--primary-purple);color:#fff;position:sticky;top:0;z-index:50}
-.site-nav{max-width:1200px;margin:0 auto;display:flex;align-items:center;padding:12px 24px;gap:14px;flex-wrap:wrap;min-height:64px}
-.marca{display:flex;align-items:center;gap:12px;color:#fff;flex:0 0 auto}
-.marca img{height:24px;width:auto;display:block}  /* ~103px: acima do mínimo de 2,5 cm do MIV */
-.marca span{font-size:15px;font-weight:800;white-space:nowrap;border-left:1px solid rgba(255,255,255,.5);padding-left:12px}
+/* Menu do site do Gov Hub (igual ao de gov-hub.io) + sub-barra da capacitação, os dois fixos no topo */
+header.site{position:sticky;top:0;z-index:50}
+.gh-nav{background:var(--primary-purple);color:#fff}
+.gh-nav-in{max-width:var(--largura);margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:24px}
+.gh-logo img{height:30px;width:auto;display:block}
+.gh-links{flex:1;display:flex;justify-content:center;align-items:center;gap:4px}
+.gh-links a{color:#fff;font-size:12px;font-weight:700;letter-spacing:.5px;padding:8px 14px;border-radius:8px;white-space:nowrap}
+.gh-links a:hover{background:rgba(255,255,255,.14)}
+.gh-links a.ativo{background:#fff;color:var(--dark-navy)}
+.gh-social{display:flex;align-items:center;gap:16px}
+.gh-social img{width:32px;height:32px;display:block}
+.gh-menu-btn{display:none;margin-left:auto;background:none;border:none;padding:8px;cursor:pointer;flex-direction:column;gap:5px}
+.gh-menu-btn span{display:block;width:24px;height:2.5px;background:#fff;border-radius:2px}
+@media(max-width:1199.98px){
+  .gh-menu-btn{display:flex}
+  .gh-nav .gh-social{display:none}
+  .gh-links{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;align-items:stretch;gap:0;
+      background:var(--primary-purple);padding:8px 16px 16px;box-shadow:var(--shadow-xl)}
+  .gh-links.aberto{display:flex}
+  .gh-links a{padding:12px 14px;font-size:14px}
+}
+
+/* sub-barra da capacitação: clara, com a borda da marca */
+.site-nav{background:#fff;color:var(--dark-navy);border-bottom:2px solid var(--border-soft)}
+.site-nav-in{max-width:var(--largura);margin:0 auto;display:flex;align-items:center;padding:10px 24px;gap:14px;flex-wrap:wrap;min-height:60px}
+.marca{display:flex;align-items:center;gap:12px;color:var(--dark-navy);flex:0 0 auto}
+.marca span{font-size:15px;font-weight:800;white-space:nowrap}
 
 .site-search{position:relative;flex:1;min-width:220px;max-width:360px}
 .site-search input{width:100%;border:none;border-radius:999px;padding:9px 14px 9px 36px;font-size:13.5px;font-family:inherit;
-    background:rgba(255,255,255,.95);color:var(--text-strong)}
+    background:var(--bg-soft);color:var(--text-strong)}
 .site-search input::placeholder{color:var(--text-muted)}
-.site-search input:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.site-search input:focus-visible{outline:3px solid var(--purple-700);outline-offset:2px}
 .site-search .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);pointer-events:none;display:flex}
 .site-search .search-icon svg{width:16px;height:16px}
 .search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border-radius:var(--radius-md);
@@ -83,12 +111,12 @@ header.site{background:var(--primary-purple);color:#fff;position:sticky;top:0;z-
 .nav-actions{display:flex;align-items:center;gap:14px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .nav-links{display:flex;align-items:center;gap:20px;font-size:14px;font-weight:600}
 .nav-links a{opacity:.9;padding-bottom:4px;border-bottom:2px solid transparent}
-.nav-links a:hover{opacity:1;border-bottom-color:rgba(255,255,255,.6)}
-.nav-links a[aria-current="page"]{opacity:1;border-bottom-color:#fff}
+.nav-links a:hover{opacity:1;border-bottom-color:var(--border-soft)}
+.nav-links a[aria-current="page"]{opacity:1;border-bottom-color:var(--primary-purple)}
 
-.btn-contact{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.5);
+.btn-contact{display:flex;align-items:center;gap:6px;background:#fff;color:var(--dark-navy);border:1.5px solid var(--dark-navy);
     border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;white-space:nowrap}
-.btn-contact:hover{background:rgba(255,255,255,.24)}
+.btn-contact:hover{background:var(--bg-soft)}
 .btn-contact svg{width:15px;height:15px;flex:none}
 
 /* Conta Google */
@@ -102,7 +130,7 @@ header.site{background:var(--primary-purple);color:#fff;position:sticky;top:0;z-
 .btn-google.contornado{box-shadow:0 0 0 1.5px var(--text-muted) inset}
 .conta-avatar-btn{background:none;border:none;padding:0;cursor:pointer;border-radius:50%;line-height:0}
 .conta-avatar{width:36px;height:36px;border-radius:50%;background:#fff;color:var(--primary-purple);display:flex;align-items:center;
-    justify-content:center;font-size:13px;font-weight:800;border:2px solid rgba(255,255,255,.65);object-fit:cover}
+    justify-content:center;font-size:13px;font-weight:800;border:2px solid var(--border-soft);object-fit:cover}
 .conta-menu{position:absolute;top:calc(100% + 10px);right:0;background:#fff;color:var(--text-body);border-radius:var(--radius-md);
     box-shadow:var(--shadow-xl);padding:14px;min-width:220px;z-index:60}
 .conta-menu-nome{font-size:13.5px;font-weight:700;color:var(--text-strong)}
@@ -116,14 +144,31 @@ header.site{background:var(--primary-purple);color:#fff;position:sticky;top:0;z-
   .btn-contact span{display:none}
   .btn-contact{padding:8px 10px}
   .site-search{order:3;flex-basis:100%;max-width:none}
-  .marca span{display:none}
 }
 
 /* ---------- Hero ---------- */
-.hero{background:var(--dark-navy);color:#fff;padding:48px 24px 40px}
-.hero-inner{max-width:var(--largura);margin:0 auto;text-align:center}
-.hero h1{font-size:clamp(28px,4vw,40px);margin-bottom:14px}
-.hero p{font-size:16.5px;color:var(--text-on-navy);max-width:680px;margin:0 auto;line-height:1.55}
+/* Mesmo hero das páginas do site (Sobre, Projetos…): fundo branco, título navy à esquerda,
+   quarto de círculo roxo e anel navy à direita, pílula #F2F1F6 entrando pela esquerda. */
+.hero,.landing-hero{position:relative;overflow:hidden;background:#fff;color:var(--text-body);
+    padding:clamp(48px,7vw,96px) 0 clamp(48px,6vw,80px);text-align:left;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23613EFF' d='M100 0H0a100 100 0 0 0 100 100z'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%230A005A' fill-rule='evenodd' d='M50 0a50 50 0 1 0 0 100a50 50 0 1 0 0-100zM50 25.6a24.4 24.4 0 1 1 0 48.8a24.4 24.4 0 1 1 0-48.8z'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 266 100'%3E%3Crect width='266' height='100' rx='50' fill='%23F2F1F6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-size:min(33vw,440px) auto,min(10vw,140px) auto,210px auto;
+    background-position:right top,right min(24vw,320px) bottom 24px,left -72px top 18px}
+.hero-inner,.landing-hero-inner{max-width:var(--largura);margin:0 auto;padding:0 24px;text-align:left}
+.hero-inner>*,.landing-hero-inner>*{max-width:min(680px,60%)}
+.hero h1,.landing-hero h1{font-size:clamp(34px,5vw,64px);color:var(--dark-navy);margin-bottom:20px}
+.hero p,.landing-lede{font-size:clamp(16px,1.6vw,19px);color:var(--text-body);margin:0;line-height:1.55}
+.eyebrow{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--purple-700);margin-bottom:18px}
+.eyebrow::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent-rose);flex:none}
+@media(max-width:760px){
+  .hero,.landing-hero{background-image:none}
+  .hero-inner>*,.landing-hero-inner>*{max-width:100%}
+}
 
 /* ---------- Botões ---------- */
 .btn-primario{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--primary-purple);color:#fff;border:none;
@@ -169,8 +214,32 @@ header.site{background:var(--primary-purple);color:#fff;position:sticky;top:0;z-
 .modal-close:hover{background:var(--border-soft);color:var(--text-strong)}
 
 /* ---------- Rodapé ---------- */
-footer.site{text-align:center;padding:24px 24px 48px;font-size:12.5px;color:var(--text-muted)}
-footer.site a{text-decoration:underline}
+/* O mesmo rodapé do site do Gov Hub: navy, parceiros em caixas de 90×220px, links e contato */
+.gh-rodape{background:var(--dark-navy);color:#fff;padding:72px 0 48px}
+.gh-rodape-in{max-width:var(--largura);margin:0 auto;padding:0 24px}
+.gh-rodape-rotulo{display:flex;align-items:center;gap:10px;margin:32px 0 12px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.gh-rodape-rotulo:first-child{margin-top:0}
+.gh-rodape-rotulo::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent-rose);flex:none}
+.gh-rodape-logos{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 24px}
+.gh-rodape-logo{height:90px;display:flex;align-items:center}
+.gh-rodape-logo img{height:90px;max-width:220px;width:auto;object-fit:contain}
+.gh-rodape-logo img[src$=".png"]:not([src*="ipea"]){filter:brightness(0) invert(1)}
+.gh-rodape-links{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;margin-top:48px}
+.gh-rodape-contato{grid-column:4}
+.gh-rodape h4{font-size:15px;font-weight:700;margin:0 0 12px}
+.gh-rodape ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.gh-rodape a{color:#fff;font-size:15px}
+.gh-rodape-nav a{font-weight:700}
+.gh-rodape a:hover{text-decoration:underline}
+.gh-rodape .gh-social{margin-top:18px}
+.gh-rodape-credito{margin:48px 0 0;font-size:12.5px;color:var(--text-on-navy)}
+.gh-rodape-credito a{font-size:inherit;text-decoration:underline}
+@media(max-width:767.98px){
+  .gh-rodape-logos{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .gh-rodape-logo,.gh-rodape-logo img{height:64px}
+  .gh-rodape-links{grid-template-columns:1fr 1fr}
+  .gh-rodape-contato{grid-column:auto}
+}
 
 /* Aviso discreto (sincronização) — região viva sempre presente, só a opacidade muda */
 .aviso{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:80;max-width:calc(100vw - 32px);
@@ -188,7 +257,7 @@ footer.site a{text-decoration:underline}
 
 /* Foco visível (eMAG 2.1 / WCAG 2.4.7) — roxo escuro no claro, branco no roxo e no navy */
 :focus-visible{outline:3px solid var(--purple-700);outline-offset:2px;border-radius:4px}
-header.site :focus-visible,.hero :focus-visible{outline-color:#fff}
+.gh-nav :focus-visible,.gh-rodape :focus-visible{outline-color:#fff}
 
 @media (prefers-reduced-motion: reduce){*{transition:none !important;scroll-behavior:auto !important}}
 
@@ -243,5 +312,8 @@ button.star-btn:hover{background:var(--border-soft)}
     border:1.5px solid var(--text-muted);border-radius:999px;padding:5px 12px;background:#fff;white-space:nowrap}
 .btn-pdf:hover{background:var(--bg-soft)}
 .btn-pdf svg{width:15px;height:15px;flex:none}
-.btn-pdf--hero{margin-top:20px;background:transparent;color:#fff;border-color:rgba(255,255,255,.7);font-size:13.5px;padding:8px 16px}
-.btn-pdf--hero:hover{background:rgba(255,255,255,.12)}
+.btn-pdf--hero{margin-top:24px;font-size:13.5px;padding:8px 16px}
+
+/* Entrar na sub-barra clara: botão roxo (o branco sumia no fundo branco) */
+.site-nav .btn-entrar{background:var(--primary-purple);color:#fff}
+.site-nav .btn-entrar:hover{background:var(--purple-600)}

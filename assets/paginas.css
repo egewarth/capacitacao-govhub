@@ -1,23 +1,23 @@
 /* Página inicial, lista de trilhas e quiz de revisão. Cores e tipografia: assets/govhub.css. */
 
 /* ---------- Página inicial ---------- */
-.landing-hero{background:var(--dark-navy);color:#fff;padding:64px 24px 96px;text-align:center}
-.landing-hero-inner{max-width:720px;margin:0 auto}
-.landing-hero h1{font-size:clamp(32px,5vw,48px);margin-bottom:16px}
-.landing-lede{font-size:17px;color:var(--text-on-navy);line-height:1.6;margin:0 auto 32px}
+/* o hero (fundo, formas, título) vem de .landing-hero em govhub.css, igual ao das páginas do site */
+.landing-lede{margin-bottom:32px !important}
 .landing-cta{padding:12px 28px;font-size:14.5px}
-.landing-login-card{max-width:560px;margin:-48px auto 60px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+/* cartão de login na faixa clara, abaixo do hero (não mais sobreposto), alinhado à margem do conteúdo */
+.landing-login-card{max-width:560px;margin:48px 0 64px;background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
     position:relative;z-index:2;padding:28px;text-align:center}
+.landing-login-wrap{max-width:var(--largura);margin:0 auto;padding:0 24px}
 .landing-login-card .btn-google{margin:0 auto 14px}
 .landing-login-hint{font-size:13px;color:var(--text-muted);margin:0;line-height:1.5}
 .landing-logado{display:flex;flex-direction:column;align-items:center;gap:10px}
 .landing-logado p{margin:0;font-size:14.5px}
 .check-verde{width:40px;height:40px;border-radius:50%;background:var(--success-soft);color:var(--success-text);display:flex;align-items:center;justify-content:center}
 .check-verde svg{width:20px;height:20px}
-@media(max-width:600px){.landing-login-card{margin:-48px 16px 48px}}
+@media(max-width:600px){.landing-login-card{margin:32px 0 48px}}
 
 /* ---------- Lista de trilhas ---------- */
-.track-grid{max-width:1040px;margin:-20px auto 40px;padding:0 24px;position:relative;z-index:2;display:grid;
+.track-grid{max-width:var(--largura);margin:48px auto 64px;padding:0 24px;position:relative;z-index:2;display:grid;
     grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
 .track-card{background:#fff;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:28px;display:flex;flex-direction:column;gap:4px;position:relative}
 .track-badge{align-self:flex-start;background:var(--bg-soft);color:var(--dark-navy);font-size:11px;font-weight:800;text-transform:uppercase;

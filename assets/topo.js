@@ -1,5 +1,6 @@
-// Topo comum a todas as páginas (marca, busca, Início/Trilhas, Dúvidas, conta Google), o rodapé
-// e o aviso de sincronização. Cada página tem só <header class="site" id="topo"></header>.
+// Topo comum a todas as páginas: o menu do site do Gov Hub e, abaixo, a sub-barra da capacitação
+// (busca, Início/Trilhas, Dúvidas, conta Google); o rodapé do site e o aviso de sincronização.
+// Cada página tem só <header class="site" id="topo"></header>.
 import { el, svg, ICONES } from './dom.js';
 import { botaoEntrar } from './login.js';
 import { carregarCatalogo, carregarTrilha } from './trilha.js';
@@ -8,26 +9,92 @@ import { hrefDoItem } from './progresso-nucleo.js';
 
 export const EMAIL_CONTATO = 'govhub@unb.br';
 
+// O site do Gov Hub fica um nível acima (as trilhas moram em /capacitacao/). Caminhos relativos,
+// para funcionar tanto no domínio próprio quanto no preview do GitHub Pages.
+const SITE = '../govhub/';
+const MENU_SITE = [
+  ['HOME', SITE + 'home/'], ['SOBRE', SITE + 'sobre/'], ['QUEM SOMOS', SITE + 'quem-somos/'],
+  ['PROJETOS', SITE + 'projetos/'], ['PUBLICAÇÕES', SITE + 'publicacoes/'],
+  ['CAPACITAÇÃO', 'index.html', true], ['DOCUMENTAÇÃO', SITE + 'documentacao/'],
+];
+const REDES = [
+  ['https://www.instagram.com/govhub.br', 'instagram', 'Instagram'],
+  ['https://github.com/GovHub-br/gov-hub', 'github', 'GitHub'],
+];
+
+// Menu principal: o mesmo do site do Gov Hub, com CAPACITAÇÃO ativo.
+function montarMenuSite() {
+  const links = MENU_SITE.map(([texto, href, ativo]) =>
+    el('a', { href, class: ativo ? 'ativo' : null, 'aria-current': ativo ? 'page' : null }, texto));
+  const menu = el('nav', { class: 'gh-links', id: 'gh-links', 'aria-label': 'Site do Gov Hub' }, ...links);
+  const botao = el('button', {
+    class: 'gh-menu-btn', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'gh-links', 'aria-label': 'Abrir o menu',
+    onclick: () => {
+      const aberto = menu.classList.toggle('aberto');
+      botao.setAttribute('aria-expanded', String(aberto));
+    },
+  }, el('span'), el('span'), el('span'));
+  return el('div', { class: 'gh-nav' }, el('div', { class: 'gh-nav-in' },
+    el('a', { class: 'gh-logo', href: SITE + 'home/' },
+      el('img', { src: 'assets/logo/logomarca-horizontal-white.svg', alt: 'Gov Hub', width: 128, height: 30 })),
+    menu,
+    el('div', { class: 'gh-social' }, ...REDES.map(([href, icone, nome]) =>
+      el('a', { href, target: '_blank', rel: 'noopener', 'aria-label': nome },
+        el('img', { src: `assets/logo/redes/${icone}.svg`, alt: '' })))),
+    botao));
+}
+
 export function montarTopo(progresso, { ativo = null } = {}) {
   const raiz = document.getElementById('topo');
   const link = (href, texto, chave) => el('a', { href, 'aria-current': ativo === chave ? 'page' : null }, texto);
   const conta = el('div', { class: 'conta', id: 'conta' });
-  raiz.replaceChildren(el('div', { class: 'site-nav' },
-    el('a', { class: 'marca', href: 'index.html' },
-      el('img', { src: 'assets/logo/logomarca-horizontal-white.svg', alt: 'Gov Hub', width: 103, height: 24 }),
-      el('span', {}, 'Trilhas de capacitação')),
+  // Sub-barra da capacitação (busca, Início/Trilhas, Dúvidas, conta), abaixo do menu do site.
+  raiz.replaceChildren(montarMenuSite(), el('div', { class: 'site-nav' }, el('div', { class: 'site-nav-in' },
+    el('a', { class: 'marca', href: 'index.html' }, el('span', {}, 'Trilhas de capacitação')),
     montarBusca(),
     el('div', { class: 'nav-actions' },
-      el('nav', { class: 'nav-links', 'aria-label': 'Principal' },
-        link('index.html', 'Início', 'inicio'), link('trilhas.html', 'Trilhas', 'trilhas'),
-        link('../', 'Gov Hub', 'govhub')),   // as trilhas moram em /capacitacao/ do site do Gov Hub
+      el('nav', { class: 'nav-links', 'aria-label': 'Capacitação' },
+        link('index.html', 'Início', 'inicio'), link('trilhas.html', 'Trilhas', 'trilhas')),
       el('a', { class: 'btn-contact', href: 'mailto:' + EMAIL_CONTATO, title: 'Dúvidas ou contato: ' + EMAIL_CONTATO, 'aria-label': 'Dúvidas? Escreva para ' + EMAIL_CONTATO },
         svg(ICONES.email), el('span', {}, 'Dúvidas?')),
-      conta)));
+      conta))));
   montarConta(conta, progresso);
   montarAviso(progresso);
-  document.body.append(el('footer', { class: 'site' }, 'Trilhas de capacitação · Gov Hub · estrutura baseada em ',
-    el('a', { href: 'https://diataxis.fr/' }, 'Diátaxis')));
+  document.body.append(montarRodape());
+}
+
+// ---- Rodapé: o mesmo do site do Gov Hub ---------------------------------------------------
+const PARCEIROS = [
+  ['lab-livre-white.svg', 'Lab Livre'], ['unb-light-outlined.svg', 'Universidade de Brasília'],
+  ['capibaribe.png', 'Capibaribe'], ['Cidade_Democratica.png', 'Instituto Cidade Democrática'],
+];
+const APOIO = [
+  ['ipea_footer.png', 'Ipea'], ['cidades_negativo.svg', 'Ministério das Cidades'],
+  ['mir_negativo.svg', 'Ministério da Igualdade Racial'], ['mgi_negativo.svg', 'Ministério da Gestão e da Inovação em Serviços Públicos'],
+  ['cultura_negativo.svg', 'Ministério da Cultura'],
+];
+
+function montarRodape() {
+  const logos = (lista) => el('div', { class: 'gh-rodape-logos' },
+    ...lista.map(([arq, nome]) => el('div', { class: 'gh-rodape-logo' }, el('img', { src: 'assets/logo/parceiros/' + arq, alt: nome }))));
+  const lista = (itens) => el('ul', {}, ...itens.map(([texto, href]) => el('li', {}, el('a', { href }, texto))));
+  return el('footer', { class: 'site gh-rodape' }, el('div', { class: 'gh-rodape-in' },
+    el('p', { class: 'gh-rodape-rotulo' }, 'Gov Hub é uma iniciativa'), logos(PARCEIROS),
+    el('p', { class: 'gh-rodape-rotulo' }, 'Apoio'), logos(APOIO),
+    el('div', { class: 'gh-rodape-links' },
+      el('div', { class: 'gh-rodape-nav' }, lista([
+        ['Home', SITE + 'home/'], ['Sobre', SITE + 'sobre/'], ['Projetos', SITE + 'projetos/'],
+        ['Publicações', SITE + 'publicacoes/'], ['Quem somos', SITE + 'quem-somos/'],
+        ['Documentação', SITE + 'documentacao/'], ['DEMO', SITE + 'dashboards/']])),
+      el('div', {}, el('h4', {}, 'Como usar'), lista([
+        ['Gov hub no meu órgão', SITE + 'sobre-projeto/replicacao/'], ['Tutoriais', SITE + 'documentacao/tutoriais/infraestrutura/cicd'],
+        ['Funcionalidades', SITE + 'sobre-projeto/overview'], ['Documentação', SITE + 'documentacao/instalacao']])),
+      el('div', { class: 'gh-rodape-contato' }, el('h4', {}, 'Contato'), lista([[EMAIL_CONTATO, 'mailto:' + EMAIL_CONTATO]]),
+        el('div', { class: 'gh-social' }, ...REDES.map(([href, icone, nome]) =>
+          el('a', { href, target: '_blank', rel: 'noopener', 'aria-label': nome },
+            el('img', { src: `assets/logo/redes/${icone}.svg`, alt: '' })))))),
+    el('p', { class: 'gh-rodape-credito' }, 'Trilhas de capacitação · estrutura baseada em ',
+      el('a', { href: 'https://diataxis.fr/' }, 'Diátaxis'))));
 }
 
 // ---- Busca: títulos das aulas das trilhas abertas --------------------------------------
