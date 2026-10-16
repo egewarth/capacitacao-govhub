@@ -1,10 +1,11 @@
-// Página inicial (index.html): apresentação e cartão de login.
+// Página inicial (index.html): apresentação, cartão de login e a lista de trilhas.
 import { progresso } from './progresso.js';
 import { montarTopo } from './topo.js';
 import { el, svg, ICONES } from './dom.js';
 import { botaoEntrar } from './login.js';
+import { montarCatalogo } from './catalogo.js';
 
-montarTopo(progresso, { ativo: 'inicio' });
+montarTopo(progresso);
 const cartao = document.getElementById('login-card');
 
 function pintar() {
@@ -22,3 +23,4 @@ function pintar() {
 }
 progresso.aoMudar(pintar);
 pintar();
+montarCatalogo(progresso);

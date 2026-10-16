@@ -74,7 +74,7 @@ trilha — é dele que sai o botão *Marcar como feito* no fim de cada página. 
    vale em todas as trilhas que a usam.
 3. Rode `python3 tools/gen_roadmap.py` e commite o resultado.
 
-A trilha aparece sozinha no catálogo (`trilhas.html`). Os campos opcionais do cabeçalho (`chamada`,
+A trilha aparece sozinha no catálogo (seção `#trilhas` do `index.html`). Os campos opcionais do cabeçalho (`chamada`,
 `status`, `etapas`…), a linha `Etapa: … · Ícone: …` de cada nível e o quiz em `quiz/<slug>.json` estão
 no [README, seção 7.2](README.md#72-editar-a-trilha).
 
@@ -99,7 +99,7 @@ Um mesmo documento pode estar em várias trilhas, mas **não se repete dentro da
 
 - `docs/trilhas/*.json`, `docs/trilhas/*.md` e `docs/trilhas/*.xmind`.
 
-As páginas (`index.html`, `trilhas.html`, `mapa.html`, `doc.html`, `quiz.html`) não têm regiões geradas: o design,
+As páginas (`index.html`, `mapa.html`, `doc.html`, `quiz.html`) não têm regiões geradas: o design,
 o CSS e o JS são seus.
 
 ## 3. Identidade visual

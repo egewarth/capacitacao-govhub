@@ -12,7 +12,7 @@ const $ = (id) => document.getElementById(id);
 const ROTULO_PAPEL = { essencial: 'Essencial', apoio: 'Apoio', marco: 'Marco' };
 const CHAVE_LOGICA = 'govhub-logica-recolhida';
 
-montarTopo(progresso, { ativo: 'trilhas' });
+montarTopo(progresso);
 
 const pedido = new URLSearchParams(location.search).get('trilha');
 let catalogo = null;
@@ -175,7 +175,7 @@ let celebracao = null;
 if (!trilha) {
   $('trilha-titulo').textContent = 'Trilha não encontrada';
   $('painel').replaceChildren(el('p', { class: 'msg' }, 'Não foi possível carregar esta trilha. ',
-    el('a', { href: 'trilhas.html', class: 'btn-link' }, 'Ver todas as trilhas')));
+    el('a', { href: 'index.html#trilhas', class: 'btn-link' }, 'Ver todas as trilhas')));
   $('progresso-texto').textContent = '';
   $('limpar').hidden = true;
 } else {

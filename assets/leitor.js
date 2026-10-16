@@ -238,7 +238,7 @@ async function abrir({ path }, { foco = false } = {}) {
   } catch (e) {
     if (path !== atual.path) return;
     mostrarMensagem('Não foi possível abrir ', el('code', {}, path), ` (${e.message}). `,
-      el('a', { href: 'trilhas.html' }, 'Ver as trilhas'));
+      el('a', { href: 'index.html#trilhas' }, 'Ver as trilhas'));
   } finally {
     if (path === atual.path) conteudo.removeAttribute('aria-busy');
   }
@@ -277,7 +277,7 @@ function tirarLinhaDeTipo(raiz) {
 }
 
 // ---- Início ----------------------------------------------------------------------------
-montarTopo(progresso, { ativo: 'trilhas' });
+montarTopo(progresso);
 $('voltar-icone').replaceChildren(svg(ICONES.voltar));
 document.querySelector('.seta-voltar').replaceChildren(svg(ICONES.voltar));
 document.querySelector('.seta-avancar').replaceChildren(svg(ICONES.avancar));
@@ -305,7 +305,7 @@ if (lerUrl().trilha !== slug) {
   u.search = new URLSearchParams({ trilha: slug, ...Object.fromEntries(resto) }).toString();   // trilha antes de path, como nos links gerados
   history.replaceState(null, '', u);
 }
-$('voltar-trilha').href = trilha ? 'mapa.html?trilha=' + encodeURIComponent(slug) : 'trilhas.html';
+$('voltar-trilha').href = trilha ? 'mapa.html?trilha=' + encodeURIComponent(slug) : 'index.html#trilhas';
 if (trilha) celebracao = montarCelebracao(progresso, slug, trilha, { temQuiz: !!trilha.quiz });
 $('aula-cta').addEventListener('click', aoClicarCta);
 document.addEventListener('click', interceptarLinks);

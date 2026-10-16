@@ -8,7 +8,7 @@ import { perguntasDaTrilha, corrigirQuiz } from './hub-nucleo.js';
 import { el, svg, ICONES } from './dom.js';
 
 const $ = (id) => document.getElementById(id);
-montarTopo(progresso, { ativo: 'trilhas' });
+montarTopo(progresso);
 $('voltar-icone').replaceChildren(svg(ICONES.voltar));
 
 const pedido = new URLSearchParams(location.search).get('trilha');

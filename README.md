@@ -9,7 +9,7 @@ organizado (framework **Diátaxis**) e como editar e evoluir o material.
 
 - Estrutura do conteúdo: [Diátaxis](https://diataxis.fr/)
 - Acessibilidade: [eMAG](https://www.gov.br/governodigital/pt-br/acessibilidade-e-usuario/acessibilidade-digital) e [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/)
-- Trilhas de aprendizagem: [trilhas.html](trilhas.html) (catálogo) · fonte de cada trilha em `trilhas/<slug>.md`
+- Trilhas de aprendizagem: [index.html#trilhas](index.html#trilhas) (catálogo) · fonte de cada trilha em `trilhas/<slug>.md`
 
 > Vai editar o material? Pule para a seção 7 — [Como editar e contribuir](#7-como-editar-e-contribuir).
 
@@ -82,8 +82,8 @@ Dashboards-Roadmap/
 ├── trilhas/                     fonte de cada trilha (<slug>.md)
 ├── CONTEXT.md                   linguagem ubíqua da autoria
 ├── CONTRIBUTING.md              como contribuir
-├── index.html                   página inicial (apresentação e login)
-├── trilhas.html                 catálogo de trilhas
+├── index.html                   página inicial: apresentação, login e catálogo de trilhas
+├── trilhas.html                 endereço antigo do catálogo, só redireciona
 ├── mapa.html                    mapa de uma trilha (?trilha=<slug>), um nível por vez
 ├── doc.html                     página da aula (Markdown), por trilha
 ├── quiz.html                    quiz de revisão (?trilha=<slug>), liberado ao concluir a trilha

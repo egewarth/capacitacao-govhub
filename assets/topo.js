@@ -1,5 +1,5 @@
 // Topo comum a todas as páginas: o menu do site do Gov Hub e, abaixo, a sub-barra da capacitação
-// (busca, Início/Trilhas, Dúvidas, conta Google); o rodapé do site e o aviso de sincronização.
+// (busca, Dúvidas, conta Google); o rodapé do site e o aviso de sincronização.
 // Cada página tem só <header class="site" id="topo"></header>.
 import { el, svg, ICONES } from './dom.js';
 import { botaoEntrar } from './login.js';
@@ -44,17 +44,14 @@ function montarMenuSite() {
     botao));
 }
 
-export function montarTopo(progresso, { ativo = null } = {}) {
+export function montarTopo(progresso) {
   const raiz = document.getElementById('topo');
-  const link = (href, texto, chave) => el('a', { href, 'aria-current': ativo === chave ? 'page' : null }, texto);
   const conta = el('div', { class: 'conta', id: 'conta' });
-  // Sub-barra da capacitação (busca, Início/Trilhas, Dúvidas, conta), abaixo do menu do site.
+  // Sub-barra da capacitação (busca, Dúvidas, conta), abaixo do menu do site.
   raiz.replaceChildren(montarMenuSite(), el('div', { class: 'site-nav' }, el('div', { class: 'site-nav-in' },
     el('a', { class: 'marca', href: 'index.html' }, el('span', {}, 'Trilhas de capacitação')),
     montarBusca(),
     el('div', { class: 'nav-actions' },
-      el('nav', { class: 'nav-links', 'aria-label': 'Capacitação' },
-        link('index.html', 'Início', 'inicio'), link('trilhas.html', 'Trilhas', 'trilhas')),
       el('a', { class: 'btn-contact', href: 'mailto:' + EMAIL_CONTATO, title: 'Dúvidas ou contato: ' + EMAIL_CONTATO, 'aria-label': 'Dúvidas? Escreva para ' + EMAIL_CONTATO },
         svg(ICONES.email), el('span', {}, 'Dúvidas?')),
       conta))));
