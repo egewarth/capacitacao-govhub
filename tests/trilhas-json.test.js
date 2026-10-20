@@ -44,6 +44,7 @@ for (const resumo of catalogo.trilhas) {
     const ids = trilha.niveis.flatMap((n) => n.itens.map((i) => i.id));
     assert.equal(new Set(ids).size, ids.length);
     assert.deepEqual(resumo.aulas, ids);
-    assert.equal(resumo.niveis, trilha.niveis.length);
+    assert.equal(resumo.niveis, trilha.niveis.filter((n) => n.status !== 'em-breve').length);   // o catálogo conta os níveis abertos
+    for (const n of trilha.niveis) assert.equal(n.status === 'em-breve', n.itens.length === 0, `nível ${n.numero}`);
   });
 }

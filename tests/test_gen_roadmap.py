@@ -170,5 +170,34 @@ class Etapas(unittest.TestCase):
             self.gerar(self.CAB.replace("em-breve", "talvez") + self.CORPO)
 
 
+class NivelEmBreve(unittest.TestCase):
+    """Nível anunciado, ainda sem aulas (ex.: os vídeos de mão na massa)."""
+    def gerar(self, corpo):
+        trilhas, saida = tempfile.mkdtemp(), tempfile.mkdtemp()
+        open(os.path.join(trilhas, "teste.md"), "w", encoding="utf-8").write(CABECALHO + corpo)
+        gen.gerar(trilhas, saida)
+        return (json.load(open(os.path.join(saida, "teste.json"), encoding="utf-8")),
+                json.load(open(os.path.join(saida, "index.json"), encoding="utf-8")))
+
+    def test_nivel_em_breve_sem_aulas(self):
+        trilha, catalogo = self.gerar(CORPO + "\n## Nível 1 · Mão na massa\nStatus: em-breve\nVídeos no Superset e no Power BI.\n")
+        n1 = trilha["niveis"][1]
+        self.assertEqual((n1["status"], n1["itens"], n1["descricao"]), ("em-breve", [], "Vídeos no Superset e no Power BI."))
+        self.assertNotIn("status", trilha["niveis"][0])
+        self.assertEqual(catalogo["trilhas"][0]["niveis"], 1)   # o catálogo conta os níveis abertos
+
+    def test_nivel_em_breve_nao_tem_aulas(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(CORPO.replace("## Nível 0 · Base\n", "## Nível 0 · Base\nStatus: em-breve\n"))
+
+    def test_nivel_aberto_precisa_de_aula(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(CORPO + "\n## Nível 1 · Vazio\nSó a abertura.\n")
+
+    def test_status_de_nivel_conhecido(self):
+        with self.assertRaises(SystemExit):
+            self.gerar(CORPO + "\n## Nível 1 · X\nStatus: depois\n")
+
+
 if __name__ == "__main__":
     unittest.main()

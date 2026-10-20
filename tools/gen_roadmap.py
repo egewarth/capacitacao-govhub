@@ -56,6 +56,7 @@ SUPPORT_ROLES = ("support", "optional")
 
 ITEM_RE  = re.compile(r'^- \[([^\]]+)\]\s+\*\*(.+?)\*\*\s+—\s+(.+?)\s+—\s+`([^`]+)`\s*$')
 LEVEL_RE = re.compile(r'^##\s+Nível\s+(\d+)\s+·\s+(.+)$')
+STATUS_NIVEL_RE = re.compile(r'^Status:\s*(\S+)$')
 ETAPA_RE = re.compile(r'^Etapa:\s*(.+?)\s*·\s*Ícone:\s*([a-z0-9-]+)$')
 
 def parse(lines, inicio=0):
@@ -73,6 +74,12 @@ def parse(lines, inicio=0):
         em = ETAPA_RE.match(s)
         if em and not cur["items"]:
             cur["etapa"], cur["icone"] = em.group(1), em.group(2)
+            continue
+        sm = STATUS_NIVEL_RE.match(s)
+        if sm and not cur["items"]:
+            if sm.group(1) not in STATUS:
+                raise SystemExit("Status de nível inválido %r (linha %d): use %s" % (sm.group(1), idx + 1, " ou ".join(STATUS)))
+            cur["status"] = sm.group(1)
             continue
         if s.startswith("- ["):
             im = ITEM_RE.match(s)
@@ -181,6 +188,17 @@ def ler_etapas(texto, origem):
     return etapas
 
 
+def validar_niveis(levels, origem):
+    """Nível em breve é só anúncio (sem aulas); nível aberto precisa de pelo menos uma aula."""
+    for lv in levels:
+        if lv.get("status") == "em-breve" and lv["items"]:
+            raise SystemExit("%s (linha %d): o nível %d está em breve e não pode ter aulas"
+                             % (origem, lv["linha"], lv["num"]))
+        if not lv.get("status") and not lv["items"]:
+            raise SystemExit("%s (linha %d): o nível %d não tem aulas (se ele ainda vai chegar, "
+                             "use a linha `Status: em-breve`)" % (origem, lv["linha"], lv["num"]))
+
+
 def validar_etapas(meta, levels, origem):
     """A etapa de cada nível precisa estar nas etapas do cabeçalho; o ícone precisa existir."""
     rotulos = [e["rotulo"] for e in meta.get("etapas") or []]
@@ -233,6 +251,8 @@ def json_da_trilha(meta, levels):
         if "etapa" in lv:
             nivel["etapa"] = lv["etapa"]
             nivel["icone"] = "assets/icones/%s-sober.svg" % lv["icone"]
+        if lv.get("status"):
+            nivel["status"] = lv["status"]
         nivel["itens"] = itens
         niveis.append(nivel)
     dados = {"_aviso": AVISO, "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"],
@@ -273,7 +293,8 @@ def gen_xmind(meta, levels, caminho):
     level_topics = []
     for lv in levels:
         kids = [topic(it["title"], role=ROLE_DISPLAY[it["role"]], note=it["doc"]) for it in lv["items"]]
-        level_topics.append(topic("Nível %d · %s" % (lv["num"], lv["title"]), note=lv["desc"], children=kids))
+        titulo = "Nível %d · %s" % (lv["num"], lv["title"]) + (" (em breve)" if lv.get("status") else "")
+        level_topics.append(topic(titulo, note=lv["desc"], children=kids))
 
     root = topic(meta["titulo"],
                  note="Faça os itens essenciais de cada nível primeiro, de cima para baixo; "
@@ -305,7 +326,7 @@ def gen_texto(meta, levels, caminho):
            % (meta["slug"], meta["slug"]),
            "---\n"]
     for lv in levels:
-        out.append("### Nível %d · %s" % (lv["num"], lv["title"]))
+        out.append("### Nível %d · %s" % (lv["num"], lv["title"]) + (" (em breve)" if lv.get("status") else ""))
         out.append("*%s*" % lv["desc"])
         for it in lv["items"]:
             out.append(line(it))
@@ -346,6 +367,7 @@ def carregar(trilhas_dir):
         levels, dropped = parse(corpo, inicio=len(texto.split("\n")) - len(corpo))
         validar_caminhos(levels, origem)
         validar_repetidos(levels, origem)
+        validar_niveis(levels, origem)
         validar_etapas(meta, levels, origem)
         trilhas.append((meta, levels, dropped, origem))
     slugs = [m["slug"] for m, _l, _d, _o in trilhas]
@@ -371,7 +393,7 @@ def gerar(trilhas_dir, out_dir):
         catalogo.append({
             "slug": meta["slug"], "titulo": meta["titulo"], "descricao": meta["descricao"], "categoria": meta["categoria"],
             **({"status": meta["status"]} if meta.get("status") else {}),
-            "niveis": len(levels), "aulas": [i["id"] for n in dados["niveis"] for i in n["itens"]],
+            "niveis": len([lv for lv in levels if not lv.get("status")]), "aulas": [i["id"] for n in dados["niveis"] for i in n["itens"]],
         })
     escrever_json(os.path.join(out_dir, "index.json"), {"_aviso": AVISO, "trilhas": catalogo})
     gen_catalogo_texto([(m, l) for m, l, _d, _o in trilhas], os.path.join(out_dir, "index.md"))
