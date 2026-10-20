@@ -123,4 +123,3 @@ têm maior impacto no resultado final.
 ## Veja também
 
 - [Comparação entre categorias](graficos-comparacao-entre-categorias.md)
-- [Paletas e significado das cores](paletas-e-significado-das-cores.md)

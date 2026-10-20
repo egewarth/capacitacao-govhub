@@ -53,4 +53,3 @@ Trate-os como ponto de partida para o wireframe e valide com quem vai usar o pai
 
 - [Arquitetura da informação](arquitetura-da-informacao.md)
 - [Hierarquia visual](hierarquia-visual.md)
-- [Consistência visual](consistencia-visual.md)

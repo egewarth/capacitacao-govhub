@@ -1,14 +1,14 @@
 ---
 slug: dashboards
 titulo: Dashboards no Gov Hub
-descricao: Do "por que um dashboard" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.
+descricao: Do "por que um dashboard" à escolha do gráfico certo, com Apache Superset e Power BI.
 categoria: negocial
-chamada: Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu, do primeiro gráfico à publicação, com Apache Superset e Power BI.
-etapas: Por quê=Fundamentos | O quê=Princípios transversais | Como=Execução na ferramenta | Prática=Estudo de caso | Governança=Padrões Gov Hub
-etapas_subtitulo: Cinco etapas em sequência: do "por quê" à governança
-etapas_nota: **Acessibilidade e arquitetura da informação** não são um módulo isolado no fim: aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.
+chamada: Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu: dos fundamentos e do design à escolha do gráfico certo, com Apache Superset e Power BI.
+etapas: Por quê=Fundamentos conceituais | O quê=Princípios mínimos de design | Como=Gráficos | Prática=Mão na massa
+etapas_subtitulo: Quatro etapas em sequência: do "por quê" à prática
+etapas_nota: **Mão na massa** chega em breve: vídeos mostrando como aplicar tudo isso no Superset e no Power BI.
 ---
-# Trilha de aprendizagem — Dashboards no GovHub
+# Trilha de aprendizagem: Dashboards no Gov Hub
 
 > **Fonte única da trilha.** Edite **apenas este arquivo** e rode `python3 tools/gen_roadmap.py`. Ele regenera `docs/trilhas/dashboards.json` (lido pelo mapa, pelo leitor e pelo catálogo), `docs/trilhas/dashboards.md` (versão em texto) e `docs/trilhas/dashboards.xmind` (mapa mental). Um mesmo documento não pode aparecer duas vezes nesta trilha.
 >
@@ -19,16 +19,16 @@ etapas_nota: **Acessibilidade e arquitetura da informação** não são um módu
 > **Cadência:** faça os itens **core** de cada nível, de cima para baixo; **support/optional/advanced**
 > ficam para quando forem necessários. Para reordenar, mova linhas; para incluir, copie uma linha.
 >
-> A trilha segue a progressão **"por quê" → "o quê" → "como"**: fundamentos conceituais, princípios
-> transversais (design, acessibilidade, arquitetura da informação), execução técnica na ferramenta,
-> padrões de governança e, por fim, prática guiada. Acessibilidade e arquitetura da informação não são
-> um módulo isolado no fim — aparecem desde o Nível 0 como critérios de qualidade.
+> A trilha segue os módulos do documento de conteúdo da capacitação: **fundamentos conceituais**,
+> **princípios mínimos de design** (arquitetura da informação e hierarquia visual) e **gráficos**. O
+> nível de **mão na massa**, em vídeo, está anunciado com `Status: em-breve` e ganha aulas quando os
+> vídeos existirem.
 
 
-## Nível 0 · Fundamentos de visualização de dados
+## Nível 0 · Fundamentos conceituais
 Etapa: Por quê · Ícone: light-bulb
 O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o
-diferencia de um relatório ou de um painel operacional, e por que um dashboard bom parece simples.
+diferencia de um relatório ou de um painel operacional, e quais perguntas ele precisa responder.
 
 - [explanation] **Por que fazer um dashboard?** — core — `docs/explicacao/por-que-fazer-um-dashboard.md`
 - [explanation] **O que faz um dashboard ruim** — core — `docs/explicacao/o-que-faz-um-dashboard-ruim.md`
@@ -37,10 +37,10 @@ diferencia de um relatório ou de um painel operacional, e por que um dashboard 
 - [reference] **Perguntas que um dashboard deve responder** — support — `docs/referencia/perguntas-que-um-dashboard-deve-responder.md`
 - [reference] **Glossário** — support — `docs/referencia/glossario.md`
 
-## Nível 1 · Arquitetura da informação
+## Nível 1 · Princípios mínimos de design
 Etapa: O quê · Ícone: rectangle-group
-Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: posição dos elementos,
-fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filtros.
+Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: fluxo de leitura, contexto,
+navegação do geral para o detalhe, filtros e o que deve se destacar primeiro.
 
 - [explanation] **Arquitetura da informação — visão geral** — core — `docs/explicacao/arquitetura-da-informacao.md`
 - [explanation] **Fluxo de leitura: padrões F e Z** — core — `docs/explicacao/fluxo-de-leitura-f-e-z.md`
@@ -48,33 +48,13 @@ fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filt
 - [explanation] **Estrutura de navegação: overview, zoom e detalhe** — core — `docs/explicacao/estrutura-de-navegacao.md`
 - [explanation] **Organização de páginas e abas** — support — `docs/explicacao/organizacao-de-paginas-e-abas.md`
 - [explanation] **Filtros e segmentação** — core — `docs/explicacao/filtros-e-segmentacao.md`
-
-## Nível 2 · Hierarquia visual e storytelling
-Etapa: O quê · Ícone: presentation-chart-line
-Definir o que se enxerga primeiro e transformar o dashboard em uma narrativa que gera decisão,
-em vez de um mural de números sem prioridade.
-
 - [explanation] **Hierarquia visual** — core — `docs/explicacao/hierarquia-visual.md`
 - [explanation] **KPIs e Big Numbers** — core — `docs/explicacao/kpis-e-big-numbers.md`
-- [explanation] **Storytelling e comunicação com dados** — core — `docs/explicacao/storytelling-com-dados.md`
-- [explanation] **Viés e distorção na apresentação dos dados** — support — `docs/explicacao/vies-e-distorcao-nos-dados.md`
 
-## Nível 3 · Design visual e acessibilidade
-Etapa: O quê · Ícone: swatch
-Base de design aplicada a dados, sem exigir formação em design — e acessibilidade como requisito legal
-da plataforma de governo (eMAG e WCAG), não como polimento opcional no fim do projeto.
-
-- [explanation] **Consistência visual: tipografia, grid e alinhamento** — core — `docs/explicacao/consistencia-visual.md`
-- [reference] **Paletas e significado das cores** — core — `docs/referencia/paletas-e-significado-das-cores.md`
-- [explanation] **Acessibilidade em dashboards (eMAG e WCAG)** — core — `docs/explicacao/acessibilidade-em-dashboards.md`
-- [reference] **Checklist de acessibilidade** — core — `docs/referencia/checklist-de-acessibilidade.md`
-- [explanation] **Interatividade: filtros, drill-down e drill-through** — support — `docs/explicacao/interatividade.md`
-- [explanation] **Experiência do usuário e performance** — support — `docs/explicacao/experiencia-do-usuario-e-performance.md`
-
-## Nível 4 · Escolha do gráfico
+## Nível 2 · Gráficos
 Etapa: Como · Ícone: chart-pie
 O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo
-raciocínio (as duas primeiras páginas) e volte às referências sempre que estiver construindo.
+raciocínio (as três primeiras aulas) e volte às referências sempre que estiver construindo.
 
 - [explanation] **Qual é o gráfico certo para o meu dado?** — core — `docs/explicacao/qual-e-o-grafico-certo.md`
 - [explanation] **Erros mais comuns na escolha do gráfico** — core — `docs/explicacao/erros-comuns-na-escolha-do-grafico.md`
@@ -90,23 +70,8 @@ raciocínio (as duas primeiras páginas) e volte às referências sempre que est
 - [reference] **Azure Maps (Power BI)** — support — `docs/referencia/azure-maps.md`
 - [research] **Mapas: Superset vs. Power BI** — support — `docs/pesquisa/mapas-superset-vs-power-bi.md`
 
-## Nível 5 · Prática guiada
-Etapa: Prática · Ícone: wrench
-Mão na massa: do entendimento do problema até o dashboard publicado, passando por KPIs, wireframe,
-construção na ferramenta e revisão de qualidade.
-
-- [tutorial] **Do problema ao dashboard publicado** — capstone — `docs/tutoriais/do-problema-ao-dashboard-publicado.md`
-- [how-to] **Adicionar um filtro no Superset** — support — `docs/guias/adicionar-filtro-no-superset.md`
-- [how-to] **Criar um tema de cores no Power BI (JSON)** — support — `docs/guias/criar-tema-de-cores-no-power-bi.md`
-- [how-to] **Configurar a ordem de leitura (tab order) no Power BI** — support — `docs/guias/configurar-tab-order-no-power-bi.md`
-- [challenge] **Transformar um dashboard ruim em um dashboard bom** — capstone — `docs/desafios/dashboard-ruim-para-dashboard-bom.md`
-
-## Nível 6 · Governança e publicação no GovHub
-Etapa: Governança · Ícone: shield-check
-Como tudo isso se conecta às regras da plataforma: nomenclatura, papéis, homologação e o checklist que
-precede qualquer publicação para o público final.
-
-- [reference] **Padrões e governança GovHub** — core — `docs/referencia/padroes-e-governanca-govhub.md`
-- [reference] **Checklist final de qualidade antes de publicar** — core — `docs/referencia/checklist-final-de-qualidade.md`
-- [how-to] **Publicar e homologar um dashboard no GovHub** — core — `docs/guias/publicar-e-homologar-no-govhub.md`
-- [reference] **Papéis e permissões** — support — `docs/referencia/papeis-e-permissoes.md`
+## Nível 3 · Mão na massa no Superset e no Power BI
+Etapa: Prática · Ícone: play-circle
+Status: em-breve
+Vídeos mostrando, passo a passo, como aplicar os fundamentos, o design e a escolha do gráfico na
+construção de um dashboard no Apache Superset e no Power BI.

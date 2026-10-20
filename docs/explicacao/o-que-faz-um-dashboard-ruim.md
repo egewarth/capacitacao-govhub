@@ -45,8 +45,3 @@ demanda. Assim nada se perde e o painel continua legível.
 - [Percepção visual e carga cognitiva](percepcao-visual-e-carga-cognitiva.md) — por que o excesso custa caro
 - [Hierarquia visual](hierarquia-visual.md) — como decidir o que se destaca
 - [Filtros e segmentação](filtros-e-segmentacao.md) — o excesso mais comum de todos
-
-## Veja também
-
-- [Transformar um dashboard ruim em um dashboard bom](../desafios/dashboard-ruim-para-dashboard-bom.md)
-- [Checklist final de qualidade](../referencia/checklist-final-de-qualidade.md)

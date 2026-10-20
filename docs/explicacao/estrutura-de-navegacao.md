@@ -42,5 +42,4 @@ confiar que alguém vai tentar.
 ## Veja também
 
 - [Organização de páginas e abas](organizacao-de-paginas-e-abas.md)
-- [Interatividade: filtros, drill-down e drill-through](interatividade.md)
 - [Arquitetura da informação](arquitetura-da-informacao.md)

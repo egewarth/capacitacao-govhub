@@ -54,4 +54,3 @@ dividi-lo — não aumentar o número de destaques. Ver
 
 - [KPIs e Big Numbers](kpis-e-big-numbers.md)
 - [Arquitetura da informação](arquitetura-da-informacao.md)
-- [Consistência visual](consistencia-visual.md)

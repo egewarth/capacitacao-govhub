@@ -4,9 +4,9 @@
     {
       "slug": "dashboards",
       "titulo": "Dashboards no Gov Hub",
-      "descricao": "Do \"por que um dashboard\" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.",
+      "descricao": "Do \"por que um dashboard\" à escolha do gráfico certo, com Apache Superset e Power BI.",
       "categoria": "negocial",
-      "niveis": 7,
+      "niveis": 3,
       "aulas": [
         "explicacao/por-que-fazer-um-dashboard",
         "explicacao/o-que-faz-um-dashboard-ruim",
@@ -22,14 +22,6 @@
         "explicacao/filtros-e-segmentacao",
         "explicacao/hierarquia-visual",
         "explicacao/kpis-e-big-numbers",
-        "explicacao/storytelling-com-dados",
-        "explicacao/vies-e-distorcao-nos-dados",
-        "explicacao/consistencia-visual",
-        "referencia/paletas-e-significado-das-cores",
-        "explicacao/acessibilidade-em-dashboards",
-        "referencia/checklist-de-acessibilidade",
-        "explicacao/interatividade",
-        "explicacao/experiencia-do-usuario-e-performance",
         "explicacao/qual-e-o-grafico-certo",
         "explicacao/erros-comuns-na-escolha-do-grafico",
         "referencia/guia-rapido-pergunta-para-grafico",
@@ -42,35 +34,26 @@
         "referencia/graficos-geoespaciais",
         "referencia/graficos-avancados-power-bi",
         "referencia/azure-maps",
-        "pesquisa/mapas-superset-vs-power-bi",
-        "tutoriais/do-problema-ao-dashboard-publicado",
-        "guias/adicionar-filtro-no-superset",
-        "guias/criar-tema-de-cores-no-power-bi",
-        "guias/configurar-tab-order-no-power-bi",
-        "desafios/dashboard-ruim-para-dashboard-bom",
-        "referencia/padroes-e-governanca-govhub",
-        "referencia/checklist-final-de-qualidade",
-        "guias/publicar-e-homologar-no-govhub",
-        "referencia/papeis-e-permissoes"
+        "pesquisa/mapas-superset-vs-power-bi"
       ]
     },
     {
       "slug": "dashboards-fast-track",
       "titulo": "Fast track: Dashboards no Gov Hub",
-      "descricao": "As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essencial ao painel publicado.",
+      "descricao": "As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essencial à escolha do gráfico.",
       "categoria": "negocial",
       "niveis": 2,
       "aulas": [
         "explicacao/por-que-fazer-um-dashboard",
         "explicacao/o-que-faz-um-dashboard-ruim",
+        "explicacao/arquitetura-da-informacao",
         "explicacao/hierarquia-visual",
         "explicacao/kpis-e-big-numbers",
         "explicacao/qual-e-o-grafico-certo",
         "referencia/guia-rapido-pergunta-para-grafico",
-        "referencia/checklist-de-acessibilidade",
-        "tutoriais/do-problema-ao-dashboard-publicado",
-        "referencia/checklist-final-de-qualidade",
-        "guias/publicar-e-homologar-no-govhub"
+        "explicacao/erros-comuns-na-escolha-do-grafico",
+        "explicacao/indicacao-de-contexto",
+        "explicacao/filtros-e-segmentacao"
       ]
     },
     {

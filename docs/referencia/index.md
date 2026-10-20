@@ -15,17 +15,6 @@ Descrições neutras e completas, para consulta durante o trabalho.
 - [Visuais avançados do Power BI](graficos-avancados-power-bi.md)
 - [Azure Maps (Power BI)](azure-maps.md)
 
-## Design e acessibilidade
-
-- [Paletas e significado das cores](paletas-e-significado-das-cores.md)
-- [Checklist de acessibilidade](checklist-de-acessibilidade.md)
-
-## Qualidade e governança
-
-- [Checklist final de qualidade](checklist-final-de-qualidade.md)
-- [Padrões e governança GovHub](padroes-e-governanca-govhub.md)
-- [Papéis e permissões](papeis-e-permissoes.md)
-
 ## Conceitos
 
 - [Perguntas que um dashboard deve responder](perguntas-que-um-dashboard-deve-responder.md)

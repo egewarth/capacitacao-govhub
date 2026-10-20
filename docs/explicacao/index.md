@@ -22,15 +22,6 @@ Por que as coisas funcionam como funcionam — contexto e trade-offs.
 
 - [Hierarquia visual](hierarquia-visual.md)
 - [KPIs e Big Numbers](kpis-e-big-numbers.md)
-- [Storytelling e comunicação com dados](storytelling-com-dados.md)
-- [Viés e distorção na apresentação dos dados](vies-e-distorcao-nos-dados.md)
-
-## Design e acessibilidade
-
-- [Consistência visual](consistencia-visual.md)
-- [Acessibilidade em dashboards](acessibilidade-em-dashboards.md)
-- [Interatividade](interatividade.md)
-- [Experiência do usuário e performance](experiencia-do-usuario-e-performance.md)
 
 ## Escolha do gráfico
 

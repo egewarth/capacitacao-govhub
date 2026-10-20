@@ -56,5 +56,3 @@ saídas costumam funcionar melhor do que adicionar mais um seletor:
 ## Veja também
 
 - [Estrutura de navegação](estrutura-de-navegacao.md)
-- [Interatividade: filtros, drill-down e drill-through](interatividade.md)
-- [Adicionar um filtro no Superset](../guias/adicionar-filtro-no-superset.md)

@@ -5,11 +5,8 @@ propósito.
 
 | Seção | Propósito | Quando usar |
 |---|---|---|
-| [Tutoriais](tutoriais/index.md) | aprender fazendo | você está começando e quer ser guiado do início ao fim |
-| [Guias](guias/index.md) | resolver uma tarefa | você já tem o básico e precisa fazer uma coisa específica |
 | [Referência](referencia/index.md) | consultar os fatos | você está construindo e precisa checar algo |
 | [Explicação](explicacao/index.md) | entender o porquê | você quer compreender o raciocínio por trás das decisões |
-| [Desafios](desafios/index.md) | aplicar | você quer consolidar tudo em uma entrega real |
 | [Pesquisa](pesquisa/index.md) | comparar | você precisa decidir entre alternativas |
 
 A ordem recomendada de leitura está na [trilha](trilhas/index.md) — ou na

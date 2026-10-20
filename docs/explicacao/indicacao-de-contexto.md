@@ -36,10 +36,8 @@ secundária, não concorrente: menor, mais discreta, próxima do indicador.
 
 Cuidado também com a comparação escolhida. Comparar com o período anterior em uma série sazonal produz
 alarmes falsos; nesses casos, comparar com o mesmo período do ano anterior costuma ser mais honesto.
-Ver [Viés e distorção na apresentação dos dados](vies-e-distorcao-nos-dados.md).
 
 ## Veja também
 
 - [KPIs e Big Numbers](kpis-e-big-numbers.md)
 - [Arquitetura da informação](arquitetura-da-informacao.md)
-- [Storytelling e comunicação com dados](storytelling-com-dados.md)

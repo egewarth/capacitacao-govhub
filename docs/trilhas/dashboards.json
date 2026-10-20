@@ -2,39 +2,35 @@
   "_aviso": "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao.",
   "slug": "dashboards",
   "titulo": "Dashboards no Gov Hub",
-  "descricao": "Do \"por que um dashboard\" ao painel publicado no Gov Hub, com Apache Superset e Power BI e com acessibilidade como requisito.",
+  "descricao": "Do \"por que um dashboard\" à escolha do gráfico certo, com Apache Superset e Power BI.",
   "categoria": "negocial",
-  "chamada": "Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu, do primeiro gráfico à publicação, com Apache Superset e Power BI.",
+  "chamada": "Um dashboard ruim some na rotina de quem devia usá-lo. Um dashboard bom muda decisão. Aprenda a construir o seu: dos fundamentos e do design à escolha do gráfico certo, com Apache Superset e Power BI.",
   "etapas": [
     {
       "rotulo": "Por quê",
-      "caixa": "Fundamentos"
+      "caixa": "Fundamentos conceituais"
     },
     {
       "rotulo": "O quê",
-      "caixa": "Princípios transversais"
+      "caixa": "Princípios mínimos de design"
     },
     {
       "rotulo": "Como",
-      "caixa": "Execução na ferramenta"
+      "caixa": "Gráficos"
     },
     {
       "rotulo": "Prática",
-      "caixa": "Estudo de caso"
-    },
-    {
-      "rotulo": "Governança",
-      "caixa": "Padrões Gov Hub"
+      "caixa": "Mão na massa"
     }
   ],
-  "etapas_subtitulo": "Cinco etapas em sequência: do \"por quê\" à governança",
-  "etapas_nota": "**Acessibilidade e arquitetura da informação** não são um módulo isolado no fim: aparecem desde o Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.",
+  "etapas_subtitulo": "Quatro etapas em sequência: do \"por quê\" à prática",
+  "etapas_nota": "**Mão na massa** chega em breve: vídeos mostrando como aplicar tudo isso no Superset e no Power BI.",
   "quiz": "quiz/dashboards.json",
   "niveis": [
     {
       "numero": 0,
-      "titulo": "Fundamentos de visualização de dados",
-      "descricao": "O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o diferencia de um relatório ou de um painel operacional, e por que um dashboard bom parece simples.",
+      "titulo": "Fundamentos conceituais",
+      "descricao": "O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o diferencia de um relatório ou de um painel operacional, e quais perguntas ele precisa responder.",
       "etapa": "Por quê",
       "icone": "assets/icones/light-bulb-sober.svg",
       "itens": [
@@ -102,8 +98,8 @@
     },
     {
       "numero": 1,
-      "titulo": "Arquitetura da informação",
-      "descricao": "Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: posição dos elementos, fluxo de leitura, navegação do geral para o detalhe e uso disciplinado de filtros.",
+      "titulo": "Princípios mínimos de design",
+      "descricao": "Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: fluxo de leitura, contexto, navegação do geral para o detalhe, filtros e o que deve se destacar primeiro.",
       "etapa": "O quê",
       "icone": "assets/icones/rectangle-group-sober.svg",
       "itens": [
@@ -166,16 +162,7 @@
           "papel": "core",
           "papel_nome": "Essencial",
           "icone": "assets/icones/light-bulb-sober.svg"
-        }
-      ]
-    },
-    {
-      "numero": 2,
-      "titulo": "Hierarquia visual e storytelling",
-      "descricao": "Definir o que se enxerga primeiro e transformar o dashboard em uma narrativa que gera decisão, em vez de um mural de números sem prioridade.",
-      "etapa": "O quê",
-      "icone": "assets/icones/presentation-chart-line-sober.svg",
-      "itens": [
+        },
         {
           "id": "explicacao/hierarquia-visual",
           "titulo": "Hierarquia visual",
@@ -195,102 +182,13 @@
           "papel": "core",
           "papel_nome": "Essencial",
           "icone": "assets/icones/light-bulb-sober.svg"
-        },
-        {
-          "id": "explicacao/storytelling-com-dados",
-          "titulo": "Storytelling e comunicação com dados",
-          "doc": "docs/explicacao/storytelling-com-dados.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/light-bulb-sober.svg"
-        },
-        {
-          "id": "explicacao/vies-e-distorcao-nos-dados",
-          "titulo": "Viés e distorção na apresentação dos dados",
-          "doc": "docs/explicacao/vies-e-distorcao-nos-dados.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/light-bulb-sober.svg"
         }
       ]
     },
     {
-      "numero": 3,
-      "titulo": "Design visual e acessibilidade",
-      "descricao": "Base de design aplicada a dados, sem exigir formação em design — e acessibilidade como requisito legal da plataforma de governo (eMAG e WCAG), não como polimento opcional no fim do projeto.",
-      "etapa": "O quê",
-      "icone": "assets/icones/swatch-sober.svg",
-      "itens": [
-        {
-          "id": "explicacao/consistencia-visual",
-          "titulo": "Consistência visual: tipografia, grid e alinhamento",
-          "doc": "docs/explicacao/consistencia-visual.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/light-bulb-sober.svg"
-        },
-        {
-          "id": "referencia/paletas-e-significado-das-cores",
-          "titulo": "Paletas e significado das cores",
-          "doc": "docs/referencia/paletas-e-significado-das-cores.md",
-          "tipo": "referencia",
-          "tipo_nome": "Referência",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/document-text-sober.svg"
-        },
-        {
-          "id": "explicacao/acessibilidade-em-dashboards",
-          "titulo": "Acessibilidade em dashboards (eMAG e WCAG)",
-          "doc": "docs/explicacao/acessibilidade-em-dashboards.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/light-bulb-sober.svg"
-        },
-        {
-          "id": "referencia/checklist-de-acessibilidade",
-          "titulo": "Checklist de acessibilidade",
-          "doc": "docs/referencia/checklist-de-acessibilidade.md",
-          "tipo": "referencia",
-          "tipo_nome": "Referência",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/document-text-sober.svg"
-        },
-        {
-          "id": "explicacao/interatividade",
-          "titulo": "Interatividade: filtros, drill-down e drill-through",
-          "doc": "docs/explicacao/interatividade.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/light-bulb-sober.svg"
-        },
-        {
-          "id": "explicacao/experiencia-do-usuario-e-performance",
-          "titulo": "Experiência do usuário e performance",
-          "doc": "docs/explicacao/experiencia-do-usuario-e-performance.md",
-          "tipo": "explicacao",
-          "tipo_nome": "Explicação",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/light-bulb-sober.svg"
-        }
-      ]
-    },
-    {
-      "numero": 4,
-      "titulo": "Escolha do gráfico",
-      "descricao": "O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo raciocínio (as duas primeiras páginas) e volte às referências sempre que estiver construindo.",
+      "numero": 2,
+      "titulo": "Gráficos",
+      "descricao": "O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo raciocínio (as três primeiras aulas) e volte às referências sempre que estiver construindo.",
       "etapa": "Como",
       "icone": "assets/icones/chart-pie-sober.svg",
       "itens": [
@@ -427,112 +325,13 @@
       ]
     },
     {
-      "numero": 5,
-      "titulo": "Prática guiada",
-      "descricao": "Mão na massa: do entendimento do problema até o dashboard publicado, passando por KPIs, wireframe, construção na ferramenta e revisão de qualidade.",
+      "numero": 3,
+      "titulo": "Mão na massa no Superset e no Power BI",
+      "descricao": "Vídeos mostrando, passo a passo, como aplicar os fundamentos, o design e a escolha do gráfico na construção de um dashboard no Apache Superset e no Power BI.",
       "etapa": "Prática",
-      "icone": "assets/icones/wrench-sober.svg",
-      "itens": [
-        {
-          "id": "tutoriais/do-problema-ao-dashboard-publicado",
-          "titulo": "Do problema ao dashboard publicado",
-          "doc": "docs/tutoriais/do-problema-ao-dashboard-publicado.md",
-          "tipo": "tutorial",
-          "tipo_nome": "Tutorial",
-          "papel": "capstone",
-          "papel_nome": "Capstone",
-          "icone": "assets/icones/book-open-sober.svg"
-        },
-        {
-          "id": "guias/adicionar-filtro-no-superset",
-          "titulo": "Adicionar um filtro no Superset",
-          "doc": "docs/guias/adicionar-filtro-no-superset.md",
-          "tipo": "guia",
-          "tipo_nome": "Guia",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/wrench-sober.svg"
-        },
-        {
-          "id": "guias/criar-tema-de-cores-no-power-bi",
-          "titulo": "Criar um tema de cores no Power BI (JSON)",
-          "doc": "docs/guias/criar-tema-de-cores-no-power-bi.md",
-          "tipo": "guia",
-          "tipo_nome": "Guia",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/wrench-sober.svg"
-        },
-        {
-          "id": "guias/configurar-tab-order-no-power-bi",
-          "titulo": "Configurar a ordem de leitura (tab order) no Power BI",
-          "doc": "docs/guias/configurar-tab-order-no-power-bi.md",
-          "tipo": "guia",
-          "tipo_nome": "Guia",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/wrench-sober.svg"
-        },
-        {
-          "id": "desafios/dashboard-ruim-para-dashboard-bom",
-          "titulo": "Transformar um dashboard ruim em um dashboard bom",
-          "doc": "docs/desafios/dashboard-ruim-para-dashboard-bom.md",
-          "tipo": "desafio",
-          "tipo_nome": "Desafio",
-          "papel": "capstone",
-          "papel_nome": "Capstone",
-          "icone": "assets/icones/trophy-sober.svg"
-        }
-      ]
-    },
-    {
-      "numero": 6,
-      "titulo": "Governança e publicação no GovHub",
-      "descricao": "Como tudo isso se conecta às regras da plataforma: nomenclatura, papéis, homologação e o checklist que precede qualquer publicação para o público final.",
-      "etapa": "Governança",
-      "icone": "assets/icones/shield-check-sober.svg",
-      "itens": [
-        {
-          "id": "referencia/padroes-e-governanca-govhub",
-          "titulo": "Padrões e governança GovHub",
-          "doc": "docs/referencia/padroes-e-governanca-govhub.md",
-          "tipo": "referencia",
-          "tipo_nome": "Referência",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/document-text-sober.svg"
-        },
-        {
-          "id": "referencia/checklist-final-de-qualidade",
-          "titulo": "Checklist final de qualidade antes de publicar",
-          "doc": "docs/referencia/checklist-final-de-qualidade.md",
-          "tipo": "referencia",
-          "tipo_nome": "Referência",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/document-text-sober.svg"
-        },
-        {
-          "id": "guias/publicar-e-homologar-no-govhub",
-          "titulo": "Publicar e homologar um dashboard no GovHub",
-          "doc": "docs/guias/publicar-e-homologar-no-govhub.md",
-          "tipo": "guia",
-          "tipo_nome": "Guia",
-          "papel": "core",
-          "papel_nome": "Essencial",
-          "icone": "assets/icones/wrench-sober.svg"
-        },
-        {
-          "id": "referencia/papeis-e-permissoes",
-          "titulo": "Papéis e permissões",
-          "doc": "docs/referencia/papeis-e-permissoes.md",
-          "tipo": "referencia",
-          "tipo_nome": "Referência",
-          "papel": "support",
-          "papel_nome": "Apoio",
-          "icone": "assets/icones/document-text-sober.svg"
-        }
-      ]
+      "icone": "assets/icones/play-circle-sober.svg",
+      "status": "em-breve",
+      "itens": []
     }
   ]
 }

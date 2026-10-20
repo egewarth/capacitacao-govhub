@@ -50,7 +50,7 @@ precisão. Quando a precisão importa, barras funcionam melhor.
 
 Cortar o eixo Y para começar acima de zero amplifica visualmente diferenças pequenas. Efeitos 3D
 distorcem proporções. Ambos aparecem com frequência em apresentações e ambos induzem a leituras
-erradas. Ver [Viés e distorção na apresentação dos dados](vies-e-distorcao-nos-dados.md).
+erradas.
 
 ## Trade-offs e alternativas
 
@@ -64,4 +64,3 @@ O critério é sempre o mesmo: a escolha ajuda ou atrapalha a leitura correta?
 
 - [Qual é o gráfico certo para o meu dado?](qual-e-o-grafico-certo.md)
 - [Guia rápido: pergunta → gráfico](../referencia/guia-rapido-pergunta-para-grafico.md)
-- [Checklist final de qualidade](../referencia/checklist-final-de-qualidade.md)

@@ -45,4 +45,3 @@ respondem a nenhuma pergunta da lista costumam ser decoração.
 
 - [Dashboard, relatório analítico e painel operacional](../explicacao/dashboard-relatorio-painel-operacional.md)
 - [Guia rápido: pergunta → gráfico](guia-rapido-pergunta-para-grafico.md)
-- [Checklist final de qualidade](checklist-final-de-qualidade.md)

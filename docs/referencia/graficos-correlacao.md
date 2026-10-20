@@ -100,4 +100,3 @@ compreender o motivo.
 ## Veja também
 
 - [Distribuição: Histogram e Box Plot](graficos-distribuicao.md)
-- [Viés e distorção na apresentação dos dados](../explicacao/vies-e-distorcao-nos-dados.md)
