@@ -1,0 +1,4 @@
+# Publicações do site do Gov Hub (GovHub-br/gov-hub-io, docs/blog/posts/) escondidas neste deploy.
+# Um arquivo por linha. O post sai do build daqui (página, card da home e de Publicações);
+# o repositório do gov-hub-io não muda. Para mostrar de novo, apague a linha.
+fluxo-compras-publicas.md

@@ -102,6 +102,12 @@ jobs:
           ref: ${{ vars.GOVHUB_REF || 'feat/idv-govhub' }}
           path: _govhub
 
+      - name: Esconder publicações (tools/publicacoes-ocultas.txt)
+        run: |
+          grep -v -E '^\s*(#|$)' tools/publicacoes-ocultas.txt | while read -r post; do
+            rm -v "_govhub/docs/blog/posts/$post" || echo "::warning::publicação não encontrada: $post"
+          done
+
       - name: Gerar o site do Gov Hub (MkDocs)
         working-directory: _govhub
         run: |

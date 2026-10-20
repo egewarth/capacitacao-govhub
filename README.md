@@ -131,6 +131,9 @@ com 27 aulas, e um nível de prática em vídeo anunciado como "em breve":
 | 3 | Gráficos |
 | 4 | Mão na massa no Superset e no Power BI (vídeos, em breve) |
 
+No catálogo da página inicial, **cada nível conta como uma aula** (o card mostra "3 aulas · 1 em breve" e o
+progresso por níveis concluídos); dentro do mapa, a contagem continua por aula.
+
 Um nível em breve é declarado em `trilhas/<slug>.md` com a linha `Status: em-breve` logo abaixo do
 título do nível e não tem aulas: aparece no mapa como "Em breve", não conta no andamento e fica fora
 do PDF. Quando os vídeos existirem, basta tirar a linha e listar as aulas.
@@ -228,6 +231,7 @@ Campos opcionais do cabeçalho, usados pelo mapa (ADR 0007):
 |---|---|
 | `chamada` | frase do topo do mapa (sem ela, vale a `descricao`) |
 | `status: em-breve` | o card aparece desabilitado no catálogo |
+| `status: oculta` | a trilha some do catálogo e da busca (o link direto para o mapa continua abrindo) |
 | `etapas` | "A lógica da trilha": `Rótulo=Descrição \| Rótulo=Descrição \| …` |
 | `etapas_subtitulo` · `etapas_nota` | linha abaixo do título e nota no pé do quadro (`**trecho**` vira negrito) |
 
@@ -290,6 +294,12 @@ MMDC="npx -y @mermaid-js/mermaid-cli@11" python3 tools/gen_pdf.py
 - `pdf/` (só existe no site publicado ou depois de rodar `tools/gen_pdf.py`).
 
 As páginas HTML não têm regiões geradas: o mapa e o catálogo são montados no navegador a partir do JSON.
+
+### 7.4.1 Publicações do site do Gov Hub
+
+O deploy monta o site do Gov Hub (repositório `GovHub-br/gov-hub-io`) na raiz e as trilhas em
+`/capacitacao/`. Para esconder uma publicação **só neste site**, sem mexer no gov-hub-io, ponha o nome
+do arquivo do post (de `docs/blog/posts/`) em `tools/publicacoes-ocultas.txt`.
 
 ### 7.5 Publicar
 
