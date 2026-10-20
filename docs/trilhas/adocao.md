@@ -1,4 +1,4 @@
-# Adotar o Gov Hub no seu órgão
+# Implante o Gov Hub na sua infraestrutura
 
 Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.
 

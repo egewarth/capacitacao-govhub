@@ -106,7 +106,7 @@ function montarBusca() {
   async function carregar() {
     if (trilhas) return trilhas;
     const catalogo = await carregarCatalogo();
-    const abertas = catalogo.trilhas.filter((t) => t.status !== 'em-breve');
+    const abertas = catalogo.trilhas.filter((t) => !t.status);   // nem em breve nem oculta
     trilhas = await Promise.all(abertas.map((t) => carregarTrilha(t.slug)));
     return trilhas;
   }

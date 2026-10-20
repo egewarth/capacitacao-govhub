@@ -1,13 +1,13 @@
 ---
 slug: adocao
-titulo: Adotar o Gov Hub no seu órgão
+titulo: Implante o Gov Hub na sua infraestrutura
 descricao: Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.
 categoria: tecnica
 status: em-breve
 etapas: Entender=Entender a plataforma | Planejar=Planejar a adoção | Preparar=Preparar a infraestrutura | Implantar=Primeiro deploy | Conectar=Conectar a primeira fonte | Governar=Governança e acesso | Expandir=Fork temático
 etapas_subtitulo: Sete etapas em sequência: do que é a plataforma ao fork temático
 ---
-# Trilha de aprendizagem: Adotar o Gov Hub no seu órgão
+# Trilha de aprendizagem: Implante o Gov Hub na sua infraestrutura
 
 > **Fonte única da trilha.** Edite **apenas este arquivo** e rode `python3 tools/gen_roadmap.py`. Ele regenera `docs/trilhas/adocao.json`, `docs/trilhas/adocao.md` e `docs/trilhas/adocao.xmind`. O formato dos itens é o mesmo de `trilhas/dashboards.md`.
 >

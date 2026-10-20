@@ -1,7 +1,7 @@
 {
   "_aviso": "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao.",
   "slug": "adocao",
-  "titulo": "Adotar o Gov Hub no seu órgão",
+  "titulo": "Implante o Gov Hub na sua infraestrutura",
   "descricao": "Do que é a plataforma ao fork temático, para a equipe de TI que vai implantar o Gov Hub em outro órgão.",
   "categoria": "tecnica",
   "status": "em-breve",

@@ -33,7 +33,8 @@ AVISO = "Gerado por tools/gen_roadmap.py a partir de trilhas/ - nao edite a mao.
 CAMPOS_OBRIGATORIOS = ("slug", "titulo", "descricao", "categoria")
 # categoria -> posição no catálogo. Negocial: para quem usa os dados; técnica: para quem opera a plataforma.
 CATEGORIAS = {"negocial": 0, "tecnica": 1}
-STATUS = ("em-breve",)   # trilha listada no catálogo, mas ainda fechada
+STATUS = ("em-breve", "oculta")   # trilha: em-breve = card desabilitado; oculta = fora da lista (o link direto ainda abre)
+STATUS_NIVEL = ("em-breve",)       # nível anunciado, ainda sem aulas
 ICONES_DIR = os.path.join(REPO, "assets", "icones")
 QUIZ_DIR = os.path.join(REPO, "quiz")   # quiz/<slug>.json, editado à mão: o JSON da trilha aponta para ele   # ícone do nível: assets/icones/<nome>-sober.svg
 XMIND_DATA = (1980, 1, 1, 0, 0, 0)   # data fixa e sem compressão (ZIP_STORED): o .xmind só muda com o conteúdo e é idêntico em qualquer
@@ -77,8 +78,8 @@ def parse(lines, inicio=0):
             continue
         sm = STATUS_NIVEL_RE.match(s)
         if sm and not cur["items"]:
-            if sm.group(1) not in STATUS:
-                raise SystemExit("Status de nível inválido %r (linha %d): use %s" % (sm.group(1), idx + 1, " ou ".join(STATUS)))
+            if sm.group(1) not in STATUS_NIVEL:
+                raise SystemExit("Status de nível inválido %r (linha %d): use %s" % (sm.group(1), idx + 1, " ou ".join(STATUS_NIVEL)))
             cur["status"] = sm.group(1)
             continue
         if s.startswith("- ["):

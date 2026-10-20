@@ -5,6 +5,7 @@
   "descricao": "As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essencial à escolha do gráfico.",
   "categoria": "negocial",
   "chamada": "Pouco tempo? Aqui está o essencial da trilha de Dashboards em 10 aulas: o que faz um bom painel, como organizar o que se vê primeiro e como escolher o gráfico certo.",
+  "status": "oculta",
   "etapas": [
     {
       "rotulo": "Entender",

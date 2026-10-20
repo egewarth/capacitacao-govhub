@@ -165,6 +165,10 @@ class Etapas(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.gerar(self.CAB + self.CORPO.replace("Ícone: wrench", "Ícone: nao-existe"))
 
+    def test_status_oculta(self):
+        trilha, catalogo = self.gerar(self.CAB.replace("em-breve", "oculta") + self.CORPO)
+        self.assertEqual(catalogo["trilhas"][0]["status"], "oculta")
+
     def test_status_conhecido(self):
         with self.assertRaises(SystemExit):
             self.gerar(self.CAB.replace("em-breve", "talvez") + self.CORPO)
@@ -197,6 +201,8 @@ class NivelEmBreve(unittest.TestCase):
     def test_status_de_nivel_conhecido(self):
         with self.assertRaises(SystemExit):
             self.gerar(CORPO + "\n## Nível 1 · X\nStatus: depois\n")
+        with self.assertRaises(SystemExit):   # oculta vale para a trilha, não para o nível
+            self.gerar(CORPO + "\n## Nível 1 · X\nStatus: oculta\n")
 
 
 if __name__ == "__main__":
