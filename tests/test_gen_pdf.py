@@ -92,9 +92,11 @@ class Html(unittest.TestCase):
             {"numero": 0, "titulo": "Base", "descricao": "Abre.", "itens": [
                 {"id": "explicacao/a", "titulo": "Aula A", "doc": "docs/explicacao/a.md", "tipo_nome": "Explicação", "papel": "core"}]},
             {"numero": 1, "titulo": "Prática", "descricao": "", "itens": [
-                {"id": "guias/b", "titulo": "Aula B", "doc": "docs/guias/b.md", "tipo_nome": "Guia", "papel": "support"}]}]}
+                {"id": "guias/b", "titulo": "Aula B", "doc": "docs/guias/b.md", "tipo_nome": "Guia", "papel": "support"}]},
+            {"numero": 2, "titulo": "Vídeos", "descricao": "Em breve.", "status": "em-breve", "itens": []}]}
         h = gen.html_da_trilha(trilha, {"explicacao/a": "<p>a</p>", "guias/b": "<p>b</p>"}, "https://s/")
-        self.assertEqual(h.count('class="gh-chapter"'), 2)
+        self.assertEqual(h.count('class="gh-chapter"'), 2)   # o nível em breve não entra
+        self.assertNotIn("Vídeos", h)
         self.assertIn('href="#aula-explicacao-a"', h)
         self.assertIn('id="aula-guias-b"', h)
         self.assertIn("Guia · Apoio", h)

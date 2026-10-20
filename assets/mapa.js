@@ -4,7 +4,7 @@ import { progresso } from './progresso.js';
 import { montarTopo } from './topo.js';
 import { carregarCatalogo, carregarTrilha, escolherTrilha } from './trilha.js';
 import { contar, hrefDoItem } from './progresso-nucleo.js';
-import { nivelPadrao, papelVisual, niveisConcluidos, pdfDaTrilha } from './hub-nucleo.js';
+import { nivelPadrao, papelVisual, niveisConcluidos, pdfDaTrilha, emBreve } from './hub-nucleo.js';
 import { montarCelebracao } from './celebracao.js';
 import { el, svg, ICONES } from './dom.js';
 
@@ -87,10 +87,14 @@ function montarNivel(numero, { foco = false } = {}) {
         nivel.icone ? el('span', { class: 'panel-icon' }, el('img', { src: nivel.icone, alt: '' })) : null,
         el('div', {}, nivel.etapa ? el('span', { class: 'panel-stage-pill' }, nivel.etapa) : null, titulo)),
       nivel.descricao ? el('p', { class: 'desc' }, nivel.descricao) : null,
-      el('div', { class: 'panel-progress-row' },
+      emBreve(nivel) ? null : el('div', { class: 'panel-progress-row' },
         el('div', { class: 'panel-progress-track', 'aria-hidden': 'true' }, el('div', { class: 'panel-progress-fill', id: 'nivel-barra' })),
         el('span', { class: 'panel-progress-label', id: 'nivel-contador' }))),
-    el('ul', { class: 'item-grid', 'aria-label': 'Aulas do nível ' + nivel.numero }, ...nivel.itens.map(cartaoAula)),
+    emBreve(nivel)
+      ? el('div', { class: 'nivel-em-breve' },
+        el('span', { class: 'track-soon-badge' }, 'Em breve'),
+        el('p', {}, 'Este nível ainda está em produção. As aulas aparecem aqui assim que forem publicadas.'))
+      : el('ul', { class: 'item-grid', 'aria-label': 'Aulas do nível ' + nivel.numero }, ...nivel.itens.map(cartaoAula)),
     el('nav', { class: 'panel-nav', 'aria-label': 'Outros níveis' },
       el('span', {}, anterior ? el('a', { href: '#nivel-' + anterior.numero }, `← Nível ${anterior.numero} · ${anterior.titulo}`) : null),
       el('span', {}, proximo ? el('a', { href: '#nivel-' + proximo.numero }, `Nível ${proximo.numero} · ${proximo.titulo} →`) : null)));
@@ -100,7 +104,7 @@ function montarNivel(numero, { foco = false } = {}) {
 
 function montarNiveis() {
   $('niveis').replaceChildren(...trilha.niveis.map((n) => el('li', {},
-    el('a', { class: 'trail-nav-item', href: '#nivel-' + n.numero, 'data-nivel': n.numero },
+    el('a', { class: 'trail-nav-item' + (emBreve(n) ? ' em-breve' : ''), href: '#nivel-' + n.numero, 'data-nivel': n.numero },
       el('span', { class: 'trail-nav-num', 'aria-hidden': 'true' }, String(n.numero)),
       el('span', { class: 'trail-nav-text' },
         el('span', { class: 't' }, el('span', { class: 'sr-only' }, `Nível ${n.numero}: `), n.titulo),
@@ -117,11 +121,12 @@ function pintar() {
   $('limpar').disabled = c.feitas === 0;
   document.querySelectorAll('.trail-nav-item').forEach((a) => {
     const n = c.porNivel[a.dataset.nivel];
-    const completo = n.feitas === n.total;
+    const futuro = a.classList.contains('em-breve');
+    const completo = !futuro && n.total > 0 && n.feitas === n.total;
     a.classList.toggle('complete', completo);
     if (Number(a.dataset.nivel) === nivelAtual) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
     a.querySelector('.trail-nav-num').replaceChildren(completo ? svg(ICONES.check) : a.dataset.nivel);
-    a.querySelector('.meta').textContent = `${n.feitas}/${n.total} concluídos`;
+    a.querySelector('.meta').textContent = futuro ? 'Em breve' : `${n.feitas}/${n.total} concluídos`;
   });
   document.querySelectorAll('.item-card').forEach((card) => {
     const feito = !!feitos[card.dataset.id];
@@ -130,7 +135,7 @@ function pintar() {
     b.setAttribute('aria-pressed', String(feito));
   });
   const n = c.porNivel[nivelAtual];
-  if (n && $('nivel-barra')) {
+  if (n && n.total && $('nivel-barra')) {
     $('nivel-barra').style.width = Math.round((n.feitas / n.total) * 100) + '%';
     $('nivel-contador').textContent = `${n.feitas}/${n.total} concluídos`;
   }

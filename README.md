@@ -125,17 +125,19 @@ do GovHub ([ADR 0002](docs/adr/0002-identidade-visual-govhub.md)).
 
 ## 4. A trilha
 
-A trilha de Dashboards tem sete níveis, do vocabulário à publicação:
+A trilha de Dashboards segue os módulos do documento de conteúdo da capacitação: três níveis abertos,
+com 27 aulas, e um nível de prática em vídeo anunciado como "em breve":
 
 | Nível | Tema |
 |---|---|
-| 0 | Fundamentos de visualização de dados |
-| 1 | Arquitetura da informação |
-| 2 | Hierarquia visual e storytelling |
-| 3 | Design visual e acessibilidade |
-| 4 | Escolha do gráfico |
-| 5 | Prática guiada |
-| 6 | Governança e publicação no GovHub |
+| 0 | Fundamentos conceituais |
+| 1 | Princípios mínimos de design (arquitetura da informação e hierarquia visual) |
+| 2 | Gráficos |
+| 3 | Mão na massa no Superset e no Power BI (vídeos, em breve) |
+
+Um nível em breve é declarado em `trilhas/<slug>.md` com a linha `Status: em-breve` logo abaixo do
+título do nível e não tem aulas: aparece no mapa como "Em breve", não conta no andamento e fica fora
+do PDF. Quando os vídeos existirem, basta tirar a linha e listar as aulas.
 
 Em cada nível, faça primeiro os itens **essenciais**; os de **apoio/opcionais** vêm quando forem
 necessários.

@@ -58,3 +58,11 @@ test('caminhos dos PDFs: os mesmos que tools/gen_pdf.py escreve em pdf/', () => 
   assert.equal(pdfDaAula('explicacao/hierarquia-visual'), 'pdf/aulas/explicacao/hierarquia-visual.pdf');
   assert.equal(pdfDaTrilha('dashboards'), 'pdf/trilhas/dashboards.pdf');
 });
+
+const COM_EM_BREVE = [...NIVEIS, { numero: 2, titulo: 'Vídeos', status: 'em-breve', itens: [] }];
+
+test('nível em breve: não conta no andamento nem é aberto por padrão', () => {
+  assert.deepEqual(niveisConcluidos({ a: true, b: true, c: true }, COM_EM_BREVE), { feitos: 2, total: 2, percentual: 100 });
+  assert.equal(nivelPadrao({ a: true, b: true, c: true }, COM_EM_BREVE), 0);
+  assert.equal(nivelPadrao({ a: true, b: true }, COM_EM_BREVE), 1);
+});

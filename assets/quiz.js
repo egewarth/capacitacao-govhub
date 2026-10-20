@@ -101,7 +101,7 @@ if (!trilha || !banco) {
         el('a', { class: 'btn-link', href: mapa }, 'Ir para a trilha'));
       return;
     }
-    $('quiz-intro').textContent = `Revise os conceitos que você aprendeu ao longo dos ${trilha.niveis.length} níveis. São ${perguntas.length} perguntas, uma por aula; responda todas para ver o resultado.`;
+    $('quiz-intro').textContent = `Revise os conceitos que você aprendeu ao longo dos ${trilha.niveis.filter((n) => n.status !== 'em-breve').length} níveis. São ${perguntas.length} perguntas, uma por aula; responda todas para ver o resultado.`;
     if (!montado) { montado = true; montar(); }
   }
   progresso.aoMudar(pintar);

@@ -118,3 +118,11 @@
   .logic-card{margin:32px 16px 0}
 }
 .stage-row>li{display:flex;align-items:flex-start;gap:6px}
+
+/* Nível anunciado, ainda sem aulas (Status: em-breve) */
+.trail-nav-item.em-breve .trail-nav-text .t{color:var(--text-muted)}
+.trail-nav-item.em-breve .trail-nav-num{background:var(--bg-soft);color:var(--text-muted)}
+.nivel-em-breve{background:#fff;border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.nivel-em-breve p{margin:0;font-size:14px}
+.nivel-em-breve .track-soon-badge{position:static;background:var(--border-soft);color:var(--purple-700);font-size:10.5px;font-weight:800;
+    text-transform:uppercase;letter-spacing:.03em;padding:5px 10px;border-radius:999px}

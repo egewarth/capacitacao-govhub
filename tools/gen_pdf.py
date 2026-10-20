@@ -425,14 +425,14 @@ def html_da_trilha(trilha, corpos, base):
     """`corpos`: {id da aula: fragmento HTML}."""
     partes = [capa("Trilha de capacitação", trilha["titulo"], trilha.get("chamada") or trilha["descricao"])]
     toc = ['<section class="gh-toc">', rodape(trilha["titulo"]), "<h2>Sumário</h2><ol>"]
-    for n in trilha["niveis"]:
+    for n in [x for x in trilha["niveis"] if x.get("status") != "em-breve"]:
         toc.append('<li><span class="gh-toc__nivel">Nível %d · %s</span><ol>' % (n["numero"], html.escape(n["titulo"])))
         for it in n["itens"]:
             toc.append('<li><a href="#%s">%s</a></li>' % (ancora(it["id"]), html.escape(it["titulo"])))
         toc.append("</ol></li>")
     toc.append("</ol></section>")
     partes.append("".join(toc))
-    for n in trilha["niveis"]:
+    for n in [x for x in trilha["niveis"] if x.get("status") != "em-breve"]:
         sec = ['<section class="gh-chapter">', rodape(trilha["titulo"]),
                '<div class="gh-band"><div class="gh-band__row"><div class="gh-band__num">%02d</div><div>'
                '<div class="gh-band__eyebrow">Nível %d%s</div><h2 class="gh-band__title">%s</h2></div></div>%s</div>'

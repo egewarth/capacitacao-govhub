@@ -3,9 +3,12 @@
 
 // Nível que o mapa abre quando o link não diz qual: o primeiro com aula pendente.
 export function nivelPadrao(feitos, niveis) {
-  const pendente = niveis.find((n) => n.itens.some((i) => !feitos[i.id]));
+  const pendente = niveis.find((n) => !emBreve(n) && n.itens.some((i) => !feitos[i.id]));
   return pendente ? pendente.numero : (niveis[0] ? niveis[0].numero : 0);
 }
+
+// Nível anunciado, ainda sem aulas (`Status: em-breve` em trilhas/<slug>.md).
+export const emBreve = (nivel) => nivel.status === 'em-breve';
 
 // Os cinco papéis da trilha viram três marcações no mapa: essencial, apoio e marco.
 export function papelVisual(papel) {
@@ -55,8 +58,9 @@ export function corrigirQuiz(perguntas, respostas) {
 
 // Andamento da trilha em níveis: um nível conta quando todas as suas aulas estão feitas.
 export function niveisConcluidos(feitos, niveis) {
-  const feitosN = niveis.filter((n) => n.itens.length > 0 && n.itens.every((i) => feitos[i.id])).length;
-  return { feitos: feitosN, total: niveis.length, percentual: niveis.length ? Math.round((feitosN / niveis.length) * 100) : 0 };
+  const abertos = niveis.filter((n) => !emBreve(n));
+  const feitosN = abertos.filter((n) => n.itens.length > 0 && n.itens.every((i) => feitos[i.id])).length;
+  return { feitos: feitosN, total: abertos.length, percentual: abertos.length ? Math.round((feitosN / abertos.length) * 100) : 0 };
 }
 
 // PDFs gerados por tools/gen_pdf.py no deploy (pasta pdf/ do site publicado).
