@@ -29,7 +29,7 @@ for (const resumo of catalogo.trilhas) {
     assert.equal(!!trilha.diagrama, !!trilha.diagrama_alt);
     if (trilha.diagrama) assert.ok(existsSync(new URL('../' + trilha.diagrama, import.meta.url)), trilha.diagrama);
     trilha.niveis.forEach((nivel, i) => {
-      assert.equal(nivel.numero, i);
+      assert.equal(nivel.numero, i + 1);   // os níveis começam no 1
       for (const item of nivel.itens) {
         assert.equal(item.id, item.doc.replace(/^docs\//, '').replace(/\.md$/, ''));
         assert.ok(TIPOS.includes(item.tipo) && PAPEIS.includes(item.papel));

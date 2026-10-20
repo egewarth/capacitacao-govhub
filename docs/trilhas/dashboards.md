@@ -7,7 +7,7 @@ Do "por que um dashboard" à escolha do gráfico certo, com Apache Superset e Po
 
 ---
 
-### Nível 0 · Fundamentos conceituais
+### Nível 1 · Fundamentos conceituais
 *O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o diferencia de um relatório ou de um painel operacional, e quais perguntas ele precisa responder.*
 - [Por que fazer um dashboard?](../explicacao/por-que-fazer-um-dashboard.md) — *Explicação* · **Essencial**
 - [O que faz um dashboard ruim](../explicacao/o-que-faz-um-dashboard-ruim.md) — *Explicação* · **Essencial**
@@ -16,7 +16,7 @@ Do "por que um dashboard" à escolha do gráfico certo, com Apache Superset e Po
 - [Perguntas que um dashboard deve responder](../referencia/perguntas-que-um-dashboard-deve-responder.md) — *Referência* · Apoio
 - [Glossário](../referencia/glossario.md) — *Referência* · Apoio
 
-### Nível 1 · Princípios mínimos de design
+### Nível 2 · Princípios mínimos de design
 *Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: fluxo de leitura, contexto, navegação do geral para o detalhe, filtros e o que deve se destacar primeiro.*
 - [Arquitetura da informação — visão geral](../explicacao/arquitetura-da-informacao.md) — *Explicação* · **Essencial**
 - [Fluxo de leitura: padrões F e Z](../explicacao/fluxo-de-leitura-f-e-z.md) — *Explicação* · **Essencial**
@@ -27,7 +27,7 @@ Do "por que um dashboard" à escolha do gráfico certo, com Apache Superset e Po
 - [Hierarquia visual](../explicacao/hierarquia-visual.md) — *Explicação* · **Essencial**
 - [KPIs e Big Numbers](../explicacao/kpis-e-big-numbers.md) — *Explicação* · **Essencial**
 
-### Nível 2 · Gráficos
+### Nível 3 · Gráficos
 *O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo raciocínio (as três primeiras aulas) e volte às referências sempre que estiver construindo.*
 - [Qual é o gráfico certo para o meu dado?](../explicacao/qual-e-o-grafico-certo.md) — *Explicação* · **Essencial**
 - [Erros mais comuns na escolha do gráfico](../explicacao/erros-comuns-na-escolha-do-grafico.md) — *Explicação* · **Essencial**
@@ -43,6 +43,6 @@ Do "por que um dashboard" à escolha do gráfico certo, com Apache Superset e Po
 - [Azure Maps (Power BI)](../referencia/azure-maps.md) — *Referência* · Apoio
 - [Mapas: Superset vs. Power BI](../pesquisa/mapas-superset-vs-power-bi.md) — *Pesquisa* · Apoio
 
-### Nível 3 · Mão na massa no Superset e no Power BI (em breve)
+### Nível 4 · Mão na massa no Superset e no Power BI (em breve)
 *Vídeos mostrando, passo a passo, como aplicar os fundamentos, o design e a escolha do gráfico na construção de um dashboard no Apache Superset e no Power BI.*
 

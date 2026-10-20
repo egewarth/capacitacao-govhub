@@ -15,7 +15,7 @@ etapas_nota: Quer se aprofundar? A trilha completa **Dashboards no Gov Hub** tem
 > Versão curta da trilha `dashboards`: as mesmas aulas, só as mais importantes. O progresso é por aula,
 > então o que for concluído aqui aparece concluído na trilha completa.
 
-## Nível 0 · O essencial
+## Nível 1 · O essencial
 Etapa: Entender · Ícone: light-bulb
 O que um dashboard resolve, o que estraga um painel e como organizar o que se vê primeiro: a
 arquitetura da informação, a hierarquia visual e os números-chave no topo.
@@ -26,7 +26,7 @@ arquitetura da informação, a hierarquia visual e os números-chave no topo.
 - [explanation] **Hierarquia visual** — core — `docs/explicacao/hierarquia-visual.md`
 - [explanation] **KPIs e Big Numbers** — core — `docs/explicacao/kpis-e-big-numbers.md`
 
-## Nível 1 · Do dado ao gráfico
+## Nível 2 · Do dado ao gráfico
 Etapa: Escolher · Ícone: chart-pie
 Qual visual responde qual pergunta, os erros que mais distorcem a leitura, e como dar contexto aos
 números e oferecer só os filtros que ajudam.

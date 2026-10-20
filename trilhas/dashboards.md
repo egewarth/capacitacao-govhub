@@ -25,7 +25,7 @@ etapas_nota: **Mão na massa** chega em breve: vídeos mostrando como aplicar tu
 > vídeos existirem.
 
 
-## Nível 0 · Fundamentos conceituais
+## Nível 1 · Fundamentos conceituais
 Etapa: Por quê · Ícone: light-bulb
 O vocabulário e o raciocínio crítico antes de tocar na ferramenta: o que um dashboard resolve, o que o
 diferencia de um relatório ou de um painel operacional, e quais perguntas ele precisa responder.
@@ -37,7 +37,7 @@ diferencia de um relatório ou de um painel operacional, e quais perguntas ele p
 - [reference] **Perguntas que um dashboard deve responder** — support — `docs/referencia/perguntas-que-um-dashboard-deve-responder.md`
 - [reference] **Glossário** — support — `docs/referencia/glossario.md`
 
-## Nível 1 · Princípios mínimos de design
+## Nível 2 · Princípios mínimos de design
 Etapa: O quê · Ícone: rectangle-group
 Como organizar o conteúdo para que quem lê encontre a resposta sem esforço: fluxo de leitura, contexto,
 navegação do geral para o detalhe, filtros e o que deve se destacar primeiro.
@@ -51,7 +51,7 @@ navegação do geral para o detalhe, filtros e o que deve se destacar primeiro.
 - [explanation] **Hierarquia visual** — core — `docs/explicacao/hierarquia-visual.md`
 - [explanation] **KPIs e Big Numbers** — core — `docs/explicacao/kpis-e-big-numbers.md`
 
-## Nível 2 · Gráficos
+## Nível 3 · Gráficos
 Etapa: Como · Ícone: chart-pie
 O catálogo de consulta: qual visual responde qual pergunta, no Superset e no Power BI. Comece pelo
 raciocínio (as três primeiras aulas) e volte às referências sempre que estiver construindo.
@@ -70,7 +70,7 @@ raciocínio (as três primeiras aulas) e volte às referências sempre que estiv
 - [reference] **Azure Maps (Power BI)** — support — `docs/referencia/azure-maps.md`
 - [research] **Mapas: Superset vs. Power BI** — support — `docs/pesquisa/mapas-superset-vs-power-bi.md`
 
-## Nível 3 · Mão na massa no Superset e no Power BI
+## Nível 4 · Mão na massa no Superset e no Power BI
 Etapa: Prática · Ícone: play-circle
 Status: em-breve
 Vídeos mostrando, passo a passo, como aplicar os fundamentos, o design e a escolha do gráfico na

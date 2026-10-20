@@ -20,7 +20,7 @@
   "quiz": "quiz/dashboards-fast-track.json",
   "niveis": [
     {
-      "numero": 0,
+      "numero": 1,
       "titulo": "O essencial",
       "descricao": "O que um dashboard resolve, o que estraga um painel e como organizar o que se vê primeiro: a arquitetura da informação, a hierarquia visual e os números-chave no topo.",
       "etapa": "Entender",
@@ -79,7 +79,7 @@
       ]
     },
     {
-      "numero": 1,
+      "numero": 2,
       "titulo": "Do dado ao gráfico",
       "descricao": "Qual visual responde qual pergunta, os erros que mais distorcem a leitura, e como dar contexto aos números e oferecer só os filtros que ajudam.",
       "etapa": "Escolher",

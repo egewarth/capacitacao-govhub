@@ -26,17 +26,13 @@ depois a execução técnica na ferramenta.
 
 ### A lógica da trilha
 
-A trilha segue a progressão **"por quê" → "o quê" → "como"**:
+A trilha segue a progressão **"por quê" → "o quê" → "como" → prática**:
 
-1. **Fundamentos conceituais** — por que um dashboard é bom ou ruim
-2. **Princípios transversais** — design, acessibilidade, arquitetura da informação (valem para
+1. **Fundamentos conceituais**: por que um dashboard é bom ou ruim
+2. **Princípios mínimos de design**: arquitetura da informação e hierarquia visual (valem para
    qualquer ferramenta)
-3. **Execução técnica** — como aplicar isso no Superset e no Power BI
-4. **Padrões e governança GovHub** — como isso se conecta ao ecossistema da plataforma
-5. **Prática guiada** — estudo de caso, checklist, publicação
-
-**Acessibilidade e arquitetura da informação não são um módulo isolado no fim.** Elas aparecem desde o
-Nível 0 como critérios de qualidade e voltam de forma aplicada nos níveis técnicos.
+3. **Gráficos**: qual visual responde qual pergunta, no Superset e no Power BI
+4. **Mão na massa**: vídeos aplicando tudo isso no Superset e no Power BI (em breve)
 
 ### Público
 
@@ -130,10 +126,10 @@ com 27 aulas, e um nível de prática em vídeo anunciado como "em breve":
 
 | Nível | Tema |
 |---|---|
-| 0 | Fundamentos conceituais |
-| 1 | Princípios mínimos de design (arquitetura da informação e hierarquia visual) |
-| 2 | Gráficos |
-| 3 | Mão na massa no Superset e no Power BI (vídeos, em breve) |
+| 1 | Fundamentos conceituais |
+| 2 | Princípios mínimos de design (arquitetura da informação e hierarquia visual) |
+| 3 | Gráficos |
+| 4 | Mão na massa no Superset e no Power BI (vídeos, em breve) |
 
 Um nível em breve é declarado em `trilhas/<slug>.md` com a linha `Status: em-breve` logo abaixo do
 título do nível e não tem aulas: aparece no mapa como "Em breve", não conta no andamento e fica fora

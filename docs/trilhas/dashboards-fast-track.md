@@ -7,7 +7,7 @@ As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essenc
 
 ---
 
-### Nível 0 · O essencial
+### Nível 1 · O essencial
 *O que um dashboard resolve, o que estraga um painel e como organizar o que se vê primeiro: a arquitetura da informação, a hierarquia visual e os números-chave no topo.*
 - [Por que fazer um dashboard?](../explicacao/por-que-fazer-um-dashboard.md) — *Explicação* · **Essencial**
 - [O que faz um dashboard ruim](../explicacao/o-que-faz-um-dashboard-ruim.md) — *Explicação* · **Essencial**
@@ -15,7 +15,7 @@ As 10 aulas mais importantes da trilha de Dashboards, em dois níveis: do essenc
 - [Hierarquia visual](../explicacao/hierarquia-visual.md) — *Explicação* · **Essencial**
 - [KPIs e Big Numbers](../explicacao/kpis-e-big-numbers.md) — *Explicação* · **Essencial**
 
-### Nível 1 · Do dado ao gráfico
+### Nível 2 · Do dado ao gráfico
 *Qual visual responde qual pergunta, os erros que mais distorcem a leitura, e como dar contexto aos números e oferecer só os filtros que ajudam.*
 - [Qual é o gráfico certo para o meu dado?](../explicacao/qual-e-o-grafico-certo.md) — *Explicação* · **Essencial**
 - [Guia rápido: pergunta → gráfico](../referencia/guia-rapido-pergunta-para-grafico.md) — *Referência* · **Essencial**
